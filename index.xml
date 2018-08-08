@@ -16,7 +16,503 @@
       <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/titanic/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;overview&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Overview&lt;/h3&gt;
+&lt;p&gt;The Titanic left the port of Queensland (now Cobh), Ireland on April 11, 1912 with 2224 passengers &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. On early morning of Monday, 15 April 1912, sank the “unsinkable” after a collision with an iceberg dragging more than 2/3 of the passengers down to the bottom of the Atlantic Ocean.&lt;/p&gt;
+&lt;p&gt;Due to the insufficient number of means of survival, the possibility to get in lifeboats would have obeyed to some kind of considerations: from the ethical “women and children first” to the more practical proximity to the Upper Deck which is itself related to the cabin class and thus to the socio-economic class of each passenger (see &lt;a href=&#34;https://rmstitanic1912.weebly.com/the-levels-of-the-titanic.html&#34;&gt;here&lt;/a&gt; the different levels of the Titanic).&lt;/p&gt;
+&lt;p&gt;Based on these considerations, the purpose of this project is to predict the survival of a test subset of passengers using machine learning. To this intent, I “dive” first into the training dataset provided by &lt;a href=&#34;https://www.kaggle.com/c/titanic&#34;&gt;kaggle.com&lt;/a&gt; within the framework of its prediction competitions, to identify and engineer the most important predictors.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;read-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Read data&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+library(Amelia)
+library(gridExtra)
+library(caret)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;trainVarTypes &amp;lt;- c(&amp;quot;integer&amp;quot;, &amp;quot;factor&amp;quot;, &amp;quot;factor&amp;quot;, &amp;quot;character&amp;quot;, &amp;quot;factor&amp;quot;, &amp;quot;numeric&amp;quot;, 
+                   &amp;quot;integer&amp;quot;, &amp;quot;integer&amp;quot;, &amp;quot;character&amp;quot;, &amp;quot;numeric&amp;quot;, &amp;quot;character&amp;quot;, &amp;quot;factor&amp;quot;) 
+# for Resp. PassengerId, Survived, Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked
+
+testVarTypes &amp;lt;- trainVarTypes[-2]
+
+train &amp;lt;- read.csv(&amp;quot;./titanic/train.csv&amp;quot;, colClasses = trainVarTypes, na.strings = c(&amp;quot;NA&amp;quot;, &amp;quot;&amp;quot;))
+test &amp;lt;- read.csv(&amp;quot;./titanic/test.csv&amp;quot;, colClasses = testVarTypes, na.strings = c(&amp;quot;NA&amp;quot;, &amp;quot;&amp;quot;))
+
+train$Survived &amp;lt;- factor(train$Survived, levels = c(0,1), labels = c(&amp;quot;no&amp;quot;, &amp;quot;yes&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;preliminary-data-analysis&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Preliminary data analysis&lt;/h3&gt;
+&lt;p&gt;The train dataset consists in a subset of 891 observations of 11 variables describing each passenger listed in. According to each variable we can know: whether the passenger survived or not (yes/no), his/her class on board (1st, 2nd or 3rd class), name (including the title), sex (female/male), Age, ticket number, fare, cabin number, and were he/her embarked.&lt;/p&gt;
+&lt;p&gt;Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found &lt;a href=&#34;https://www.kaggle.com/c/titanic/data&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    891 obs. of  12 variables:
+##  $ PassengerId: int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Survived   : Factor w/ 2 levels &amp;quot;no&amp;quot;,&amp;quot;yes&amp;quot;: 1 2 2 2 1 1 1 1 2 2 ...
+##  $ Pclass     : Factor w/ 3 levels &amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;: 3 1 3 1 3 3 1 3 3 2 ...
+##  $ Name       : chr  &amp;quot;Braund, Mr. Owen Harris&amp;quot; &amp;quot;Cumings, Mrs. John Bradley (Florence Briggs Thayer)&amp;quot; &amp;quot;Heikkinen, Miss. Laina&amp;quot; &amp;quot;Futrelle, Mrs. Jacques Heath (Lily May Peel)&amp;quot; ...
+##  $ Sex        : Factor w/ 2 levels &amp;quot;female&amp;quot;,&amp;quot;male&amp;quot;: 2 1 1 1 2 2 2 2 1 1 ...
+##  $ Age        : num  22 38 26 35 35 NA 54 2 27 14 ...
+##  $ SibSp      : int  1 1 0 1 0 0 0 3 0 1 ...
+##  $ Parch      : int  0 0 0 0 0 0 0 1 2 0 ...
+##  $ Ticket     : chr  &amp;quot;A/5 21171&amp;quot; &amp;quot;PC 17599&amp;quot; &amp;quot;STON/O2. 3101282&amp;quot; &amp;quot;113803&amp;quot; ...
+##  $ Fare       : num  7.25 71.28 7.92 53.1 8.05 ...
+##  $ Cabin      : chr  NA &amp;quot;C85&amp;quot; NA &amp;quot;C123&amp;quot; ...
+##  $ Embarked   : Factor w/ 3 levels &amp;quot;C&amp;quot;,&amp;quot;Q&amp;quot;,&amp;quot;S&amp;quot;: 3 1 3 3 3 2 3 3 3 1 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(train, n = 4)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   PassengerId Survived Pclass
+## 1           1       no      3
+## 2           2      yes      1
+## 3           3      yes      3
+## 4           4      yes      1
+##                                                  Name    Sex Age SibSp
+## 1                             Braund, Mr. Owen Harris   male  22     1
+## 2 Cumings, Mrs. John Bradley (Florence Briggs Thayer) female  38     1
+## 3                              Heikkinen, Miss. Laina female  26     0
+## 4        Futrelle, Mrs. Jacques Heath (Lily May Peel) female  35     1
+##   Parch           Ticket    Fare Cabin Embarked
+## 1     0        A/5 21171  7.2500  &amp;lt;NA&amp;gt;        S
+## 2     0         PC 17599 71.2833   C85        C
+## 3     0 STON/O2. 3101282  7.9250  &amp;lt;NA&amp;gt;        S
+## 4     0           113803 53.1000  C123        S&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   PassengerId    Survived  Pclass      Name               Sex     
+##  Min.   :  1.0   no :549   1:216   Length:891         female:314  
+##  1st Qu.:223.5   yes:342   2:184   Class :character   male  :577  
+##  Median :446.0             3:491   Mode  :character               
+##  Mean   :446.0                                                    
+##  3rd Qu.:668.5                                                    
+##  Max.   :891.0                                                    
+##                                                                   
+##       Age            SibSp           Parch           Ticket         
+##  Min.   : 0.42   Min.   :0.000   Min.   :0.0000   Length:891        
+##  1st Qu.:20.12   1st Qu.:0.000   1st Qu.:0.0000   Class :character  
+##  Median :28.00   Median :0.000   Median :0.0000   Mode  :character  
+##  Mean   :29.70   Mean   :0.523   Mean   :0.3816                     
+##  3rd Qu.:38.00   3rd Qu.:1.000   3rd Qu.:0.0000                     
+##  Max.   :80.00   Max.   :8.000   Max.   :6.0000                     
+##  NA&amp;#39;s   :177                                                        
+##       Fare           Cabin           Embarked  
+##  Min.   :  0.00   Length:891         C   :168  
+##  1st Qu.:  7.91   Class :character   Q   : 77  
+##  Median : 14.45   Mode  :character   S   :644  
+##  Mean   : 32.20                      NA&amp;#39;s:  2  
+##  3rd Qu.: 31.00                                
+##  Max.   :512.33                                
+## &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One important aspect when predicting using machine learning is the assessment of the completeness of the data (percentage of data with one or more values).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;missmap(train, main = &amp;quot;Missing Values Analysis&amp;quot;, col=c(&amp;quot;red&amp;quot;, &amp;quot;gray&amp;quot;)) # how many observations are missing&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/missing-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sapply(train, function(x) sum(is.na(x))) # how many observations are missing&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## PassengerId    Survived      Pclass        Name         Sex         Age 
+##           0           0           0           0           0         177 
+##       SibSp       Parch      Ticket        Fare       Cabin    Embarked 
+##           0           0           0           0         687           2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The analysis shows that two variables suffer strongly from lack of data: Cabin and Age.&lt;/p&gt;
+&lt;p&gt;While a missing Cabin number simply means that the passenger has no cabin, the variable Age is crucial and its missing observations should be imputed.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-engineering&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Data Engineering&lt;/h3&gt;
+&lt;div id=&#34;replace-titles-in-names&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Replace titles in names&lt;/h4&gt;
+&lt;p&gt;The preliminary data analysis puts light on the fact that the passengers titles are included to the variable Names. While the passengers names are not of a big importance here, their titles are in contrast very important and could represent an important predictor for machine learning.&lt;/p&gt;
+&lt;p&gt;I chose thus to isolate the titles and classify them in four different categories according to their meanings: “Miss” for young ladies, “Mrs” for older/married ones, “Mil” for military passengers and “Noble” for the aristocratic titles. The categories “Rev”, “Mr”, “Dr” and “Master” are kept unchangeable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1. train$Name - Replace titles in Name
+
+x &amp;lt;- sub(&amp;quot;.*, &amp;quot;, &amp;quot;&amp;quot;, as.character(train$Name))
+train$NameCat &amp;lt;- sub(&amp;quot;\\..*&amp;quot;, &amp;quot;&amp;quot;, x)
+train$NameCat[train$NameCat %in% c(&amp;quot;Miss&amp;quot;, &amp;quot;Mlle&amp;quot;, &amp;quot;Ms&amp;quot;)] &amp;lt;- &amp;quot;Miss&amp;quot;
+train$NameCat[train$NameCat %in% c(&amp;quot;Mme&amp;quot;, &amp;quot;Mrs&amp;quot;)] &amp;lt;- &amp;quot;Mrs&amp;quot;
+train$NameCat[train$NameCat %in% c(&amp;quot;Capt&amp;quot;, &amp;quot;Col&amp;quot;, &amp;quot;Major&amp;quot;)] &amp;lt;- &amp;quot;Mil&amp;quot;
+train$NameCat[train$NameCat %in% c(&amp;quot;Don&amp;quot;, &amp;quot;Jonkheer&amp;quot;, &amp;quot;Lady&amp;quot;, &amp;quot;Sir&amp;quot;, &amp;quot;the Countess&amp;quot;)] &amp;lt;- &amp;quot;Noble&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Please note however, that, contrary to what one might think, the category “Master” was used at the time to identify male children.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(train, aes(x = NameCat, y = Age)) + geom_boxplot(aes(fill=Survived)) + theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/bxplt_NameCat-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-age-categories&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Create Age categories&lt;/h4&gt;
+&lt;p&gt;For efficiency, it is more appropriate to classify the passengers according to specific age ranges using the variable Age. In this way, one could directly identify whether the passenger is a “child”, “adult” or “senior”.&lt;/p&gt;
+&lt;p&gt;For passengers with no information about the age, I use temporarily the category “missing”.&lt;/p&gt;
+&lt;p&gt;Please note also, that eventhough the Titanic’s Certificates of Clearance indicates that passengers over 14 are considered adults &lt;a href=&#34;#fn2&#34; class=&#34;footnoteRef&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;, I consider myself that during the evacuation of the Titanic, only signs of puberty can be used to determine whether a passenger is a child or not. For this reason, I chose the age of 14 as a limit to distinguish between an adult or a child passenger.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2. train$Age - Categories
+
+train$AgeCat[train$Age &amp;gt; 0 &amp;amp; train$Age &amp;lt;= 14 &amp;amp; !is.na(train$Age)] &amp;lt;- &amp;quot;child&amp;quot;
+train$AgeCat[train$Age &amp;gt; 14 &amp;amp; train$Age &amp;lt;= 60 &amp;amp; !is.na(train$Age)] &amp;lt;- &amp;quot;adult&amp;quot;
+train$AgeCat[train$Age &amp;gt; 60 &amp;amp; !is.na(train$Age)] &amp;lt;- &amp;quot;senior&amp;quot;
+train$AgeCat[is.na(train$Age)] &amp;lt;- &amp;quot;missing&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;cabin-number&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Cabin number&lt;/h4&gt;
+&lt;p&gt;A new categorical variable is also set according to whether the passenger has a cabin or not.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 3. train$Cabin
+
+train$HasCab[!is.na(train$Cabin)] &amp;lt;- &amp;quot;yes&amp;quot;
+train$HasCab[is.na(train$Cabin)] &amp;lt;- &amp;quot;no&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-family-factor&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;The “family” factor&lt;/h4&gt;
+&lt;p&gt;It is known that many passengers were crossing the Atlantic with other members of their families. On living the sinking Titanic, it is obvious that children should have been accompanied on lifeboats by, at least, one of their parents. Thus, being on board with other family members would play an important role.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 4. train$HasFam
+train$HasFam[train$SibSp != 0 | train$Parch != 0] &amp;lt;- &amp;quot;yes&amp;quot;
+train$HasFam[train$SibSp == 0 &amp;amp; train$Parch == 0] &amp;lt;- &amp;quot;no&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Nevertheless, the question is: to what extent? did big families have the same chance of getting in lifeboats as smaller ones?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Check the relationship between SibSp, Parchar and survival
+
+ggplot(train, aes(y = SibSp, x = Parch)) +
+    geom_jitter(aes(color = Survived)) +
+    theme_bw() +
+    geom_vline(xintercept = 3, color = &amp;#39;black&amp;#39;, lty=5) +
+    geom_hline(yintercept = 3, color = &amp;#39;black&amp;#39;, lty=5)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;It appears here that passengers with SibSp or Parch greater than 3 (i.e. the passenger belonged to a family of more than 4 members) had a smaller chance to survive. I introduce thus another predictor variable which classify the passengers according to the count of their relatives on board.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 5. train$FamCat
+
+train$FamCat[train$SibSp + train$Parch &amp;lt;= 4] &amp;lt;- &amp;quot;small&amp;quot;     # family
+train$FamCat[train$SibSp + train$Parch &amp;gt; 4] &amp;lt;- &amp;quot;big&amp;quot;        # big one
+train$FamCat[train$SibSp + train$Parch == 0] &amp;lt;- &amp;quot;single&amp;quot;    # the passenger was alone&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;factorize-categorical-variables&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Factorize categorical variables…&lt;/h4&gt;
+&lt;p&gt;…as all these engineered variables are to be used as categorical ones:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;train$Pclass &amp;lt;- factor(train$Pclass)
+train$NameCat &amp;lt;- factor(train$NameCat)
+train$AgeCat &amp;lt;- factor(train$AgeCat)
+train$HasCab &amp;lt;- factor(train$HasCab)
+train$HasFam &amp;lt;- factor(train$HasFam)
+train$FamCat &amp;lt;- factor(train$FamCat)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;detailed-exploratory-data-analysis&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Detailed exploratory data analysis&lt;/h3&gt;
+&lt;p&gt;According to the train dataset, the proportion of survival is a bit greater than the global one (one third). Not surprisingly, the women and children survived the shipwreck more than men.&lt;/p&gt;
+&lt;p&gt;One can also notice that the overall proportion of survival for the category “missing” seems to be very close to category “adult” which leads me to believe (even subjectively) that the mean ages of these categories would not be very different.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# barplot: survived or not
+p1 &amp;lt;- ggplot(data = train, aes(Survived, fill = Survived)) + 
+    geom_bar() + guides(fill = FALSE) + 
+    theme_bw()
+
+# barplot: survival according to sex
+p2 &amp;lt;-  ggplot(data = train, aes(Sex, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + guides(fill = FALSE) + 
+    theme_bw()
+
+# barplot: survival or not according to age category
+p3 &amp;lt;-  ggplot(data = train, aes(x = AgeCat, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + 
+    theme_bw()
+
+grid.arrange(p1, p2, p3, layout_matrix = cbind(c(1,3), c(2,3)), widths=c(2,3))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/DEDA-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The percentage of survival is about 38.4%&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   train$Sex train$Survived
+## 1    female       74.20382
+## 2      male       18.89081&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   train$AgeCat train$Survived
+## 1        adult       39.02439
+## 2        child       58.44156
+## 3      missing       29.37853
+## 4       senior       22.72727&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In light of the first following plot, it seems that having family members on board of the Titanic was not very crucial for survival. However, when looking to the second one, it appears clearly that being a member of a small family was in fact relatively important for survival mainly because of the fact that small children were always accompanied by &lt;strong&gt;at least&lt;/strong&gt; one of their parents.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# barplot: survived or not according to has a family on board or not
+p1 &amp;lt;- ggplot(data = train, aes(x = HasFam, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + 
+    theme_bw()
+
+# barplot: survived or not according to the category of the family
+p2 &amp;lt;- ggplot(data = train, aes(x = FamCat, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + guides(fill = FALSE) + 
+    theme_bw()
+
+grid.arrange(p1, p2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##   train$HasFam train$Survived
+## 1           no       30.35382
+## 2          yes       50.56497&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   train$FamCat train$Survived
+## 1          big       14.89362
+## 2       single       30.35382
+## 3        small       56.02606&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Wealth also seems to have an import impact on survival. It appears on the two following plots that having a cabin or being a first class passenger increased clearly the chance of survival.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# barplot: survived or not according to having a cabin or not
+p2 &amp;lt;- ggplot(data = train, aes(x = HasCab, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + 
+    theme_bw()
+
+# barplot: survival or not according to passenger class
+p1 &amp;lt;-  ggplot(data = train, aes(x = Pclass, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + guides(fill = FALSE) + 
+    theme_bw()
+
+grid.arrange(p1, p2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##   train$Pclass train$Survived
+## 1            1       62.96296
+## 2            2       47.28261
+## 3            3       24.23625&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   train$HasCab train$Survived
+## 1           no       29.98544
+## 2          yes       66.66667&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;On the other side, it appears also clearly that the &lt;strong&gt;overwhelming majority&lt;/strong&gt; of women who bought their tickets more than 50 pounds survived. Since it is not the case for men, the reason could be that the women from first class were the first to leave the Titanic on lifeboats when men of the first classe was forced to wait for women and children from other classes.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Had the Fare any impact? 
+ggplot(train, aes(x = PassengerId, y = Fare, color = Survived)) + 
+    geom_point() + 
+    theme_bw() + 
+    facet_grid(. ~ Sex)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The variable Fare seems also to correlate globally to age categories and can thus be of a good value when imputing the missing ageCat values. Nevertheless, to overcome the skewed distribution of the variable Fare, an appropriate less sensitive classifier method should be used (Random Forest or Gradient Boosting Method can do the job in such cases)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# How evolves the Fare according to passengers age (depending on age categories)
+ggplot(train,aes(x = Age,y = Fare, color = AgeCat)) + geom_point(shape = 1) + 
+     geom_smooth(method=&amp;#39;lm&amp;#39;) + scale_y_continuous(limits = c(0, 300)) + 
+    theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# How evolves the Fare according to passengers age (overall)
+ggplot(train,aes(x = Age,y = Fare)) + geom_point(color = &amp;quot;red&amp;quot;) + 
+    geom_smooth(method=&amp;#39;lm&amp;#39;) + scale_y_continuous(limits = c(0, 300)) + 
+    theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-14-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Concerning the passengers titles, the proportions of survival for each category correlate to age categories and sex as pointed out above. One can notice also that certain categories such as Doctors, servicemen or clerics did not survive for the majority (did not even tried to leave the Titanic?).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Relationship between survival and name categories
+ggplot(data = train, aes(x = NameCat, fill = Survived)) + 
+    geom_bar(position = &amp;quot;dodge&amp;quot;) + 
+    theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggregate(train$Survived ~ train$NameCat, FUN= function(x) sum(x == &amp;quot;yes&amp;quot;) / length(x) * 100)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   train$NameCat train$Survived
+## 1            Dr       42.85714
+## 2        Master       57.50000
+## 3           Mil       40.00000
+## 4          Miss       70.27027
+## 5            Mr       15.66731
+## 6           Mrs       79.36508
+## 7         Noble       60.00000
+## 8           Rev        0.00000&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;curiosity-not-directly-related-to-the-topic-of-the-project&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;CURIOSITY (not directly related to the topic of the project)&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Relatioship between passengers title and passengers class
+# Difference in social classes (exception for &amp;quot;Master&amp;quot;)
+p &amp;lt;- ggplot(data = train, aes(Pclass, fill = Pclass)) + 
+    geom_bar() + 
+    theme_bw()
+
+p + facet_grid(. ~ NameCat)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/curiosity-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Relationship between age categories and passengers class 
+# (interesting concerning the category &amp;quot;missing&amp;quot; which seems, according to its
+# distribution, to be close to &amp;quot;adult&amp;quot;) (suppose that most of the passengers with 
+# &amp;quot;missing&amp;quot; ages are in fact &amp;quot;adults&amp;quot;)
+p + facet_grid(. ~ AgeCat)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/curiosity-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-imputation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Data Imputation&lt;/h3&gt;
+&lt;p&gt;In order to predict the target variable, it is important to impute all missing values of the predictors. There are many methods for the imputation, each with advantages and inconvenients. For this project, two variables show missing values: Embarked and Age (Fare and Age for test data). Since only two values are missing in Embarked, I do a little investigation to deduct them based on the ticket number, provided that it should be related to the place were it was issued.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1. train$Embarked
+
+# passengerID with missing &amp;quot;Embarked&amp;quot;
+train$PassengerId[is.na(train$Embarked)] &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1]  62 830&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# both passengerd have same ticket: 113572 =&amp;gt; they embarked together with the same
+# ticket
+train$Ticket[is.na(train$Embarked)]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;113572&amp;quot; &amp;quot;113572&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# check other passengers with ticket of the same prefix =&amp;gt; they most probably bought 
+# their tickets from the same embarkment place
+train$Embarked[grep(&amp;quot;^1135&amp;quot;, train$Ticket)] &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] C    &amp;lt;NA&amp;gt; S    S    S    S    C    S    &amp;lt;NA&amp;gt;
+## Levels: C Q S&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# since most of the last cases have value &amp;quot;S&amp;quot; for Embarkment I give the same for the
+# missing ones:
+train$Embarked[is.na(train$Embarked)] &amp;lt;- &amp;quot;S&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Concerning the missing values of Age, I decided to use the variable AgeCat instead to avoid imputing numerical values. The missing values are imputed using Random Forest algorithm since it appears, as pointed out above, that the age category of the passengers is related directly to many parameters included in our dataset. Of course, the variable Survived is excluded when training the model.&lt;/p&gt;
+&lt;p&gt;Although it is possible to merge training and data set for the computation of a unique model, I prefer to do the computation for each set separately. The chosed classifiers are: “Pclass”, “Sex”, “Embarked”, “Fare,”NameCat“,”HasCab“, and”FamCat&amp;quot; while the target variable is “AgeCat” with three different levels: “child”, “adult”, and “senior”.&lt;/p&gt;
+&lt;p&gt;The trainControl was set to use the K-fold cross-validation as it represents a robust method to estimate the model’s accuracy. The choice of k = 5 has been empirically shown to avoid high bias and variance when estimating the test error rate &lt;a href=&#34;#fn3&#34; class=&#34;footnoteRef&#34; id=&#34;fnref3&#34;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# train$Age
+# The imputation is predicted
+# 1. Select the predictors - &amp;quot;Survived&amp;quot;&amp;quot; should not be selected
+trainAgetrain &amp;lt;- train[c(1, 3, 5, 10, 12, 13, 14, 15, 17)]
+
+# keep only observations with AgeCat = &amp;quot;missing&amp;quot; in the test subset
+trainAgetest &amp;lt;- trainAgetrain[trainAgetrain$AgeCat == &amp;quot;missing&amp;quot;,]
+
+# exclude AgeCat from the test subset
+trainAgetest &amp;lt;- trainAgetest[, -7]
+
+# exclude observations with AgeCat = &amp;quot;missing&amp;quot; in the train subset
+trainAgetrain &amp;lt;- trainAgetrain[trainAgetrain$AgeCat != &amp;quot;missing&amp;quot;,] 
+trainAgetrain &amp;lt;- trainAgetrain[, -1]
+
+# exclude the level &amp;quot;missing&amp;quot;
+trainAgetrain$AgeCat &amp;lt;- factor(trainAgetrain$AgeCat)
+
+# Subset the train data set
+set.seed(1962)
+subsets &amp;lt;- createDataPartition(y=trainAgetrain$AgeCat, p=0.75, list=FALSE)
+subTraining &amp;lt;- trainAgetrain[subsets, ] 
+subTesting &amp;lt;- trainAgetrain[-subsets, ]
+
+# train the model
+x &amp;lt;- subTraining[, -6] # column 6 is the target variable
+y &amp;lt;- subTraining[, 6]
+control = trainControl(method = &amp;quot;cv&amp;quot;, number = 5, allowParallel = TRUE)
+modelRFtrain &amp;lt;- train(x, y, method = &amp;quot;rf&amp;quot;, trControl = control)  # I use random forest &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#modelRFtrain$results
+predRFtrain &amp;lt;- predict(modelRFtrain, subTesting)
+cfMatRFtrain &amp;lt;- confusionMatrix(subTesting$AgeCat, predRFtrain)
+cfMatRFtrain$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##     0.93785311     0.70165492     0.89152431     0.96857126     0.90395480 
+## AccuracyPValue  McnemarPValue 
+##     0.07426355            NaN&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatRFtrain$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction adult child senior
+##     adult    151     2      0
+##     child      4    15      0
+##     senior     5     0      0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;importanceRFtrain &amp;lt;- varImp(modelRFtrain,scale = FALSE)
+plot(importanceRFtrain, top= 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The obtained model shows a very good accuracy on training subset. The most important predictors are resp. NameCat, Fare and FamCat. This result is not surprising as this relationship appeared clearly in the exploratory data analysis.&lt;/p&gt;
+&lt;p&gt;The missing values of AgeCat in train data are then predicted using the obtained RF model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# predict for the missing AgeCat in train data set
+predAgetrain &amp;lt;- predict(modelRFtrain, trainAgetest)
+
+# values are then injected into train
+train$AgeCat[train$PassengerId %in% trainAgetest$PassengerId] &amp;lt;- predAgetrain
+train$AgeCat &amp;lt;- factor(train$AgeCat)
+# ifelse(train$AgeCat[trainAgetest$PassengerId] == predAge, 1, 0)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adapting-the-test-file&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Adapting the test file&lt;/h3&gt;
+&lt;p&gt;In order to predict survival, the test data should be modified in the same way as for the train data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sapply(test, function(x) sum(is.na(x))) # how many observations are missing&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## PassengerId      Pclass        Name         Sex         Age       SibSp 
+##           0           0           0           0          86           0 
+##       Parch      Ticket        Fare       Cabin    Embarked 
+##           0           0           1         327           0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We notice here missing values in Age and Fare. Concerning Fare, and since it is only one value missing, one could simply assign to this observation the median value of its appropriate class.&lt;/p&gt;
+&lt;p&gt;The missing values of AgeCat are imputed using the exact same method as for the train data.&lt;/p&gt;
+&lt;p&gt;Many titles seen in the train file are missing in test file. At the same time, a new one, &lt;strong&gt;Dona&lt;/strong&gt;, is classified as a noble title.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Data Engineering
+
+# 1. test$Name
+x &amp;lt;- sub(&amp;quot;.*, &amp;quot;, &amp;quot;&amp;quot;, as.character(test$Name))
+test$NameCat &amp;lt;- sub(&amp;quot;\\..*&amp;quot;, &amp;quot;&amp;quot;, x)
+test$NameCat[test$NameCat %in% c(&amp;quot;Miss&amp;quot;, &amp;quot;Ms&amp;quot;)] &amp;lt;- &amp;quot;Miss&amp;quot;
+test$NameCat[test$NameCat == &amp;quot;Col&amp;quot;] &amp;lt;- &amp;quot;Mil&amp;quot;
+test$NameCat[test$NameCat == &amp;quot;Dona&amp;quot;] &amp;lt;- &amp;quot;Noble&amp;quot;
+
+# 2. test$Age
+test$AgeCat[test$Age &amp;gt; 0 &amp;amp; test$Age &amp;lt;= 14 &amp;amp; !is.na(test$Age)] &amp;lt;- &amp;quot;child&amp;quot;
+test$AgeCat[test$Age &amp;gt; 14 &amp;amp; test$Age &amp;lt;= 60 &amp;amp; !is.na(test$Age)] &amp;lt;- &amp;quot;adult&amp;quot;
+test$AgeCat[test$Age &amp;gt; 60 &amp;amp; !is.na(test$Age)] &amp;lt;- &amp;quot;senior&amp;quot;
+test$AgeCat[is.na(test$Age)] &amp;lt;- &amp;quot;missing&amp;quot;
+
+# 3. test$Cabin
+test$HasCab[!is.na(test$Cabin)] &amp;lt;- &amp;quot;yes&amp;quot;
+test$HasCab[is.na(test$Cabin)] &amp;lt;- &amp;quot;no&amp;quot;
+
+# 4. Add test$HasFam
+test$HasFam[test$SibSp != 0 | test$Parch != 0] &amp;lt;- &amp;quot;yes&amp;quot;
+test$HasFam[test$SibSp == 0 &amp;amp; test$Parch == 0] &amp;lt;- &amp;quot;no&amp;quot;
+
+# 5. Add test$Famcat
+test$FamCat[test$SibSp + test$Parch &amp;lt;= 4] &amp;lt;- &amp;quot;small&amp;quot;
+test$FamCat[test$SibSp + test$Parch &amp;gt; 4] &amp;lt;- &amp;quot;big&amp;quot;
+test$FamCat[test$SibSp + test$Parch == 0] &amp;lt;- &amp;quot;single&amp;quot;
+
+# 6. missing Fare: PassengerId = 1044 with Pclass = 3 -&amp;gt; use the median for pclass
+test$Fare[test$PassengerId == 1044] &amp;lt;- median(test$Fare[test$Pclass == 3], na.rm = TRUE)
+
+test$NameCat &amp;lt;- factor(test$NameCat)
+test$AgeCat &amp;lt;- factor(test$AgeCat)
+test$HasCab &amp;lt;- factor(test$HasCab)
+test$HasFam &amp;lt;- factor(test$HasFam)
+test$FamCat &amp;lt;- factor(test$FamCat)
+
+#Imputation of missing test$Age
+testAgetrain &amp;lt;- test[c(1, 2, 4, 9, 11, 12, 13, 14, 16)]
+testAgetest &amp;lt;- testAgetrain[testAgetrain$AgeCat == &amp;quot;missing&amp;quot;,]
+testAgetest &amp;lt;- testAgetest[, -7]                                    # test file
+testAgetrain &amp;lt;- testAgetrain[testAgetrain$AgeCat != &amp;quot;missing&amp;quot;,]
+testAgetrain &amp;lt;- testAgetrain[, -1]                                  # train file
+testAgetrain$AgeCat &amp;lt;- factor(testAgetrain$AgeCat)                  # in case of different levels
+set.seed(1962)
+subsets &amp;lt;- createDataPartition(y=testAgetrain$AgeCat, p=0.75, list=FALSE)
+subTraining &amp;lt;- testAgetrain[subsets, ] 
+subTesting &amp;lt;- testAgetrain[-subsets, ]
+x &amp;lt;- subTraining[, -6]                                              # column 6 is the target variable
+y &amp;lt;- subTraining[, 6]
+control = trainControl(method = &amp;quot;cv&amp;quot;, number = 5, allowParallel = TRUE)
+modelRFtest &amp;lt;- train(x, y, method = &amp;quot;rf&amp;quot;, trControl = control)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#modelRFtest$results
+predRFtest &amp;lt;- predict(modelRFtest, subTesting)
+cfMatRFtest &amp;lt;- confusionMatrix(subTesting$AgeCat, predRFtest)
+cfMatRFtest$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##      0.8765432      0.4409938      0.7846553      0.9391798      0.8641975 
+## AccuracyPValue  McnemarPValue 
+##      0.4510839            NaN&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatRFtest$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction adult child senior
+##     adult     66     5      1
+##     child      2     5      0
+##     senior     2     0      0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predtestAgetest &amp;lt;- predict(modelRFtest, testAgetest)
+test$AgeCat[test$PassengerId %in% testAgetest$PassengerId] &amp;lt;- predtestAgetest
+test$AgeCat &amp;lt;- factor(test$AgeCat)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;prediction-of-survival&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Prediction of survival&lt;/h3&gt;
+&lt;p&gt;Now that all the data is processed and missing values imputed, lets compute the final model and predict survival among the passengers in the test list.&lt;/p&gt;
+&lt;p&gt;Contrarily to the imputation of AgeCat, the boosting methods proved to be more effective as they better accomodate: * the small variance of the selected predictors provided that the outcome reduces to only two values: Survived or not, * the high bias that could be induced by the use of categorical predictors.&lt;/p&gt;
+&lt;p&gt;For these reasons, I decided to use the gradient boosting method (GBM) to predict the survival.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;predictor variables&lt;/strong&gt; are: “Pclass”, “Sex”, “Fare”“,”Embarked“,”NameCat“,”AgeCat“,”HasCab“, and”FamCat“.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;target variable&lt;/strong&gt; is “Survived”.&lt;/p&gt;
+&lt;p&gt;The train data consists in 891 observations while the test data consists in 418.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# RF for train and test
+trainFin &amp;lt;- train[c(2, 3, 5, 10, 12, 13, 14, 15, 17)]
+#trainFin$Survived &amp;lt;- factor(trainFin$Survived)
+testFin &amp;lt;- test[c(1, 2, 4, 9, 11, 12, 13, 14, 16)]
+set.seed(1962)
+subsets &amp;lt;- createDataPartition(y=trainFin$AgeCat, p=0.75, list=FALSE)
+subTraining &amp;lt;- trainFin[subsets, ]
+subTesting &amp;lt;- trainFin[-subsets, ]
+x &amp;lt;- subTraining[, -1] # column 1 is the target variable
+y &amp;lt;- subTraining[, 1]
+control = trainControl(method = &amp;quot;boot&amp;quot;, number = 5, allowParallel = TRUE)
+modelGBMFin &amp;lt;- train(x, y, method = &amp;quot;gbm&amp;quot;, trControl = control)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#modelGBMFin$results
+predGBMFin &amp;lt;- predict(modelGBMFin, subTesting)
+cfMatGBMFin &amp;lt;- confusionMatrix(subTesting$Survived, predGBMFin)
+cfMatGBMFin$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##   8.108108e-01   5.901899e-01   7.530008e-01   8.601154e-01   6.576577e-01 
+## AccuracyPValue  McnemarPValue 
+##   3.427043e-07   2.800872e-01&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatGBMFin$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction  no yes
+##        no  121  17
+##        yes  25  59&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predGBMFin &amp;lt;- predict(modelGBMFin, testFin)
+sol &amp;lt;- ifelse(predGBMFin == &amp;quot;yes&amp;quot;, &amp;quot;1&amp;quot;, &amp;quot;0&amp;quot;)
+z &amp;lt;- data.frame(test$PassengerId, sol)
+colnames(z) &amp;lt;- c(&amp;quot;PassengerId&amp;quot;, &amp;quot;Survived&amp;quot;)
+write.csv(z, &amp;quot;Res.csv&amp;quot;, row.names=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model obtained had an accuracy of 0.77511. Nevertheless, another model obtained just by replacing FamCat with HasFam reaches an accuracy of 0.80382 and ended much higher on the leaderboard.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bibliography&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bibliography&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Mersey, Lord (1999) [1912]. The Loss of the Titanic, 1912. The Stationery Office. ISBN 978-0-11-702403-8&lt;a href=&#34;#fnref1&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn2&#34;&gt;&lt;p&gt;&lt;a href=&#34;https://www.encyclopedia-titanica.org/titanic-statistics.html&#34; class=&#34;uri&#34;&gt;https://www.encyclopedia-titanica.org/titanic-statistics.html&lt;/a&gt;&lt;a href=&#34;#fnref2&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn3&#34;&gt;&lt;p&gt;&lt;a href=&#34;http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/&#34; class=&#34;uri&#34;&gt;http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/&lt;/a&gt;&lt;a href=&#34;#fnref3&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -729,7 +1225,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Aug 08 17:45:36 2018 --&gt;
+&lt;!-- Wed Aug 08 17:54:41 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
