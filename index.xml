@@ -11,6 +11,16 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Getting and cleaning data</title>
+      <link>https://slamara.github.io/project/gcd/</link>
+      <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/gcd/</guid>
+      <description>&lt;p&gt;hello!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Ranking US Hospitals</title>
       <link>https://slamara.github.io/project/rankingushospitals/</link>
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
