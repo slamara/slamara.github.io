@@ -16,7 +16,125 @@
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/fuelconsumption/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;executive-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Executive summary:&lt;/h2&gt;
+&lt;p&gt;The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (&lt;strong&gt;am&lt;/strong&gt;) on the fuel consumption (&lt;strong&gt;mpg&lt;/strong&gt;) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of &lt;strong&gt;mpg&lt;/strong&gt; and &lt;strong&gt;am&lt;/strong&gt; with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.&lt;/p&gt;
+&lt;p&gt;In this short report, I start with an exploratory analysis and rapid graphical representation focusing roughly on the &lt;strong&gt;am&lt;/strong&gt; and &lt;strong&gt;mpg&lt;/strong&gt;. In the second part I examine different models and select the best one inferring the relationship between these variables. The report ends with a conclusion.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The dataset “mtcars” can be loaded with:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(mtcars)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(mtcars)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(mtcars)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    32 obs. of  11 variables:
+##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The data set consists of 11 different characteristics of 32 car models from the 70’s.&lt;/p&gt;
+&lt;p&gt;The box plot computed for &lt;strong&gt;mpg&lt;/strong&gt; with regards to &lt;strong&gt;am&lt;/strong&gt; shows clearly that the manual transmission have a higher &lt;strong&gt;mpg&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;qplot(as.factor(am), mpg, data = mtcars, geom = &amp;quot;boxplot&amp;quot;, color = as.factor(am), 
+      xlab = &amp;quot;Type of transmission(0: automatic, 1: manual)&amp;quot;, 
+      ylab = &amp;quot;Number of miles per gallon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/fuelConsumption_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;However, the correlation between &lt;strong&gt;mpg&lt;/strong&gt; and the other parameters shows a stronger relationship between &lt;strong&gt;mpg&lt;/strong&gt; and &lt;strong&gt;wt&lt;/strong&gt;, &lt;strong&gt;cyl&lt;/strong&gt;, &lt;strong&gt;disp&lt;/strong&gt;, &lt;strong&gt;hp&lt;/strong&gt;, &lt;strong&gt;drat&lt;/strong&gt;, &lt;strong&gt;vs&lt;/strong&gt; as compared to &lt;strong&gt;am&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;corr &amp;lt;- cor(mtcars$mpg, mtcars)
+corr[1, order(-abs(corr[1,]))]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        mpg         wt        cyl       disp         hp       drat 
+##  1.0000000 -0.8676594 -0.8521620 -0.8475514 -0.7761684  0.6811719 
+##         vs         am       carb       gear       qsec 
+##  0.6640389  0.5998324 -0.5509251  0.4802848  0.4186840&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Hence, I consider that since &lt;strong&gt;mpg&lt;/strong&gt; is strongly correlated with other parameters, it could be misleading to ignore their effects on its relationship with the automatic and manual transmissions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-selection&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model selection&lt;/h2&gt;
+&lt;p&gt;As first look, I compute a regression model with &lt;strong&gt;mpg&lt;/strong&gt; as the outcome and &lt;strong&gt;am&lt;/strong&gt; as the regressor:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit1 &amp;lt;- lm(mpg ~ am, mtcars)
+summary(fit1)$coef&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##              Estimate Std. Error   t value     Pr(&amp;gt;|t|)
+## (Intercept) 17.147368   1.124603 15.247492 1.133983e-15
+## am           7.244939   1.764422  4.106127 2.850207e-04&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The estimate of the intercept represents the hypothetical fuel efficiency in case of automatic transmission (am = 0) while the estimate of &lt;strong&gt;am&lt;/strong&gt; represents the slope for the case of manual transmission (am = 1).&lt;/p&gt;
+&lt;p&gt;Fitting all parameters of mtcars:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit2 &amp;lt;- lm(mpg ~ ., mtcars)
+summary(fit2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## lm(formula = mpg ~ ., data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4506 -1.6044 -0.1196  1.2193  4.6271 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&amp;gt;|t|)  
+## (Intercept) 12.30337   18.71788   0.657   0.5181  
+## cyl         -0.11144    1.04502  -0.107   0.9161  
+## disp         0.01334    0.01786   0.747   0.4635  
+## hp          -0.02148    0.02177  -0.987   0.3350  
+## drat         0.78711    1.63537   0.481   0.6353  
+## wt          -3.71530    1.89441  -1.961   0.0633 .
+## qsec         0.82104    0.73084   1.123   0.2739  
+## vs           0.31776    2.10451   0.151   0.8814  
+## am           2.52023    2.05665   1.225   0.2340  
+## gear         0.65541    1.49326   0.439   0.6652  
+## carb        -0.19942    0.82875  -0.241   0.8122  
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## Residual standard error: 2.65 on 21 degrees of freedom
+## Multiple R-squared:  0.869,  Adjusted R-squared:  0.8066 
+## F-statistic: 13.93 on 10 and 21 DF,  p-value: 3.793e-07&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The higher value of R-squared suggests a better fit for this model. However, the p-values, which represent the significance of each parameter in presence of the others, are very high. Thus, to determine statistically the best fitting model I use the &lt;strong&gt;step&lt;/strong&gt; function:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;best &amp;lt;- step(fit2, direction = &amp;quot;both&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(best)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4811 -1.5555 -0.7257  1.4110  4.6610 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&amp;gt;|t|)    
+## (Intercept)   9.6178     6.9596   1.382 0.177915    
+## wt           -3.9165     0.7112  -5.507 6.95e-06 ***
+## qsec          1.2259     0.2887   4.247 0.000216 ***
+## am            2.9358     1.4109   2.081 0.046716 *  
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## Residual standard error: 2.459 on 28 degrees of freedom
+## Multiple R-squared:  0.8497, Adjusted R-squared:  0.8336 
+## F-statistic: 52.75 on 3 and 28 DF,  p-value: 1.21e-11&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;According to the step function, the best model accounts for &lt;strong&gt;am&lt;/strong&gt;, &lt;strong&gt;wt&lt;/strong&gt; and &lt;strong&gt;qsec&lt;/strong&gt;. The R-squared is in this case significant and the p-values small. The coefficient of &lt;strong&gt;am&lt;/strong&gt; shows an &lt;strong&gt;mpg&lt;/strong&gt; higher of about 2.94 miles per gallon in the case of manual transmission.&lt;/p&gt;
+&lt;p&gt;The plots of the residuals Vs. fitted values, the square root of the standard residuals Vs. fitted values, the standard residuals Vs. Leverage and the QQ-plot are given by:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow = c(2, 2))
+plot(best)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/fuelConsumption_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;While the QQ-plot seems to be relatively acceptable, the other plots show that the assumptions of normality and linearity are close to be breached.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusion&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The final results don’t permit to be confident in concluding a better efficiency of the manual transmission. All I can say in this case is that the quantification of the difference in fuel efficiency between the automatic and manual transmission is only about 3 miles per gallon with a p confidence of 0.046. Due to the small number of observations, only the inclusion of more data can probably improve the confidence in the qualitative and quantitative findings.&lt;/p&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -125,7 +243,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Aug 08 16:55:54 2018 --&gt;
+&lt;!-- Wed Aug 08 17:03:30 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;

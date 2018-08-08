@@ -314,7 +314,125 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <div id="executive-summary" class="section level2">
+<h2>Executive summary:</h2>
+<p>The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (<strong>am</strong>) on the fuel consumption (<strong>mpg</strong>) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of <strong>mpg</strong> and <strong>am</strong> with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.</p>
+<p>In this short report, I start with an exploratory analysis and rapid graphical representation focusing roughly on the <strong>am</strong> and <strong>mpg</strong>. In the second part I examine different models and select the best one inferring the relationship between these variables. The report ends with a conclusion.</p>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<p>The dataset “mtcars” can be loaded with:</p>
+<pre class="r"><code>data(mtcars)</code></pre>
+<pre class="r"><code>head(mtcars)</code></pre>
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<pre class="r"><code>str(mtcars)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
+##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
+<p>The data set consists of 11 different characteristics of 32 car models from the 70’s.</p>
+<p>The box plot computed for <strong>mpg</strong> with regards to <strong>am</strong> shows clearly that the manual transmission have a higher <strong>mpg</strong>.</p>
+<pre class="r"><code>qplot(as.factor(am), mpg, data = mtcars, geom = &quot;boxplot&quot;, color = as.factor(am), 
+      xlab = &quot;Type of transmission(0: automatic, 1: manual)&quot;, 
+      ylab = &quot;Number of miles per gallon&quot;)</code></pre>
+<p><img src="/project/fuelConsumption_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>However, the correlation between <strong>mpg</strong> and the other parameters shows a stronger relationship between <strong>mpg</strong> and <strong>wt</strong>, <strong>cyl</strong>, <strong>disp</strong>, <strong>hp</strong>, <strong>drat</strong>, <strong>vs</strong> as compared to <strong>am</strong>.</p>
+<pre class="r"><code>corr &lt;- cor(mtcars$mpg, mtcars)
+corr[1, order(-abs(corr[1,]))]</code></pre>
+<pre><code>##        mpg         wt        cyl       disp         hp       drat 
+##  1.0000000 -0.8676594 -0.8521620 -0.8475514 -0.7761684  0.6811719 
+##         vs         am       carb       gear       qsec 
+##  0.6640389  0.5998324 -0.5509251  0.4802848  0.4186840</code></pre>
+<p>Hence, I consider that since <strong>mpg</strong> is strongly correlated with other parameters, it could be misleading to ignore their effects on its relationship with the automatic and manual transmissions.</p>
+</div>
+<div id="model-selection" class="section level2">
+<h2>Model selection</h2>
+<p>As first look, I compute a regression model with <strong>mpg</strong> as the outcome and <strong>am</strong> as the regressor:</p>
+<pre class="r"><code>fit1 &lt;- lm(mpg ~ am, mtcars)
+summary(fit1)$coef</code></pre>
+<pre><code>##              Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept) 17.147368   1.124603 15.247492 1.133983e-15
+## am           7.244939   1.764422  4.106127 2.850207e-04</code></pre>
+<p>The estimate of the intercept represents the hypothetical fuel efficiency in case of automatic transmission (am = 0) while the estimate of <strong>am</strong> represents the slope for the case of manual transmission (am = 1).</p>
+<p>Fitting all parameters of mtcars:</p>
+<pre class="r"><code>fit2 &lt;- lm(mpg ~ ., mtcars)
+summary(fit2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ ., data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4506 -1.6044 -0.1196  1.2193  4.6271 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept) 12.30337   18.71788   0.657   0.5181  
+## cyl         -0.11144    1.04502  -0.107   0.9161  
+## disp         0.01334    0.01786   0.747   0.4635  
+## hp          -0.02148    0.02177  -0.987   0.3350  
+## drat         0.78711    1.63537   0.481   0.6353  
+## wt          -3.71530    1.89441  -1.961   0.0633 .
+## qsec         0.82104    0.73084   1.123   0.2739  
+## vs           0.31776    2.10451   0.151   0.8814  
+## am           2.52023    2.05665   1.225   0.2340  
+## gear         0.65541    1.49326   0.439   0.6652  
+## carb        -0.19942    0.82875  -0.241   0.8122  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.65 on 21 degrees of freedom
+## Multiple R-squared:  0.869,  Adjusted R-squared:  0.8066 
+## F-statistic: 13.93 on 10 and 21 DF,  p-value: 3.793e-07</code></pre>
+<p>The higher value of R-squared suggests a better fit for this model. However, the p-values, which represent the significance of each parameter in presence of the others, are very high. Thus, to determine statistically the best fitting model I use the <strong>step</strong> function:</p>
+<pre class="r"><code>best &lt;- step(fit2, direction = &quot;both&quot;)</code></pre>
+<pre class="r"><code>summary(best)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4811 -1.5555 -0.7257  1.4110  4.6610 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   9.6178     6.9596   1.382 0.177915    
+## wt           -3.9165     0.7112  -5.507 6.95e-06 ***
+## qsec          1.2259     0.2887   4.247 0.000216 ***
+## am            2.9358     1.4109   2.081 0.046716 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.459 on 28 degrees of freedom
+## Multiple R-squared:  0.8497, Adjusted R-squared:  0.8336 
+## F-statistic: 52.75 on 3 and 28 DF,  p-value: 1.21e-11</code></pre>
+<p>According to the step function, the best model accounts for <strong>am</strong>, <strong>wt</strong> and <strong>qsec</strong>. The R-squared is in this case significant and the p-values small. The coefficient of <strong>am</strong> shows an <strong>mpg</strong> higher of about 2.94 miles per gallon in the case of manual transmission.</p>
+<p>The plots of the residuals Vs. fitted values, the square root of the standard residuals Vs. fitted values, the standard residuals Vs. Leverage and the QQ-plot are given by:</p>
+<pre class="r"><code>par(mfrow = c(2, 2))
+plot(best)</code></pre>
+<p><img src="/project/fuelConsumption_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>While the QQ-plot seems to be relatively acceptable, the other plots show that the assumptions of normality and linearity are close to be breached.</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The final results don’t permit to be confident in concluding a better efficiency of the manual transmission. All I can say in this case is that the quantification of the difference in fuel efficiency between the automatic and manual transmission is only about 3 miles per gallon with a p confidence of 0.046. Due to the small number of observations, only the inclusion of more data can probably improve the confidence in the qualitative and quantitative findings.</p>
+</div>
 
     </div>
 

@@ -18,7 +18,8 @@
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/fuelconsumption/</guid>
-      <description>hello!</description>
+      <description>Executive summary:The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (am) on the fuel consumption (mpg) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of mpg and am with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.
+In this short report, I start with an exploratory analysis and rapid graphical representation focusing roughly on the am and mpg.</description>
     </item>
     
   </channel>
