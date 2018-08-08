@@ -314,7 +314,166 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This project makes use of data from a personal activity monitoring device which counts the number of steps taken by an anonymous individual in 5 minutes intervals throughout the day. The <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">dataset</a> was collected within a period of two months (October and November 2012).</p>
+<p>The variables included in this dataset are:</p>
+<p><strong>steps</strong>: Number of steps taking in a 5-minute interval (missing values are coded as NA)</p>
+<p><strong>date</strong>: The date on which the measurement was taken in YYYY-MM-DD format</p>
+<p><strong>interval</strong>: Identifier for the 5-minute interval in which measurement was taken</p>
+<p>The dataset is stored in a comma-separated-value (CSV) file with a total of 17,568 observations.</p>
+</div>
+<div id="loading-and-preprocessing-the-data" class="section level2">
+<h2>Loading and preprocessing the data:</h2>
+<pre class="r"><code>library(dplyr)
+library(xtable)
+library(chron)
+library(lattice)</code></pre>
+<pre class="r"><code>activity &lt;- read.csv(&quot;./activityMonitoring/activity.csv&quot;)
+
+activity$date &lt;- as.Date(activity$date, format=&quot;%Y-%m-%d&quot;)
+
+str(activity)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: &quot;2012-10-01&quot; &quot;2012-10-01&quot; ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...</code></pre>
+</div>
+<div id="what-is-the-mean-total-number-of-steps-taken-per-day" class="section level2">
+<h2>What is the mean total number of steps taken per day?</h2>
+<p>I first calculate the total number of steps taken per day:</p>
+<pre class="r"><code>StepsPerDay &lt;- activity %&gt;% na.omit() %&gt;% group_by(date) %&gt;% summarise(TotSteps = sum(steps))
+
+StepsPerDay</code></pre>
+<pre><code>## # A tibble: 53 x 2
+##    date       TotSteps
+##    &lt;date&gt;        &lt;int&gt;
+##  1 2012-10-02      126
+##  2 2012-10-03    11352
+##  3 2012-10-04    12116
+##  4 2012-10-05    13294
+##  5 2012-10-06    15420
+##  6 2012-10-07    11015
+##  7 2012-10-09    12811
+##  8 2012-10-10     9900
+##  9 2012-10-11    10304
+## 10 2012-10-12    17382
+## # ... with 43 more rows</code></pre>
+<p>then, I make a histogram of the total number of steps taken each day:</p>
+<pre class="r"><code>plot(StepsPerDay$date, StepsPerDay$TotSteps, type=&quot;h&quot;, lwd=5, col=&quot;red&quot;, 
+     xlab=&quot;Days&quot;, 
+     ylab=&quot;Number of steps&quot;, 
+     main=&quot;Total number of steps taken each day&quot;)</code></pre>
+<p><img src="/project/activityMonitoring_files/figure-html/histo1-1.png" width="672" /></p>
+<p>Finally, I calculate and report the mean and median of the total number of steps taken per day</p>
+<pre class="r"><code>mean(StepsPerDay$TotSteps)</code></pre>
+<pre><code>## [1] 10766.19</code></pre>
+<pre class="r"><code>median(StepsPerDay$TotSteps)</code></pre>
+<pre><code>## [1] 10765</code></pre>
+</div>
+<div id="what-is-the-average-daily-activity-pattern" class="section level2">
+<h2>What is the average daily activity pattern?</h2>
+<p>To show the pattern, I make a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)</p>
+<pre class="r"><code>MeanInterval &lt;- aggregate(activity$steps, 
+                          by=list(interval=activity$interval), 
+                          FUN = mean, na.rm = TRUE)
+
+plot(MeanInterval$interval, MeanInterval$x, type = &quot;l&quot;, col = &quot;blue&quot;, 
+     xlab = &quot;5-minute intervals&quot;, 
+     ylab = &quot;Average nummber of steps&quot;, 
+     main = &quot;Average number of steps averaged across all days&quot;)</code></pre>
+<p><img src="/project/activityMonitoring_files/figure-html/timeSerie1-1.png" width="672" /></p>
+<p>Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?</p>
+<pre class="r"><code>MeanInterval[which.max(MeanInterval$x),]</code></pre>
+<pre><code>##     interval        x
+## 104      835 206.1698</code></pre>
+</div>
+<div id="imputing-missing-values" class="section level2">
+<h2>Imputing missing values</h2>
+<p>I first calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)</p>
+<pre class="r"><code>sum(is.na(activity$steps))</code></pre>
+<pre><code>## [1] 2304</code></pre>
+<p>As a strategy for filling in all of the missing values in the dataset, I use <strong>dplyr</strong> to group the data according to the day and replace the NA with the average number of steps across all days of its corresponding interval (from the table <strong>MeanInterval</strong>).</p>
+<p>I create then a new dataset that is equal to the original dataset but with the missing data filled in.</p>
+<pre class="r"><code>activityFull &lt;- activity %&gt;% group_by(date) %&gt;% mutate(steps = ifelse(is.na(steps), MeanInterval$x[match(interval, MeanInterval$interval)], steps))</code></pre>
+<p>A histogram of the total number of steps taken each day is then re-calculated as well as the mean and median total number of steps taken per day.</p>
+<p>While the new mean is exactly the same as in the first part, the median differs too slightly.</p>
+<pre class="r"><code>StepsPerDayFull &lt;- activityFull %&gt;% group_by(date) %&gt;% summarise(TotSteps = sum(steps))
+
+plot(StepsPerDayFull$date, StepsPerDayFull$TotSteps, type=&quot;h&quot;, lwd=5, col=&quot;red&quot;, 
+     xlab=&quot;Days&quot;, 
+     ylab=&quot;Number of steps&quot;, 
+     main=&quot;Total number of steps taken each day obtained from a full data set&quot;)</code></pre>
+<p><img src="/project/activityMonitoring_files/figure-html/histo2-1.png" width="672" /></p>
+<pre class="r"><code>Recap &lt;- xtable(cbind(c(&quot;Without \&quot;NA\&quot;&quot;, &quot;With \&quot;NA\&quot;&quot;), c(mean(StepsPerDayFull$TotSteps), mean(StepsPerDay$TotSteps)), c(median(StepsPerDayFull$TotSteps), median(StepsPerDay$TotSteps))))
+
+colnames(Recap) &lt;- c(&quot;Type of data set&quot;, &quot;Mean&quot;, &quot;Median&quot;)
+
+rownames(Recap) &lt;- NULL
+
+print(Recap, include.rownames=FALSE, type=&quot;html&quot;)</code></pre>
+<!-- html table generated in R 3.5.1 by xtable 1.8-2 package -->
+<!-- Wed Aug 08 16:49:22 2018 -->
+<table border="1">
+<tr>
+<th>
+Type of data set
+</th>
+<th>
+Mean
+</th>
+<th>
+Median
+</th>
+</tr>
+<tr>
+<td>
+Without “NA”
+</td>
+<td>
+10766.1886792453
+</td>
+<td>
+10766.1886792453
+</td>
+</tr>
+<tr>
+<td>
+With “NA”
+</td>
+<td>
+10766.1886792453
+</td>
+<td>
+10765
+</td>
+</tr>
+</table>
+</div>
+<div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
+<h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<p>I first create a new factor variable in the dataset with two levels “weekday” and “weekend” indicating whether a given date is a weekday or a weekend day.</p>
+<pre class="r"><code>activityFull &lt;- activityFull %&gt;% mutate(WE = weekdays(date)) %&gt;% mutate(WE = ifelse(WE == &quot;Samstag&quot;|WE == &quot;Sonntag&quot;, &quot;weekend&quot;, &quot;weekday&quot;))
+
+# With the library &quot;Chron&quot;:
+# activityFulltest &lt;- activityFull %&gt;% mutate(WE = ifelse(is.weekend(date), &quot;weekend&quot;, &quot;weekday&quot;)
+
+table(activityFull$WE)</code></pre>
+<pre><code>## 
+## weekday weekend 
+##   12960    4608</code></pre>
+<p>I make a panel plot containing a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).</p>
+<pre class="r"><code>MeanIntervalFull &lt;- aggregate(activityFull$steps, 
+                              by=list(interval=activityFull$interval, WE=activityFull$WE), 
+                              FUN = mean)
+
+xyplot(x ~ interval | as.factor(WE), data = MeanIntervalFull, type = &quot;l&quot;, 
+       xlab = &quot;Interval&quot;, 
+       ylab = &quot;Number of steps&quot;, 
+       main = &quot;The average number of steps across all weekday days or weekend days&quot;, 
+       layout = c(1,2))</code></pre>
+<p><img src="/project/activityMonitoring_files/figure-html/PanelPlot-1.png" width="672" /></p>
+</div>
 
     </div>
 

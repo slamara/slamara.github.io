@@ -16,7 +16,166 @@
       <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/activitymonitoring/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This project makes use of data from a personal activity monitoring device which counts the number of steps taken by an anonymous individual in 5 minutes intervals throughout the day. The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&#34;&gt;dataset&lt;/a&gt; was collected within a period of two months (October and November 2012).&lt;/p&gt;
+&lt;p&gt;The variables included in this dataset are:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;steps&lt;/strong&gt;: Number of steps taking in a 5-minute interval (missing values are coded as NA)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;date&lt;/strong&gt;: The date on which the measurement was taken in YYYY-MM-DD format&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;interval&lt;/strong&gt;: Identifier for the 5-minute interval in which measurement was taken&lt;/p&gt;
+&lt;p&gt;The dataset is stored in a comma-separated-value (CSV) file with a total of 17,568 observations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;loading-and-preprocessing-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Loading and preprocessing the data:&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(xtable)
+library(chron)
+library(lattice)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;activity &amp;lt;- read.csv(&amp;quot;./activityMonitoring/activity.csv&amp;quot;)
+
+activity$date &amp;lt;- as.Date(activity$date, format=&amp;quot;%Y-%m-%d&amp;quot;)
+
+str(activity)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: &amp;quot;2012-10-01&amp;quot; &amp;quot;2012-10-01&amp;quot; ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;what-is-the-mean-total-number-of-steps-taken-per-day&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is the mean total number of steps taken per day?&lt;/h2&gt;
+&lt;p&gt;I first calculate the total number of steps taken per day:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;StepsPerDay &amp;lt;- activity %&amp;gt;% na.omit() %&amp;gt;% group_by(date) %&amp;gt;% summarise(TotSteps = sum(steps))
+
+StepsPerDay&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 53 x 2
+##    date       TotSteps
+##    &amp;lt;date&amp;gt;        &amp;lt;int&amp;gt;
+##  1 2012-10-02      126
+##  2 2012-10-03    11352
+##  3 2012-10-04    12116
+##  4 2012-10-05    13294
+##  5 2012-10-06    15420
+##  6 2012-10-07    11015
+##  7 2012-10-09    12811
+##  8 2012-10-10     9900
+##  9 2012-10-11    10304
+## 10 2012-10-12    17382
+## # ... with 43 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then, I make a histogram of the total number of steps taken each day:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(StepsPerDay$date, StepsPerDay$TotSteps, type=&amp;quot;h&amp;quot;, lwd=5, col=&amp;quot;red&amp;quot;, 
+     xlab=&amp;quot;Days&amp;quot;, 
+     ylab=&amp;quot;Number of steps&amp;quot;, 
+     main=&amp;quot;Total number of steps taken each day&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/histo1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Finally, I calculate and report the mean and median of the total number of steps taken per day&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mean(StepsPerDay$TotSteps)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 10766.19&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;median(StepsPerDay$TotSteps)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 10765&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;what-is-the-average-daily-activity-pattern&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is the average daily activity pattern?&lt;/h2&gt;
+&lt;p&gt;To show the pattern, I make a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MeanInterval &amp;lt;- aggregate(activity$steps, 
+                          by=list(interval=activity$interval), 
+                          FUN = mean, na.rm = TRUE)
+
+plot(MeanInterval$interval, MeanInterval$x, type = &amp;quot;l&amp;quot;, col = &amp;quot;blue&amp;quot;, 
+     xlab = &amp;quot;5-minute intervals&amp;quot;, 
+     ylab = &amp;quot;Average nummber of steps&amp;quot;, 
+     main = &amp;quot;Average number of steps averaged across all days&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/timeSerie1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MeanInterval[which.max(MeanInterval$x),]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##     interval        x
+## 104      835 206.1698&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;imputing-missing-values&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Imputing missing values&lt;/h2&gt;
+&lt;p&gt;I first calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sum(is.na(activity$steps))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 2304&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As a strategy for filling in all of the missing values in the dataset, I use &lt;strong&gt;dplyr&lt;/strong&gt; to group the data according to the day and replace the NA with the average number of steps across all days of its corresponding interval (from the table &lt;strong&gt;MeanInterval&lt;/strong&gt;).&lt;/p&gt;
+&lt;p&gt;I create then a new dataset that is equal to the original dataset but with the missing data filled in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;activityFull &amp;lt;- activity %&amp;gt;% group_by(date) %&amp;gt;% mutate(steps = ifelse(is.na(steps), MeanInterval$x[match(interval, MeanInterval$interval)], steps))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A histogram of the total number of steps taken each day is then re-calculated as well as the mean and median total number of steps taken per day.&lt;/p&gt;
+&lt;p&gt;While the new mean is exactly the same as in the first part, the median differs too slightly.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;StepsPerDayFull &amp;lt;- activityFull %&amp;gt;% group_by(date) %&amp;gt;% summarise(TotSteps = sum(steps))
+
+plot(StepsPerDayFull$date, StepsPerDayFull$TotSteps, type=&amp;quot;h&amp;quot;, lwd=5, col=&amp;quot;red&amp;quot;, 
+     xlab=&amp;quot;Days&amp;quot;, 
+     ylab=&amp;quot;Number of steps&amp;quot;, 
+     main=&amp;quot;Total number of steps taken each day obtained from a full data set&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/histo2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Recap &amp;lt;- xtable(cbind(c(&amp;quot;Without \&amp;quot;NA\&amp;quot;&amp;quot;, &amp;quot;With \&amp;quot;NA\&amp;quot;&amp;quot;), c(mean(StepsPerDayFull$TotSteps), mean(StepsPerDay$TotSteps)), c(median(StepsPerDayFull$TotSteps), median(StepsPerDay$TotSteps))))
+
+colnames(Recap) &amp;lt;- c(&amp;quot;Type of data set&amp;quot;, &amp;quot;Mean&amp;quot;, &amp;quot;Median&amp;quot;)
+
+rownames(Recap) &amp;lt;- NULL
+
+print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
+&lt;!-- Wed Aug 08 16:49:22 2018 --&gt;
+&lt;table border=&#34;1&#34;&gt;
+&lt;tr&gt;
+&lt;th&gt;
+Type of data set
+&lt;/th&gt;
+&lt;th&gt;
+Mean
+&lt;/th&gt;
+&lt;th&gt;
+Median
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+Without “NA”
+&lt;/td&gt;
+&lt;td&gt;
+10766.1886792453
+&lt;/td&gt;
+&lt;td&gt;
+10766.1886792453
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+With “NA”
+&lt;/td&gt;
+&lt;td&gt;
+10766.1886792453
+&lt;/td&gt;
+&lt;td&gt;
+10765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;are-there-differences-in-activity-patterns-between-weekdays-and-weekends&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Are there differences in activity patterns between weekdays and weekends?&lt;/h2&gt;
+&lt;p&gt;I first create a new factor variable in the dataset with two levels “weekday” and “weekend” indicating whether a given date is a weekday or a weekend day.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;activityFull &amp;lt;- activityFull %&amp;gt;% mutate(WE = weekdays(date)) %&amp;gt;% mutate(WE = ifelse(WE == &amp;quot;Samstag&amp;quot;|WE == &amp;quot;Sonntag&amp;quot;, &amp;quot;weekend&amp;quot;, &amp;quot;weekday&amp;quot;))
+
+# With the library &amp;quot;Chron&amp;quot;:
+# activityFulltest &amp;lt;- activityFull %&amp;gt;% mutate(WE = ifelse(is.weekend(date), &amp;quot;weekend&amp;quot;, &amp;quot;weekday&amp;quot;)
+
+table(activityFull$WE)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## weekday weekend 
+##   12960    4608&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I make a panel plot containing a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MeanIntervalFull &amp;lt;- aggregate(activityFull$steps, 
+                              by=list(interval=activityFull$interval, WE=activityFull$WE), 
+                              FUN = mean)
+
+xyplot(x ~ interval | as.factor(WE), data = MeanIntervalFull, type = &amp;quot;l&amp;quot;, 
+       xlab = &amp;quot;Interval&amp;quot;, 
+       ylab = &amp;quot;Number of steps&amp;quot;, 
+       main = &amp;quot;The average number of steps across all weekday days or weekend days&amp;quot;, 
+       layout = c(1,2))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/PanelPlot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 </description>
     </item>
     

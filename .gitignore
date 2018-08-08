@@ -12,3 +12,4 @@ y_train.txt
 household_power_consumption.txt
 summarySCC_PM25.rds
 Source_Classification_Code.rds
+activity.csv

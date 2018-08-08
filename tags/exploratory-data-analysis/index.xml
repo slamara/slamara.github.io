@@ -18,7 +18,10 @@
       <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/activitymonitoring/</guid>
-      <description>hello!</description>
+      <description>IntroductionThis project makes use of data from a personal activity monitoring device which counts the number of steps taken by an anonymous individual in 5 minutes intervals throughout the day. The dataset was collected within a period of two months (October and November 2012).
+The variables included in this dataset are:
+steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+date: The date on which the measurement was taken in YYYY-MM-DD format</description>
     </item>
     
     <item>
