@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 16:08:18 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 16:24:41 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/exploratory-data-analysis/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Evolution of fine particulate matter pollution in the US</title>
+      <link>https://slamara.github.io/project/airquality/</link>
+      <pubDate>Wed, 08 Aug 2018 16:24:41 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/airquality/</guid>
+      <description>hello!</description>
+    </item>
     
     <item>
       <title>Individual household electric power consumption</title>
