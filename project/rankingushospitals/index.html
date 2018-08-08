@@ -399,6 +399,160 @@ as.list(apply(dat, 1, function(x){do.call(best, as.list(x))}))</code></pre>
 <p>To this intent, I write a function <strong>rankHospital</strong> which takes three arguments: the 2-character abbreviated name of a state (state), an outcome (outcome), and the ranking of a hospital in that state for that outcome (num).</p>
 <p>The function returns a character vector with the name of the hospital that has the ranking specified by the <strong>num</strong> argument. The <strong>num</strong> argument can take the values “best”, “worst”, or an integer indicating the ranking.</p>
 <p>The Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings. Also, If the number given by num is larger than the number of hospitals in that state, then the function returns NA.</p>
+<pre class="r"><code>rankHospital &lt;- function(state, outcome, num = &quot;best&quot;) {
+    
+  
+## Read outcome data
+
+    data &lt;- read.csv(&quot;./rankingUsHospitals/outcome-of-care-measures.csv&quot;, 
+                         colClasses = &quot;character&quot;)
+
+## Check that state and outcome are valid
+
+    if (!(state %in% data$State)) {
+        result &lt;- &quot;invalid state&quot;
+    }
+    else if (!outcome %in% c(&quot;heart attack&quot;, &quot;heart failure&quot;, &quot;pneumonia&quot;)) {
+        result &lt;- &quot;invalid outcome&quot;
+    }
+    else {
+        keys &lt;- c(&quot;heart attack&quot; = 11, &quot;heart failure&quot; = 17, &quot;pneumonia&quot; = 23)
+        outcomeKey &lt;- keys[outcome]
+  
+  
+## Return hospital name in that state with the given rank
+## 30-day death rate
+  
+        dataPerState &lt;- split(data, data$State)
+        dataOurState &lt;- dataPerState[[state]]
+        dataOutcome &lt;- suppressWarnings(as.numeric(dataOurState[, outcomeKey]))
+        good &lt;- complete.cases(dataOutcome)
+        dataOutcome &lt;- dataOutcome[good]
+        dataOurState &lt;- dataOurState[good,]
+        dataOurState &lt;- dataOurState[order(dataOutcome, dataOurState[&quot;Hospital.Name&quot;]),]
+        if (grepl(&quot;^[0-9]+$&quot;, num)) {
+            if (as.numeric(num) &gt; length(dataOutcome)) {
+                result &lt;- NA
+            }
+            else {
+                result &lt;- dataOurState[as.numeric(num), &quot;Hospital.Name&quot;]
+            }
+        }    
+        else if (num == &quot;best&quot;) {
+                result &lt;- dataOurState[1, &quot;Hospital.Name&quot;]
+        }
+        else if (num == &quot;worst&quot;) {
+                result &lt;- dataOurState[length(dataOutcome), &quot;Hospital.Name&quot;]
+        }
+        else result &lt;- NA
+    }
+    result
+}</code></pre>
+<div id="testing-rankhospital" class="section level3">
+<h3>Testing <strong>rankHospital</strong></h3>
+<pre class="r"><code>chk1 &lt;- c(&quot;TX&quot;, &quot;heart failure&quot;, 4)
+chk2 &lt;- c(&quot;MD&quot;, &quot;heart attack&quot;, &quot;worst&quot;)
+chk3 &lt;- c(&quot;MN&quot;, &quot;heart attack&quot;, 5000)
+dat &lt;- data.table(chk1, chk2, chk3)
+dat &lt;- t(dat)
+as.list(apply(dat, 1, function(x){do.call(rankHospital, as.list(x))}))</code></pre>
+<pre><code>## $chk1
+## [1] &quot;DETAR HOSPITAL NAVARRO&quot;
+## 
+## $chk2
+## [1] &quot;HARFORD MEMORIAL HOSPITAL&quot;
+## 
+## $chk3
+## [1] NA</code></pre>
+</div>
+</div>
+<div id="ranking-hospitals-in-all-states" class="section level2">
+<h2>Ranking hospitals in all states</h2>
+<p>I implement a function <strong>rankAll</strong> which takes as arguments the outcome name (outcome) and hospital ranking (num) and returns a 2-column data frame containing the hospital in each state that has the ranking specified in num.</p>
+<p>The function returns a value for every state (some may be NA). The first column in the data frame contains the hospital name and the second one contains the 2-character abbreviation for the state name. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.</p>
+<p>Although it is possible to call the <strong>rankHospital</strong> function from the previous section, I decided, for didactic purposes, not using it.</p>
+<pre class="r"><code>rankAll &lt;- function(outcome, num = &quot;best&quot;) {
+
+    dataAll &lt;- data.frame(hospital = character(), state = character())
+  
+## Read outcome data
+
+    data &lt;- read.csv(&quot;./rankingUsHospitals/outcome-of-care-measures.csv&quot;, 
+                         colClasses = &quot;character&quot;)
+  
+## Check that outcome and num are valid
+
+    if (!outcome %in% c(&quot;heart attack&quot;, &quot;heart failure&quot;, &quot;pneumonia&quot;)) {
+        dataAll &lt;- &quot;invalid outcome&quot;
+    }
+    else {
+        keys &lt;- c(&quot;heart attack&quot; = 11, &quot;heart failure&quot; = 17, &quot;pneumonia&quot; = 23)
+        outcomeKey &lt;- keys[outcome]
+
+## For each state, find the hospital of the given rank
+
+        dataPerState &lt;- split(data, data$State)
+        for (stat in names(dataPerState)) {
+        dataOurState &lt;- dataPerState[[stat]]
+        dataOutcome &lt;- suppressWarnings(as.numeric(dataOurState[, outcomeKey]))
+        good &lt;- complete.cases(dataOutcome)
+        dataOutcome &lt;- dataOutcome[good]
+        dataOurState &lt;- dataOurState[good,]
+        dataOurState &lt;- dataOurState[ order(dataOutcome, dataOurState[&quot;Hospital.Name&quot;]), ]
+        
+        if (num == &quot;best&quot;) {
+            numState &lt;- c(1)
+        } else {
+            if (num == &quot;worst&quot;) {
+                numState &lt;- length(dataOutcome)
+            } else {
+                numState &lt;- num
+            }
+        }
+    
+        dataPart &lt;- data.frame(hospital = dataOurState[numState, &quot;Hospital.Name&quot;], 
+                                   state = stat, row.names = stat)
+        
+        dataAll &lt;- rbind(dataAll, dataPart)
+        }
+    }
+
+## Return a data frame with the hospital names and the (abbreviated) state name
+
+    dataAll
+}</code></pre>
+<div id="testing-rankall" class="section level3">
+<h3>Testing <strong>rankAll</strong></h3>
+<pre class="r"><code>head(rankAll(&quot;heart attack&quot;, 20), 10)</code></pre>
+<pre><code>##                               hospital state
+## AK                                &lt;NA&gt;    AK
+## AL      D W MCMILLAN MEMORIAL HOSPITAL    AL
+## AR   ARKANSAS METHODIST MEDICAL CENTER    AR
+## AZ JOHN C LINCOLN DEER VALLEY HOSPITAL    AZ
+## CA               SHERMAN OAKS HOSPITAL    CA
+## CO            SKY RIDGE MEDICAL CENTER    CO
+## CT             MIDSTATE MEDICAL CENTER    CT
+## DC                                &lt;NA&gt;    DC
+## DE                                &lt;NA&gt;    DE
+## FL      SOUTH FLORIDA BAPTIST HOSPITAL    FL</code></pre>
+<pre class="r"><code>tail(rankAll(&quot;pneumonia&quot;, &quot;worst&quot;), 3)</code></pre>
+<pre><code>##                                      hospital state
+## WI MAYO CLINIC HEALTH SYSTEM - NORTHLAND, INC    WI
+## WV                     PLATEAU MEDICAL CENTER    WV
+## WY           NORTH BIG HORN HOSPITAL DISTRICT    WY</code></pre>
+<pre class="r"><code>tail(rankAll(&quot;heart failure&quot;), 10)</code></pre>
+<pre><code>##                                                             hospital state
+## TN                         WELLMONT HAWKINS COUNTY MEMORIAL HOSPITAL    TN
+## TX                                        FORT DUNCAN MEDICAL CENTER    TX
+## UT VA SALT LAKE CITY HEALTHCARE - GEORGE E. WAHLEN VA MEDICAL CENTER    UT
+## VA                                          SENTARA POTOMAC HOSPITAL    VA
+## VI                            GOV JUAN F LUIS HOSPITAL &amp; MEDICAL CTR    VI
+## VT                                              SPRINGFIELD HOSPITAL    VT
+## WA                                         HARBORVIEW MEDICAL CENTER    WA
+## WI                                    AURORA ST LUKES MEDICAL CENTER    WI
+## WV                                         FAIRMONT GENERAL HOSPITAL    WV
+## WY                                        CHEYENNE VA MEDICAL CENTER    WY</code></pre>
+</div>
 </div>
 
     </div>

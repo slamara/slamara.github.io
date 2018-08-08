@@ -101,6 +101,160 @@ as.list(apply(dat, 1, function(x){do.call(best, as.list(x))}))&lt;/code&gt;&lt;/
 &lt;p&gt;To this intent, I write a function &lt;strong&gt;rankHospital&lt;/strong&gt; which takes three arguments: the 2-character abbreviated name of a state (state), an outcome (outcome), and the ranking of a hospital in that state for that outcome (num).&lt;/p&gt;
 &lt;p&gt;The function returns a character vector with the name of the hospital that has the ranking specified by the &lt;strong&gt;num&lt;/strong&gt; argument. The &lt;strong&gt;num&lt;/strong&gt; argument can take the values “best”, “worst”, or an integer indicating the ranking.&lt;/p&gt;
 &lt;p&gt;The Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings. Also, If the number given by num is larger than the number of hospitals in that state, then the function returns NA.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rankHospital &amp;lt;- function(state, outcome, num = &amp;quot;best&amp;quot;) {
+    
+  
+## Read outcome data
+
+    data &amp;lt;- read.csv(&amp;quot;./rankingUsHospitals/outcome-of-care-measures.csv&amp;quot;, 
+                         colClasses = &amp;quot;character&amp;quot;)
+
+## Check that state and outcome are valid
+
+    if (!(state %in% data$State)) {
+        result &amp;lt;- &amp;quot;invalid state&amp;quot;
+    }
+    else if (!outcome %in% c(&amp;quot;heart attack&amp;quot;, &amp;quot;heart failure&amp;quot;, &amp;quot;pneumonia&amp;quot;)) {
+        result &amp;lt;- &amp;quot;invalid outcome&amp;quot;
+    }
+    else {
+        keys &amp;lt;- c(&amp;quot;heart attack&amp;quot; = 11, &amp;quot;heart failure&amp;quot; = 17, &amp;quot;pneumonia&amp;quot; = 23)
+        outcomeKey &amp;lt;- keys[outcome]
+  
+  
+## Return hospital name in that state with the given rank
+## 30-day death rate
+  
+        dataPerState &amp;lt;- split(data, data$State)
+        dataOurState &amp;lt;- dataPerState[[state]]
+        dataOutcome &amp;lt;- suppressWarnings(as.numeric(dataOurState[, outcomeKey]))
+        good &amp;lt;- complete.cases(dataOutcome)
+        dataOutcome &amp;lt;- dataOutcome[good]
+        dataOurState &amp;lt;- dataOurState[good,]
+        dataOurState &amp;lt;- dataOurState[order(dataOutcome, dataOurState[&amp;quot;Hospital.Name&amp;quot;]),]
+        if (grepl(&amp;quot;^[0-9]+$&amp;quot;, num)) {
+            if (as.numeric(num) &amp;gt; length(dataOutcome)) {
+                result &amp;lt;- NA
+            }
+            else {
+                result &amp;lt;- dataOurState[as.numeric(num), &amp;quot;Hospital.Name&amp;quot;]
+            }
+        }    
+        else if (num == &amp;quot;best&amp;quot;) {
+                result &amp;lt;- dataOurState[1, &amp;quot;Hospital.Name&amp;quot;]
+        }
+        else if (num == &amp;quot;worst&amp;quot;) {
+                result &amp;lt;- dataOurState[length(dataOutcome), &amp;quot;Hospital.Name&amp;quot;]
+        }
+        else result &amp;lt;- NA
+    }
+    result
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;testing-rankhospital&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Testing &lt;strong&gt;rankHospital&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chk1 &amp;lt;- c(&amp;quot;TX&amp;quot;, &amp;quot;heart failure&amp;quot;, 4)
+chk2 &amp;lt;- c(&amp;quot;MD&amp;quot;, &amp;quot;heart attack&amp;quot;, &amp;quot;worst&amp;quot;)
+chk3 &amp;lt;- c(&amp;quot;MN&amp;quot;, &amp;quot;heart attack&amp;quot;, 5000)
+dat &amp;lt;- data.table(chk1, chk2, chk3)
+dat &amp;lt;- t(dat)
+as.list(apply(dat, 1, function(x){do.call(rankHospital, as.list(x))}))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $chk1
+## [1] &amp;quot;DETAR HOSPITAL NAVARRO&amp;quot;
+## 
+## $chk2
+## [1] &amp;quot;HARFORD MEMORIAL HOSPITAL&amp;quot;
+## 
+## $chk3
+## [1] NA&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ranking-hospitals-in-all-states&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Ranking hospitals in all states&lt;/h2&gt;
+&lt;p&gt;I implement a function &lt;strong&gt;rankAll&lt;/strong&gt; which takes as arguments the outcome name (outcome) and hospital ranking (num) and returns a 2-column data frame containing the hospital in each state that has the ranking specified in num.&lt;/p&gt;
+&lt;p&gt;The function returns a value for every state (some may be NA). The first column in the data frame contains the hospital name and the second one contains the 2-character abbreviation for the state name. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.&lt;/p&gt;
+&lt;p&gt;Although it is possible to call the &lt;strong&gt;rankHospital&lt;/strong&gt; function from the previous section, I decided, for didactic purposes, not using it.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rankAll &amp;lt;- function(outcome, num = &amp;quot;best&amp;quot;) {
+
+    dataAll &amp;lt;- data.frame(hospital = character(), state = character())
+  
+## Read outcome data
+
+    data &amp;lt;- read.csv(&amp;quot;./rankingUsHospitals/outcome-of-care-measures.csv&amp;quot;, 
+                         colClasses = &amp;quot;character&amp;quot;)
+  
+## Check that outcome and num are valid
+
+    if (!outcome %in% c(&amp;quot;heart attack&amp;quot;, &amp;quot;heart failure&amp;quot;, &amp;quot;pneumonia&amp;quot;)) {
+        dataAll &amp;lt;- &amp;quot;invalid outcome&amp;quot;
+    }
+    else {
+        keys &amp;lt;- c(&amp;quot;heart attack&amp;quot; = 11, &amp;quot;heart failure&amp;quot; = 17, &amp;quot;pneumonia&amp;quot; = 23)
+        outcomeKey &amp;lt;- keys[outcome]
+
+## For each state, find the hospital of the given rank
+
+        dataPerState &amp;lt;- split(data, data$State)
+        for (stat in names(dataPerState)) {
+        dataOurState &amp;lt;- dataPerState[[stat]]
+        dataOutcome &amp;lt;- suppressWarnings(as.numeric(dataOurState[, outcomeKey]))
+        good &amp;lt;- complete.cases(dataOutcome)
+        dataOutcome &amp;lt;- dataOutcome[good]
+        dataOurState &amp;lt;- dataOurState[good,]
+        dataOurState &amp;lt;- dataOurState[ order(dataOutcome, dataOurState[&amp;quot;Hospital.Name&amp;quot;]), ]
+        
+        if (num == &amp;quot;best&amp;quot;) {
+            numState &amp;lt;- c(1)
+        } else {
+            if (num == &amp;quot;worst&amp;quot;) {
+                numState &amp;lt;- length(dataOutcome)
+            } else {
+                numState &amp;lt;- num
+            }
+        }
+    
+        dataPart &amp;lt;- data.frame(hospital = dataOurState[numState, &amp;quot;Hospital.Name&amp;quot;], 
+                                   state = stat, row.names = stat)
+        
+        dataAll &amp;lt;- rbind(dataAll, dataPart)
+        }
+    }
+
+## Return a data frame with the hospital names and the (abbreviated) state name
+
+    dataAll
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;testing-rankall&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Testing &lt;strong&gt;rankAll&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(rankAll(&amp;quot;heart attack&amp;quot;, 20), 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                               hospital state
+## AK                                &amp;lt;NA&amp;gt;    AK
+## AL      D W MCMILLAN MEMORIAL HOSPITAL    AL
+## AR   ARKANSAS METHODIST MEDICAL CENTER    AR
+## AZ JOHN C LINCOLN DEER VALLEY HOSPITAL    AZ
+## CA               SHERMAN OAKS HOSPITAL    CA
+## CO            SKY RIDGE MEDICAL CENTER    CO
+## CT             MIDSTATE MEDICAL CENTER    CT
+## DC                                &amp;lt;NA&amp;gt;    DC
+## DE                                &amp;lt;NA&amp;gt;    DE
+## FL      SOUTH FLORIDA BAPTIST HOSPITAL    FL&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tail(rankAll(&amp;quot;pneumonia&amp;quot;, &amp;quot;worst&amp;quot;), 3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                      hospital state
+## WI MAYO CLINIC HEALTH SYSTEM - NORTHLAND, INC    WI
+## WV                     PLATEAU MEDICAL CENTER    WV
+## WY           NORTH BIG HORN HOSPITAL DISTRICT    WY&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tail(rankAll(&amp;quot;heart failure&amp;quot;), 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                                             hospital state
+## TN                         WELLMONT HAWKINS COUNTY MEMORIAL HOSPITAL    TN
+## TX                                        FORT DUNCAN MEDICAL CENTER    TX
+## UT VA SALT LAKE CITY HEALTHCARE - GEORGE E. WAHLEN VA MEDICAL CENTER    UT
+## VA                                          SENTARA POTOMAC HOSPITAL    VA
+## VI                            GOV JUAN F LUIS HOSPITAL &amp;amp; MEDICAL CTR    VI
+## VT                                              SPRINGFIELD HOSPITAL    VT
+## WA                                         HARBORVIEW MEDICAL CENTER    WA
+## WI                                    AURORA ST LUKES MEDICAL CENTER    WI
+## WV                                         FAIRMONT GENERAL HOSPITAL    WV
+## WY                                        CHEYENNE VA MEDICAL CENTER    WY&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
