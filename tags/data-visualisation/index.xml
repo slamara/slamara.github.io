@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 17:08:23 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 17:42:32 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/data-visualisation/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>
+      <link>https://slamara.github.io/project/titanic/</link>
+      <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/titanic/</guid>
+      <description>hello!</description>
+    </item>
     
     <item>
       <title>Impact of severe weather events in the United States</title>

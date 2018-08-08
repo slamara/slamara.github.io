@@ -16,3 +16,5 @@ activity.csv
 StormData.csv.bz2
 pml-testing.csv
 pml-training.csv
+train.csv
+test.csv
