@@ -14,3 +14,5 @@ summarySCC_PM25.rds
 Source_Classification_Code.rds
 activity.csv
 StormData.csv.bz2
+pml-testing.csv
+pml-training.csv

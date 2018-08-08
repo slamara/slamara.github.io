@@ -314,7 +314,271 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <div id="background" class="section level3">
+<h3>Background</h3>
+<p>Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.</p>
+<p>In this project, I use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to a scientific study. During this experiment, the participants were asked to perform barbell lifts in 5 different ways: one correct and four incorrect. More information is available from the website <a href="http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har">here</a>. See the section on the Weight Lifting Exercise Dataset.</p>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>The training data for this project is available here: <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">pml-training.csv</a></p>
+<p>The test data is available here: <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">pml-testing.csv</a></p>
+<p>For reproducibility, the following libraries should be installed and loaded in order to accomplish all processing steps included in this report:</p>
+<pre class="r"><code>library(caret)
+library(rattle)
+library(parallel)
+library(doParallel)</code></pre>
+</div>
+<div id="data-processing" class="section level3">
+<h3>Data Processing</h3>
+<p>When it comes to machine learning, one should consider the quality of data as most crucial element. Incomplete, irrelevant and inaccurate data sets are all sources of errors that will be inevitably incorporated in any machine learning analysis, giving to the observation <em>“garbage in, garbage out”</em> all its sense. For such high-quality demanding analysis, one should thus spend enough time wrangling data efficiently.<br />
+Fortunately, the tidying of the data was already done <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> (a data summary is given <a href="https://github.com/lgreski/datasciencectacontent/blob/master/markdown/pml-predictionSummary.md">here</a>).</p>
+<p>Nonetheless, a look at the data content shows at first sight a substantive occurrence of various missing and/or irrelevant inputs (“NA”, “”, #Div/0!“) which need to be normalized from the notational point of view.</p>
+<pre class="r"><code>#download.file(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;, &quot;pml-training.csv&quot;)
+#download.file(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;, &quot;pml-testing.csv&quot;)
+preTest &lt;- read.csv(&quot;./weightLifting/pml-testing.csv&quot;, na.strings = c(&quot;NA&quot;, &quot;&quot;, &quot;#DIV/0!&quot;))
+preTrain &lt;- read.csv(&quot;./weightLifting/pml-training.csv&quot;, na.strings = c(&quot;NA&quot;, &quot;&quot;, &quot;#DIV/0!&quot;)) </code></pre>
+<p>The data is then processed as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>the 1st and 6th columns (resp. observation’s number and “new_number”) are irrelevant in this context and are excluded,</p></li>
+<li><p>the columns with down to 90% of “NA” values are also excluded,</p></li>
+<li><p>In case, two predictors present high pairwise correlation (in term of the Pearson’s correlation coefficient <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>), only the best is kept (the one with the smallest mean absolute correlation). The cut-off value of the Pearson’s correlation coefficient is usually chosen to be higher than 0.75. Since we use variables recorded by body sensors that could be mutually influenced, I choose a bit higher value of 0.8,</p></li>
+<li><p>the predictors with near-zero variance should be excluded. However, all of them were already excluded within the previous steps,</p></li>
+<li><p>we subset the training data into training and testing sets and set up the training run with the (x, y) syntax.</p></li>
+</ol>
+<pre class="r"><code># 1. Exclude the 1st and 6th columns
+preTest &lt;- preTest[, -c(1, 6)] 
+preTrain &lt;- preTrain[, -c(1, 6)]
+
+# 2. Exclude the columns with too many NAs (cut off at 90%)
+training &lt;- preTrain[,colSums(is.na(preTrain))/nrow(preTrain) &lt; 0.9]
+cIndex &lt;- which(!(colnames(preTrain) %in% colnames(training)))
+testing &lt;- preTest[, - cIndex]
+
+# 3. Exclude the predictors that are highly correlated
+analyseDataTrain &lt;- sapply(training[,-58], as.numeric) # column 58 is the target variable
+corMat &lt;- cor(analyseDataTrain)
+highCor &lt;- findCorrelation(corMat, cutoff=0.8)
+trainingCor &lt;- training[, -highCor]
+testingCor &lt;- testing[, -highCor]
+
+# 4. Exclude the predictors with very small variance
+#nsv &lt;- nearZeroVar(trainingCor) # in this case nsv is empty
+
+# 5. Subset the data
+set.seed(123)
+subsets &lt;- createDataPartition(y=trainingCor$classe, p=0.75, list=FALSE)
+subTrainingCor &lt;- trainingCor[subsets, ] 
+subTestingCor &lt;- trainingCor[-subsets, ]
+x &lt;- subTrainingCor[, -44] # column 44 is the target variable
+y &lt;- subTrainingCor[, 44]
+rm(preTest, preTrain,testing, training, cIndex, analyseDataTrain, corMat, highCor, subsets)</code></pre>
+</div>
+<div id="computer-configuration-used-in-this-project" class="section level3">
+<h3>Computer configuration used in this project</h3>
+<table style="width:100%;">
+<colgroup>
+<col width="24%" />
+<col width="75%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Computer</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Samsung Series 5 Ultra</td>
+<td>* Operating system: Windows 10 (64 Bits)</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>* Processor: Intel Corei5 3337U @ 1.80GHz up to 2.7GHz (2 cores, 4 threads)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>* RAM: 8 Gb</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>* Disk: 512 Gb SSD</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="setting-up-the-parallel-environment" class="section level3">
+<h3>Setting up the parallel environment</h3>
+<p>To improve processing time I decided to use caret on parallel environment. This accomplished as follows:</p>
+<pre class="r"><code>cluster &lt;- makeCluster(detectCores() - 1)  # 1 core is left for OS
+registerDoParallel(cluster)</code></pre>
+</div>
+<div id="model-fitting" class="section level3">
+<h3>Model fitting</h3>
+<p>The <strong>trainControl</strong> was set to use the K-fold cross-validation as it represents a robust method to estimate the model’s accuracy. The choice of k = 5 has been empirically shown to avoid high bias and variance when estimating the test error rate <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
+<p>In this experiment, 6 participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions:</p>
+<ul>
+<li>exactly according to the specification (Class A)<br />
+</li>
+<li>throwing the elbows to the front (Class B)<br />
+</li>
+<li>lifting the dumbbell only halfway (Class C)<br />
+</li>
+<li>lowering the dumbbell only halfway (Class D)<br />
+</li>
+<li>throwing the hips to the front (Class E).</li>
+</ul>
+<p>While the class A corresponds to the specified execution of the exercise, the other 4 classes correspond to common mistakes.</p>
+<p>As we try to predict these behaviors through predictor variables, the <strong>target variable</strong>, “classe”, is thus a factor with 5 different levels corresponding to the five preceding cases.</p>
+<p>To illustrate the difference in accuracy according to the method used, three different machine learning methods are chosen:</p>
+<div id="decision-tree" class="section level4">
+<h4>1. Decision tree</h4>
+<pre class="r"><code>set.seed(123)
+control = trainControl(method = &quot;cv&quot;, number = 5, allowParallel = TRUE)
+system.time(modelRPART &lt;- train(x, y, method = &quot;rpart&quot;, trControl = control)) </code></pre>
+<pre><code>##        User      System verstrichen 
+##        6.00        0.12       20.12</code></pre>
+<pre class="r"><code>modelRPART$results</code></pre>
+<pre><code>##           cp  Accuracy     Kappa  AccuracySD    KappaSD
+## 1 0.03398842 0.5565960 0.4378718 0.009052306 0.01130354
+## 2 0.03792842 0.5119644 0.3733120 0.036654830 0.05876857
+## 3 0.06728852 0.3606495 0.1255237 0.104492903 0.17188225</code></pre>
+<pre class="r"><code>predRPART &lt;- predict(modelRPART, subTestingCor)
+cfMatRPART &lt;- confusionMatrix(subTestingCor$classe, predRPART)
+cfMatRPART$overall</code></pre>
+<pre><code>##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##   5.309951e-01   4.053248e-01   5.169111e-01   5.450422e-01   4.783850e-01 
+## AccuracyPValue  McnemarPValue 
+##   9.423710e-14   0.000000e+00</code></pre>
+<pre class="r"><code>cfMatRPART$table</code></pre>
+<pre><code>##           Reference
+## Prediction    A    B    C    D    E
+##          A 1180   31  184    0    0
+##          B  158  317  472    0    2
+##          C   16   32  806    0    1
+##          D   71  152  521    0   60
+##          E   69  168  363    0  301</code></pre>
+<pre class="r"><code>fancyRpartPlot(modelRPART$finalModel)</code></pre>
+<p><img src="/project/weightLifting_files/figure-html/ModelPredRPART-1.png" width="672" /></p>
+<p>The model obtained has a low accuracy of 55,66% and cannot be used to predict the results of the test data.</p>
+</div>
+<div id="gradient-boosting-method" class="section level4">
+<h4>2. Gradient boosting method</h4>
+<pre class="r"><code>set.seed(123) 
+elapsed &lt;- system.time(modelGBM &lt;- train(x, y, method = &quot;gbm&quot;, trControl = control)) </code></pre>
+<pre class="r"><code>elapsed</code></pre>
+<pre><code>##        User      System verstrichen 
+##       33.14        0.16      172.27</code></pre>
+<pre class="r"><code>modelGBM$results</code></pre>
+<pre><code>##   shrinkage interaction.depth n.minobsinnode n.trees  Accuracy     Kappa
+## 1       0.1                 1             10      50 0.7842776 0.7262820
+## 4       0.1                 2             10      50 0.9287265 0.9097723
+## 7       0.1                 3             10      50 0.9660959 0.9570896
+## 2       0.1                 1             10     100 0.8660808 0.8303878
+## 5       0.1                 2             10     100 0.9807720 0.9756724
+## 8       0.1                 3             10     100 0.9938168 0.9921793
+## 3       0.1                 1             10     150 0.9033830 0.8776612
+## 6       0.1                 2             10     150 0.9924579 0.9904598
+## 9       0.1                 3             10     150 0.9974179 0.9967340
+##    AccuracySD     KappaSD
+## 1 0.007445123 0.009479860
+## 4 0.005811340 0.007363580
+## 7 0.002180500 0.002753041
+## 2 0.008072280 0.010331460
+## 5 0.001602403 0.002032181
+## 8 0.001883989 0.002383054
+## 3 0.008613351 0.010989106
+## 6 0.002235010 0.002827177
+## 9 0.001658198 0.002097462</code></pre>
+<pre class="r"><code>predGBM &lt;- predict(modelGBM, subTestingCor) 
+cfMatGBM &lt;- confusionMatrix(subTestingCor$classe, predGBM)
+cfMatGBM$overall</code></pre>
+<pre><code>##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##      0.9977569      0.9971627      0.9959901      0.9988798      0.2846656 
+## AccuracyPValue  McnemarPValue 
+##      0.0000000            NaN</code></pre>
+<pre class="r"><code>cfMatGBM$table</code></pre>
+<pre><code>##           Reference
+## Prediction    A    B    C    D    E
+##          A 1395    0    0    0    0
+##          B    1  948    0    0    0
+##          C    0    1  853    1    0
+##          D    0    0    5  798    1
+##          E    0    0    0    2  899</code></pre>
+<p>The model from the GBM method presents very high accuracy on train set (99.74%) as well as on test set (99,78%). Since these values are too close, I assume that there is no overfitting on the train set. On the other hand, one can notice that the test accuracy is slightly better than the train one. Yet, the difference is in fact too small as it corresponds to <strong>less than</strong> two additional good predictions on the test set and could be induced by the smallest number of observations.</p>
+</div>
+<div id="random-forest" class="section level4">
+<h4>3. Random forest</h4>
+<pre class="r"><code>set.seed(123)
+system.time(modelRF &lt;- train(x, y, method = &quot;rf&quot;, trControl = control))</code></pre>
+<pre><code>##        User      System verstrichen 
+##       58.67        1.32      446.53</code></pre>
+<pre class="r"><code>modelRF$results </code></pre>
+<pre><code>##   mtry  Accuracy     Kappa  AccuracySD     KappaSD
+## 1    2 0.9952433 0.9939829 0.002150399 0.002720445
+## 2   22 0.9986407 0.9982806 0.001749896 0.002213406
+## 3   43 0.9967383 0.9958746 0.001743711 0.002205343</code></pre>
+<pre class="r"><code>predRF &lt;- predict(modelRF, subTestingCor)
+cfMatRF &lt;- confusionMatrix(subTestingCor$classe, predRF)
+rm(control)
+cfMatRF$overall</code></pre>
+<pre><code>##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##      0.9989804      0.9987104      0.9976223      0.9996689      0.2844617 
+## AccuracyPValue  McnemarPValue 
+##      0.0000000            NaN</code></pre>
+<pre class="r"><code>cfMatRF$table</code></pre>
+<pre><code>##           Reference
+## Prediction    A    B    C    D    E
+##          A 1395    0    0    0    0
+##          B    0  948    1    0    0
+##          C    0    1  854    0    0
+##          D    0    0    3  801    0
+##          E    0    0    0    0  901</code></pre>
+<p>The obtained model shows very high accuracies. As for the GBM method, the train and test accuracies are once again too close with the latter slightly better than the first. There is thus no overfitting on the train set.</p>
+<p>To avoid doubts on the resampling method, I computed a new model using <strong><em>repeatedcv</em></strong> on the same data set. The accuracies obtained with 5 repeats (99,88%) are exactly the same and are very close to the ones obtained previously.</p>
+</div>
+</div>
+<div id="comparison-between-the-different-methods" class="section level3">
+<h3>Comparison between the different methods</h3>
+<pre class="r"><code>results &lt;- resamples(list(RPART=modelRPART, GBM=modelGBM, RF=modelRF))
+results$timings </code></pre>
+<pre><code>##       Everything FinalModel Prediction
+## RPART      20.12       0.39         NA
+## GBM       172.27      32.25         NA
+## RF        446.53      59.48         NA</code></pre>
+<pre class="r"><code>bwplot(results)</code></pre>
+<p><img src="/project/weightLifting_files/figure-html/compModels-1.png" width="672" /></p>
+<p>Apart of the RPART method, the models obtained with the GBM and RF methods fit the test data very well. The standard deviations of the accuracies are also very small which suggests that the data collected with the body sensors is very accurate. The big difference in processing time between the GBM and RF methods (about the double) poses the problem of performance when using a time-consuming method for just a little improvement. Of course, for this project, one can afford using the RF method to predict the cases from the test data. However, once the data becomes very big, it is important to assess all these different aspects taking into consideration the acceptable margin of error.</p>
+</div>
+<div id="predictors-importance-in-random-forest" class="section level3">
+<h3>Predictor’s importance in Random Forest</h3>
+<pre class="r"><code>importanceRF &lt;- varImp(modelRF,scale = FALSE)
+plot(importanceRF, top= 10) </code></pre>
+<p><img src="/project/weightLifting_files/figure-html/predImportance-1.png" width="672" /></p>
+<p>It is very interesting to notice that the most important predictors used in RF method are the <strong><em>raw_timestamp_part_1</em></strong> and the <strong><em>num_window</em></strong>. Since the data was recorded by body sensors using a sliding time window with different durations, it is therefore necessary to look at the observations according to their corresponding time stamp and window number. While this behavior is intuitive for a human being, the fact remains that it is not obvious for a machine. Fortunately, the RF algorithm permitted to learn from the data enough to spot this fact.</p>
+</div>
+<div id="application-to-the-test-data" class="section level3">
+<h3>Application to the test data</h3>
+<pre class="r"><code>predict(modelRF, testingCor) </code></pre>
+<pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E</code></pre>
+<pre class="r"><code># 100% accuracy
+#rm(list = ls())
+stopCluster(cluster)
+registerDoSEQ()</code></pre>
+</div>
+<div id="bibliography" class="section level3">
+<h3>Bibliography</h3>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Gray, S. E., &amp; Finch, C. F. (2015). The causes of injuries sustained at fitness facilities presenting to Victorian emergency departments-identifying the main culprits. Injury epidemiology, 2(1), 6.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Velloso, E., Bulling, A., Gellersen, H., Ugulino, W., &amp; Fuks, H. (2013, March). Qualitative activity recognition of weight lifting exercises. In Proceedings of the 4th Augmented Human International Conference (pp. 116-123). ACM.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Pearson, K. (1896). Mathematical contributions to the theory of evolution. III. Regression, heredity, and panmixia. Philosophical Transactions of the Royal Society of London. Series A, containing papers of a mathematical or physical character, 187, 253-318.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p><a href="http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/" class="uri">http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/</a><a href="#fnref4">↩</a></p></li>
+</ol>
+</div>
 
     </div>
 

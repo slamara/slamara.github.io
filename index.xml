@@ -16,7 +16,271 @@
       <pubDate>Wed, 08 Aug 2018 17:17:52 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/weightlifting/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;background&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Background&lt;/h3&gt;
+&lt;p&gt;Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.&lt;/p&gt;
+&lt;p&gt;In this project, I use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to a scientific study. During this experiment, the participants were asked to perform barbell lifts in 5 different ways: one correct and four incorrect. More information is available from the website &lt;a href=&#34;http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har&#34;&gt;here&lt;/a&gt;. See the section on the Weight Lifting Exercise Dataset.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Data&lt;/h3&gt;
+&lt;p&gt;The training data for this project is available here: &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&#34;&gt;pml-training.csv&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The test data is available here: &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&#34;&gt;pml-testing.csv&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For reproducibility, the following libraries should be installed and loaded in order to accomplish all processing steps included in this report:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(caret)
+library(rattle)
+library(parallel)
+library(doParallel)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-processing&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Data Processing&lt;/h3&gt;
+&lt;p&gt;When it comes to machine learning, one should consider the quality of data as most crucial element. Incomplete, irrelevant and inaccurate data sets are all sources of errors that will be inevitably incorporated in any machine learning analysis, giving to the observation &lt;em&gt;“garbage in, garbage out”&lt;/em&gt; all its sense. For such high-quality demanding analysis, one should thus spend enough time wrangling data efficiently.&lt;br /&gt;
+Fortunately, the tidying of the data was already done &lt;a href=&#34;#fn2&#34; class=&#34;footnoteRef&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; (a data summary is given &lt;a href=&#34;https://github.com/lgreski/datasciencectacontent/blob/master/markdown/pml-predictionSummary.md&#34;&gt;here&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;Nonetheless, a look at the data content shows at first sight a substantive occurrence of various missing and/or irrelevant inputs (“NA”, “”, #Div/0!“) which need to be normalized from the notational point of view.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#download.file(&amp;quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&amp;quot;, &amp;quot;pml-training.csv&amp;quot;)
+#download.file(&amp;quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&amp;quot;, &amp;quot;pml-testing.csv&amp;quot;)
+preTest &amp;lt;- read.csv(&amp;quot;./weightLifting/pml-testing.csv&amp;quot;, na.strings = c(&amp;quot;NA&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;#DIV/0!&amp;quot;))
+preTrain &amp;lt;- read.csv(&amp;quot;./weightLifting/pml-training.csv&amp;quot;, na.strings = c(&amp;quot;NA&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;#DIV/0!&amp;quot;)) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The data is then processed as follows:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;the 1st and 6th columns (resp. observation’s number and “new_number”) are irrelevant in this context and are excluded,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the columns with down to 90% of “NA” values are also excluded,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;In case, two predictors present high pairwise correlation (in term of the Pearson’s correlation coefficient &lt;a href=&#34;#fn3&#34; class=&#34;footnoteRef&#34; id=&#34;fnref3&#34;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;), only the best is kept (the one with the smallest mean absolute correlation). The cut-off value of the Pearson’s correlation coefficient is usually chosen to be higher than 0.75. Since we use variables recorded by body sensors that could be mutually influenced, I choose a bit higher value of 0.8,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the predictors with near-zero variance should be excluded. However, all of them were already excluded within the previous steps,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;we subset the training data into training and testing sets and set up the training run with the (x, y) syntax.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1. Exclude the 1st and 6th columns
+preTest &amp;lt;- preTest[, -c(1, 6)] 
+preTrain &amp;lt;- preTrain[, -c(1, 6)]
+
+# 2. Exclude the columns with too many NAs (cut off at 90%)
+training &amp;lt;- preTrain[,colSums(is.na(preTrain))/nrow(preTrain) &amp;lt; 0.9]
+cIndex &amp;lt;- which(!(colnames(preTrain) %in% colnames(training)))
+testing &amp;lt;- preTest[, - cIndex]
+
+# 3. Exclude the predictors that are highly correlated
+analyseDataTrain &amp;lt;- sapply(training[,-58], as.numeric) # column 58 is the target variable
+corMat &amp;lt;- cor(analyseDataTrain)
+highCor &amp;lt;- findCorrelation(corMat, cutoff=0.8)
+trainingCor &amp;lt;- training[, -highCor]
+testingCor &amp;lt;- testing[, -highCor]
+
+# 4. Exclude the predictors with very small variance
+#nsv &amp;lt;- nearZeroVar(trainingCor) # in this case nsv is empty
+
+# 5. Subset the data
+set.seed(123)
+subsets &amp;lt;- createDataPartition(y=trainingCor$classe, p=0.75, list=FALSE)
+subTrainingCor &amp;lt;- trainingCor[subsets, ] 
+subTestingCor &amp;lt;- trainingCor[-subsets, ]
+x &amp;lt;- subTrainingCor[, -44] # column 44 is the target variable
+y &amp;lt;- subTrainingCor[, 44]
+rm(preTest, preTrain,testing, training, cIndex, analyseDataTrain, corMat, highCor, subsets)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;computer-configuration-used-in-this-project&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Computer configuration used in this project&lt;/h3&gt;
+&lt;table style=&#34;width:100%;&#34;&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;24%&#34; /&gt;
+&lt;col width=&#34;75%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;Computer&lt;/th&gt;
+&lt;th&gt;Configuration&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Samsung Series 5 Ultra&lt;/td&gt;
+&lt;td&gt;* Operating system: Windows 10 (64 Bits)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;* Processor: Intel Corei5 3337U @ 1.80GHz up to 2.7GHz (2 cores, 4 threads)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;* RAM: 8 Gb&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;* Disk: 512 Gb SSD&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;setting-up-the-parallel-environment&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Setting up the parallel environment&lt;/h3&gt;
+&lt;p&gt;To improve processing time I decided to use caret on parallel environment. This accomplished as follows:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cluster &amp;lt;- makeCluster(detectCores() - 1)  # 1 core is left for OS
+registerDoParallel(cluster)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Model fitting&lt;/h3&gt;
+&lt;p&gt;The &lt;strong&gt;trainControl&lt;/strong&gt; was set to use the K-fold cross-validation as it represents a robust method to estimate the model’s accuracy. The choice of k = 5 has been empirically shown to avoid high bias and variance when estimating the test error rate &lt;a href=&#34;#fn4&#34; class=&#34;footnoteRef&#34; id=&#34;fnref4&#34;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In this experiment, 6 participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;exactly according to the specification (Class A)&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;throwing the elbows to the front (Class B)&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;lifting the dumbbell only halfway (Class C)&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;lowering the dumbbell only halfway (Class D)&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;throwing the hips to the front (Class E).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;While the class A corresponds to the specified execution of the exercise, the other 4 classes correspond to common mistakes.&lt;/p&gt;
+&lt;p&gt;As we try to predict these behaviors through predictor variables, the &lt;strong&gt;target variable&lt;/strong&gt;, “classe”, is thus a factor with 5 different levels corresponding to the five preceding cases.&lt;/p&gt;
+&lt;p&gt;To illustrate the difference in accuracy according to the method used, three different machine learning methods are chosen:&lt;/p&gt;
+&lt;div id=&#34;decision-tree&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;1. Decision tree&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(123)
+control = trainControl(method = &amp;quot;cv&amp;quot;, number = 5, allowParallel = TRUE)
+system.time(modelRPART &amp;lt;- train(x, y, method = &amp;quot;rpart&amp;quot;, trControl = control)) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
+##        6.00        0.12       20.12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelRPART$results&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           cp  Accuracy     Kappa  AccuracySD    KappaSD
+## 1 0.03398842 0.5565960 0.4378718 0.009052306 0.01130354
+## 2 0.03792842 0.5119644 0.3733120 0.036654830 0.05876857
+## 3 0.06728852 0.3606495 0.1255237 0.104492903 0.17188225&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predRPART &amp;lt;- predict(modelRPART, subTestingCor)
+cfMatRPART &amp;lt;- confusionMatrix(subTestingCor$classe, predRPART)
+cfMatRPART$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##   5.309951e-01   4.053248e-01   5.169111e-01   5.450422e-01   4.783850e-01 
+## AccuracyPValue  McnemarPValue 
+##   9.423710e-14   0.000000e+00&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatRPART$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction    A    B    C    D    E
+##          A 1180   31  184    0    0
+##          B  158  317  472    0    2
+##          C   16   32  806    0    1
+##          D   71  152  521    0   60
+##          E   69  168  363    0  301&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fancyRpartPlot(modelRPART$finalModel)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/ModelPredRPART-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The model obtained has a low accuracy of 55,66% and cannot be used to predict the results of the test data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;gradient-boosting-method&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;2. Gradient boosting method&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(123) 
+elapsed &amp;lt;- system.time(modelGBM &amp;lt;- train(x, y, method = &amp;quot;gbm&amp;quot;, trControl = control)) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;elapsed&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
+##       33.14        0.16      172.27&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelGBM$results&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   shrinkage interaction.depth n.minobsinnode n.trees  Accuracy     Kappa
+## 1       0.1                 1             10      50 0.7842776 0.7262820
+## 4       0.1                 2             10      50 0.9287265 0.9097723
+## 7       0.1                 3             10      50 0.9660959 0.9570896
+## 2       0.1                 1             10     100 0.8660808 0.8303878
+## 5       0.1                 2             10     100 0.9807720 0.9756724
+## 8       0.1                 3             10     100 0.9938168 0.9921793
+## 3       0.1                 1             10     150 0.9033830 0.8776612
+## 6       0.1                 2             10     150 0.9924579 0.9904598
+## 9       0.1                 3             10     150 0.9974179 0.9967340
+##    AccuracySD     KappaSD
+## 1 0.007445123 0.009479860
+## 4 0.005811340 0.007363580
+## 7 0.002180500 0.002753041
+## 2 0.008072280 0.010331460
+## 5 0.001602403 0.002032181
+## 8 0.001883989 0.002383054
+## 3 0.008613351 0.010989106
+## 6 0.002235010 0.002827177
+## 9 0.001658198 0.002097462&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predGBM &amp;lt;- predict(modelGBM, subTestingCor) 
+cfMatGBM &amp;lt;- confusionMatrix(subTestingCor$classe, predGBM)
+cfMatGBM$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##      0.9977569      0.9971627      0.9959901      0.9988798      0.2846656 
+## AccuracyPValue  McnemarPValue 
+##      0.0000000            NaN&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatGBM$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction    A    B    C    D    E
+##          A 1395    0    0    0    0
+##          B    1  948    0    0    0
+##          C    0    1  853    1    0
+##          D    0    0    5  798    1
+##          E    0    0    0    2  899&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model from the GBM method presents very high accuracy on train set (99.74%) as well as on test set (99,78%). Since these values are too close, I assume that there is no overfitting on the train set. On the other hand, one can notice that the test accuracy is slightly better than the train one. Yet, the difference is in fact too small as it corresponds to &lt;strong&gt;less than&lt;/strong&gt; two additional good predictions on the test set and could be induced by the smallest number of observations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;random-forest&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;3. Random forest&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(123)
+system.time(modelRF &amp;lt;- train(x, y, method = &amp;quot;rf&amp;quot;, trControl = control))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
+##       58.67        1.32      446.53&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelRF$results &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   mtry  Accuracy     Kappa  AccuracySD     KappaSD
+## 1    2 0.9952433 0.9939829 0.002150399 0.002720445
+## 2   22 0.9986407 0.9982806 0.001749896 0.002213406
+## 3   43 0.9967383 0.9958746 0.001743711 0.002205343&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predRF &amp;lt;- predict(modelRF, subTestingCor)
+cfMatRF &amp;lt;- confusionMatrix(subTestingCor$classe, predRF)
+rm(control)
+cfMatRF$overall&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##      0.9989804      0.9987104      0.9976223      0.9996689      0.2844617 
+## AccuracyPValue  McnemarPValue 
+##      0.0000000            NaN&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cfMatRF$table&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           Reference
+## Prediction    A    B    C    D    E
+##          A 1395    0    0    0    0
+##          B    0  948    1    0    0
+##          C    0    1  854    0    0
+##          D    0    0    3  801    0
+##          E    0    0    0    0  901&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The obtained model shows very high accuracies. As for the GBM method, the train and test accuracies are once again too close with the latter slightly better than the first. There is thus no overfitting on the train set.&lt;/p&gt;
+&lt;p&gt;To avoid doubts on the resampling method, I computed a new model using &lt;strong&gt;&lt;em&gt;repeatedcv&lt;/em&gt;&lt;/strong&gt; on the same data set. The accuracies obtained with 5 repeats (99,88%) are exactly the same and are very close to the ones obtained previously.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;comparison-between-the-different-methods&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Comparison between the different methods&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;results &amp;lt;- resamples(list(RPART=modelRPART, GBM=modelGBM, RF=modelRF))
+results$timings &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Everything FinalModel Prediction
+## RPART      20.12       0.39         NA
+## GBM       172.27      32.25         NA
+## RF        446.53      59.48         NA&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bwplot(results)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/compModels-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Apart of the RPART method, the models obtained with the GBM and RF methods fit the test data very well. The standard deviations of the accuracies are also very small which suggests that the data collected with the body sensors is very accurate. The big difference in processing time between the GBM and RF methods (about the double) poses the problem of performance when using a time-consuming method for just a little improvement. Of course, for this project, one can afford using the RF method to predict the cases from the test data. However, once the data becomes very big, it is important to assess all these different aspects taking into consideration the acceptable margin of error.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;predictors-importance-in-random-forest&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Predictor’s importance in Random Forest&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;importanceRF &amp;lt;- varImp(modelRF,scale = FALSE)
+plot(importanceRF, top= 10) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/predImportance-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;It is very interesting to notice that the most important predictors used in RF method are the &lt;strong&gt;&lt;em&gt;raw_timestamp_part_1&lt;/em&gt;&lt;/strong&gt; and the &lt;strong&gt;&lt;em&gt;num_window&lt;/em&gt;&lt;/strong&gt;. Since the data was recorded by body sensors using a sliding time window with different durations, it is therefore necessary to look at the observations according to their corresponding time stamp and window number. While this behavior is intuitive for a human being, the fact remains that it is not obvious for a machine. Fortunately, the RF algorithm permitted to learn from the data enough to spot this fact.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;application-to-the-test-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Application to the test data&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predict(modelRF, testingCor) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 100% accuracy
+#rm(list = ls())
+stopCluster(cluster)
+registerDoSEQ()&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bibliography&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bibliography&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Gray, S. E., &amp;amp; Finch, C. F. (2015). The causes of injuries sustained at fitness facilities presenting to Victorian emergency departments-identifying the main culprits. Injury epidemiology, 2(1), 6.&lt;a href=&#34;#fnref1&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn2&#34;&gt;&lt;p&gt;Velloso, E., Bulling, A., Gellersen, H., Ugulino, W., &amp;amp; Fuks, H. (2013, March). Qualitative activity recognition of weight lifting exercises. In Proceedings of the 4th Augmented Human International Conference (pp. 116-123). ACM.&lt;a href=&#34;#fnref2&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn3&#34;&gt;&lt;p&gt;Pearson, K. (1896). Mathematical contributions to the theory of evolution. III. Regression, heredity, and panmixia. Philosophical Transactions of the Royal Society of London. Series A, containing papers of a mathematical or physical character, 187, 253-318.&lt;a href=&#34;#fnref3&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn4&#34;&gt;&lt;p&gt;&lt;a href=&#34;http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/&#34; class=&#34;uri&#34;&gt;http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r/&lt;/a&gt;&lt;a href=&#34;#fnref4&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -455,7 +719,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Aug 08 17:20:28 2018 --&gt;
+&lt;!-- Wed Aug 08 17:26:22 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
