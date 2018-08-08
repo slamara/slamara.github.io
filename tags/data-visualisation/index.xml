@@ -18,7 +18,8 @@
       <pubDate>Wed, 08 Aug 2018 16:08:18 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/electricpconsumption/</guid>
-      <description>hello!</description>
+      <description>The goal of this project is to examine how household energy usage varies over a 2-day period in February, 2007 using the base plotting system. The data used in here (in particular, the “Individual household electric power consumption Data Set”) are from the UC Irvine Machine Learning Repository, a popular repository for machine learning datasets.
+library(sqldf)library(dplyr)library(ggplot2)# Estimate the memory usagepaste0(&amp;quot;As the dataset has 2880 rows and 9 columns, it requires about &amp;quot;, round(2880 * 9 * 8 / 2^20, 2), &amp;quot; Megabytes in memory.</description>
     </item>
     
   </channel>

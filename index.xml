@@ -16,7 +16,68 @@
       <pubDate>Wed, 08 Aug 2018 16:08:18 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/electricpconsumption/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;p&gt;The goal of this project is to examine how household energy usage varies over a 2-day period in February, 2007 using the base plotting system. The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip&#34;&gt;data&lt;/a&gt; used in here (in particular, the “Individual household electric power consumption Data Set”) are from the &lt;a href=&#34;http://archive.ics.uci.edu/ml/&#34;&gt;UC Irvine Machine Learning Repository&lt;/a&gt;, a popular repository for machine learning datasets.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(sqldf)
+library(dplyr)
+library(ggplot2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Estimate the memory usage
+paste0(&amp;quot;As the dataset has 2880 rows and 9 columns, it requires about &amp;quot;, 
+           round(2880 * 9 * 8 / 2^20, 2), &amp;quot; Megabytes in memory.&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;As the dataset has 2880 rows and 9 columns, it requires about 0.2 Megabytes in memory.&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Read the data using an SQL statement
+sel_data &amp;lt;- read.csv.sql(&amp;quot;./electricPConsumption/household_power_consumption.txt&amp;quot;, 
+                            sep = &amp;#39;;&amp;#39;, header = TRUE, 
+                            sql=&amp;quot;select * from file where Date in (&amp;#39;1/2/2007&amp;#39;, &amp;#39;2/2/2007&amp;#39;)&amp;quot;)
+
+paste0(&amp;quot;Used memory: &amp;quot;, format(object.size(sel_data), units = &amp;quot;Mb&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Used memory: 0.3 Mb&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Create a datetime column given a specific format
+sel_data &amp;lt;- sel_data %&amp;gt;% mutate(datetime = as.POSIXct(paste(sel_data$Date, sel_data$Time), 
+                                                          format=&amp;quot;%d/%m/%Y %H:%M:%S&amp;quot;))
+
+# Plot the histogram
+hist(sel_data$Global_active_power, col = &amp;quot;red&amp;quot;, main = &amp;quot;Global Active Power&amp;quot;, 
+         xlab = &amp;quot;Global Active Power (kilowatts)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Create a png file from the histogram
+png(file = &amp;quot;plot1.png&amp;quot;, width = 480, height = 480, bg = &amp;quot;transparent&amp;quot;)
+
+hist(sel_data$Global_active_power, col = &amp;quot;red&amp;quot;, main = &amp;quot;Global Active Power&amp;quot;, 
+         xlab = &amp;quot;Global Active Power (kilowatts)&amp;quot;)
+
+dev.off()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(sel_data$datetime, sel_data$Global_active_power, type = &amp;quot;l&amp;quot;, xlab = &amp;quot;&amp;quot;, 
+         ylab = &amp;quot;Global Active Power (kilowatts)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow = c(2, 2))
+
+plot(sel_data$datetime, sel_data$Global_active_power, type = &amp;quot;l&amp;quot;, xlab = &amp;quot;&amp;quot;, 
+         ylab = &amp;quot;Global Active Power&amp;quot;)
+
+plot(sel_data$datetime, sel_data$Voltage, type = &amp;quot;l&amp;quot;, xlab = &amp;quot;datetime&amp;quot;, 
+         ylab = &amp;quot;Voltage&amp;quot;)
+
+plot(sel_data$datetime, sel_data$Sub_metering_1, type = &amp;quot;l&amp;quot;, 
+         ylim = range(sel_data$Sub_metering_1), xlab = &amp;quot;&amp;quot;, ylab= &amp;quot;Energy sub metering&amp;quot;)
+
+par(new = TRUE)
+
+plot(sel_data$datetime, sel_data$Sub_metering_2, type = &amp;quot;l&amp;quot;, 
+         ylim = range(sel_data$Sub_metering_1), col = &amp;quot;red&amp;quot;, 
+         xaxt = &amp;quot;n&amp;quot;, yaxt = &amp;quot;n&amp;quot;, xlab = &amp;quot;&amp;quot;, ylab= &amp;quot;&amp;quot;)
+
+par(new = TRUE)
+
+plot(sel_data$datetime, sel_data$Sub_metering_3, type = &amp;quot;l&amp;quot;, 
+         ylim = range(sel_data$Sub_metering_1), col = &amp;quot;blue&amp;quot;, 
+         xaxt = &amp;quot;n&amp;quot;, yaxt = &amp;quot;n&amp;quot;, xlab = &amp;quot;&amp;quot;, ylab= &amp;quot;&amp;quot;)
+
+legend(&amp;quot;topright&amp;quot;,legend=c(&amp;quot;Sub_metering_1&amp;quot;, &amp;quot;Sub_metering_2&amp;quot;, &amp;quot;Sub_metering_3&amp;quot;), 
+           bty = &amp;quot;n&amp;quot;, lty = c(1,1),col=c(&amp;quot;black&amp;quot;, &amp;quot;red&amp;quot;, &amp;quot;blue&amp;quot;))
+
+plot(sel_data$datetime, sel_data$Global_reactive_power, type = &amp;quot;l&amp;quot;, 
+         xlab = &amp;quot;datetime&amp;quot;, ylab = &amp;quot;Global_reactive_power&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     

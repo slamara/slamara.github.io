@@ -314,7 +314,68 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <p>The goal of this project is to examine how household energy usage varies over a 2-day period in February, 2007 using the base plotting system. The <a href="https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip">data</a> used in here (in particular, the “Individual household electric power consumption Data Set”) are from the <a href="http://archive.ics.uci.edu/ml/">UC Irvine Machine Learning Repository</a>, a popular repository for machine learning datasets.</p>
+<pre class="r"><code>library(sqldf)
+library(dplyr)
+library(ggplot2)</code></pre>
+<pre class="r"><code># Estimate the memory usage
+paste0(&quot;As the dataset has 2880 rows and 9 columns, it requires about &quot;, 
+           round(2880 * 9 * 8 / 2^20, 2), &quot; Megabytes in memory.&quot;)</code></pre>
+<pre><code>## [1] &quot;As the dataset has 2880 rows and 9 columns, it requires about 0.2 Megabytes in memory.&quot;</code></pre>
+<pre class="r"><code># Read the data using an SQL statement
+sel_data &lt;- read.csv.sql(&quot;./electricPConsumption/household_power_consumption.txt&quot;, 
+                            sep = &#39;;&#39;, header = TRUE, 
+                            sql=&quot;select * from file where Date in (&#39;1/2/2007&#39;, &#39;2/2/2007&#39;)&quot;)
+
+paste0(&quot;Used memory: &quot;, format(object.size(sel_data), units = &quot;Mb&quot;))</code></pre>
+<pre><code>## [1] &quot;Used memory: 0.3 Mb&quot;</code></pre>
+<pre class="r"><code># Create a datetime column given a specific format
+sel_data &lt;- sel_data %&gt;% mutate(datetime = as.POSIXct(paste(sel_data$Date, sel_data$Time), 
+                                                          format=&quot;%d/%m/%Y %H:%M:%S&quot;))
+
+# Plot the histogram
+hist(sel_data$Global_active_power, col = &quot;red&quot;, main = &quot;Global Active Power&quot;, 
+         xlab = &quot;Global Active Power (kilowatts)&quot;)</code></pre>
+<p><img src="/project/electricPConsumption_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code># Create a png file from the histogram
+png(file = &quot;plot1.png&quot;, width = 480, height = 480, bg = &quot;transparent&quot;)
+
+hist(sel_data$Global_active_power, col = &quot;red&quot;, main = &quot;Global Active Power&quot;, 
+         xlab = &quot;Global Active Power (kilowatts)&quot;)
+
+dev.off()</code></pre>
+<pre class="r"><code>plot(sel_data$datetime, sel_data$Global_active_power, type = &quot;l&quot;, xlab = &quot;&quot;, 
+         ylab = &quot;Global Active Power (kilowatts)&quot;)</code></pre>
+<p><img src="/project/electricPConsumption_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>par(mfrow = c(2, 2))
+
+plot(sel_data$datetime, sel_data$Global_active_power, type = &quot;l&quot;, xlab = &quot;&quot;, 
+         ylab = &quot;Global Active Power&quot;)
+
+plot(sel_data$datetime, sel_data$Voltage, type = &quot;l&quot;, xlab = &quot;datetime&quot;, 
+         ylab = &quot;Voltage&quot;)
+
+plot(sel_data$datetime, sel_data$Sub_metering_1, type = &quot;l&quot;, 
+         ylim = range(sel_data$Sub_metering_1), xlab = &quot;&quot;, ylab= &quot;Energy sub metering&quot;)
+
+par(new = TRUE)
+
+plot(sel_data$datetime, sel_data$Sub_metering_2, type = &quot;l&quot;, 
+         ylim = range(sel_data$Sub_metering_1), col = &quot;red&quot;, 
+         xaxt = &quot;n&quot;, yaxt = &quot;n&quot;, xlab = &quot;&quot;, ylab= &quot;&quot;)
+
+par(new = TRUE)
+
+plot(sel_data$datetime, sel_data$Sub_metering_3, type = &quot;l&quot;, 
+         ylim = range(sel_data$Sub_metering_1), col = &quot;blue&quot;, 
+         xaxt = &quot;n&quot;, yaxt = &quot;n&quot;, xlab = &quot;&quot;, ylab= &quot;&quot;)
+
+legend(&quot;topright&quot;,legend=c(&quot;Sub_metering_1&quot;, &quot;Sub_metering_2&quot;, &quot;Sub_metering_3&quot;), 
+           bty = &quot;n&quot;, lty = c(1,1),col=c(&quot;black&quot;, &quot;red&quot;, &quot;blue&quot;))
+
+plot(sel_data$datetime, sel_data$Global_reactive_power, type = &quot;l&quot;, 
+         xlab = &quot;datetime&quot;, ylab = &quot;Global_reactive_power&quot;)</code></pre>
+<p><img src="/project/electricPConsumption_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
 
     </div>
 
