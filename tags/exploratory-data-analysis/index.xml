@@ -18,7 +18,11 @@
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/gcd/</guid>
-      <description>hello!</description>
+      <description>IntroductionThe purpose of this project is to show the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis.
+The data used in this project represent data collected from the accelerometers of Samsung Galaxy S smartphones. For a full description please visit the following website:
+http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones 1
+Here are the data for the project:
+https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip</description>
     </item>
     
     <item>

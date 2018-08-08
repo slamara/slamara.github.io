@@ -314,7 +314,100 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The purpose of this project is to show the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis.</p>
+<p>The data used in this project represent data collected from the accelerometers of Samsung Galaxy S smartphones. For a full description please visit the following website:</p>
+<p><a href="http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones" class="uri">http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones</a> <sup><a href="#myfootnote1">1</a></sup></p>
+<p>Here are the data for the project:</p>
+<p><a href="https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip">https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip</a></p>
+<p>The script does the following:</p>
+<ol style="list-style-type: decimal">
+<li>Load the libraries <em>data.table</em> and <em>dplyr</em> needed to run the script</li>
+<li>Read the files <em>subject_test.txt</em>, <em>y_test.txt</em>, <em>X_test.txt</em> contained in folder <strong>test</strong> as well as the files <em>subject_train.txt</em>, <em>y_train.txt</em>, <em>X_train.txt</em> in folder <strong>train</strong></li>
+<li>Extract features and activity names to Label the data sets with descriptive variable names</li>
+<li>Merge the training and the tests sets to create one data set</li>
+<li>Coerce the column names to obtain syntactically valid ones</li>
+<li>Extract only the measurements on the mean and standard deviation for each measurement (<strong>sel_data</strong>)</li>
+<li>Use descriptive activity names to name the activities in the selected data set</li>
+<li>Create a second independent tidy data set with the average of each variable for each activity and each subject (<strong>mean_data</strong>)</li>
+<li>Create the output files <em>sel_data.csv</em> and <em>mean_data.csv</em></li>
+<li>Re-initialize the Global Environment.</li>
+</ol>
+<pre class="r"><code># Load libraries
+
+library(data.table)
+library(dplyr)</code></pre>
+<pre class="r"><code># Read Dataset
+
+subject_test &lt;- fread(&quot;./gcd/subject_test.txt&quot;)
+y_test &lt;- fread(&quot;./gcd/y_test.txt&quot;)
+x_test &lt;- fread(&quot;./gcd/X_test.txt&quot;)
+
+subject_train &lt;- fread(&quot;./gcd/subject_train.txt&quot;)
+y_train &lt;- fread(&quot;./gcd/y_train.txt&quot;)
+x_train &lt;- fread(&quot;./gcd/X_train.txt&quot;)
+
+# Extract features and activity names
+
+cnames &lt;- fread(&quot;./gcd/features.txt&quot;)
+
+lActivities &lt;- fread(&quot;./gcd/activity_labels.txt&quot;)
+
+# Label the data sets with descriptive variable names
+
+colnames(y_test) &lt;- &quot;activity&quot;
+colnames(subject_test) &lt;- &quot;subject&quot;
+colnames(x_test) &lt;- as.character(cnames$V2)
+all_test &lt;- cbind(subject_test, y_test, x_test)
+
+colnames(y_train) &lt;- &quot;activity&quot;
+colnames(subject_train) &lt;- &quot;subject&quot;
+colnames(x_train) &lt;- as.character(cnames$V2)
+all_train &lt;- cbind(subject_train, y_train, x_train)
+
+
+# Merge the training and the tests sets to create one data set
+
+all_data &lt;- rbind(all_test, all_train)
+paste0(&quot;Number of variables: &quot;, dim(all_data)[2])</code></pre>
+<pre><code>## [1] &quot;Number of variables: 563&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Number of Observations: &quot;, dim(all_data)[1])</code></pre>
+<pre><code>## [1] &quot;Number of Observations: 10299&quot;</code></pre>
+<pre class="r"><code># Coerce column names to obtain syntactically valid ones
+
+valid_names &lt;- make.names(names=names(all_data), unique=TRUE, allow_ = TRUE)
+names(all_data) &lt;- valid_names
+
+# Extract only the measurements on the mean and standard deviation for each measurement
+
+sel_data &lt;- select(all_data, matches(&quot;subject|activity|\\.mean\\.|\\.std\\.&quot;))
+
+names(sel_data) &lt;- gsub(names(sel_data), pattern = &quot;\\.\\.&quot;, replacement = &quot;&quot;)
+
+# Use descriptive activity names to name the activities in the selected data set
+
+sel_data$activity &lt;- lActivities$V2[match(sel_data$activity, lActivities$V1)]
+
+paste0(&quot;The recorded activities are: &quot;, paste(unique(sel_data$activity), collapse = &quot;, &quot;))</code></pre>
+<pre><code>## [1] &quot;The recorded activities are: STANDING, SITTING, LAYING, WALKING, WALKING_DOWNSTAIRS, WALKING_UPSTAIRS&quot;</code></pre>
+<pre class="r"><code>write.table(sel_data, file = &quot;./gcd/sel_data.txt&quot;, row.names = FALSE)
+
+# From the previous data set, create a second independent tidy data set with the average
+# of each variable for each activity and each subject
+
+mean_data &lt;- sel_data %&gt;% group_by(subject, activity) %&gt;% summarise_all(funs(mean))
+
+write.table(mean_data, file = &quot;./gcd/mean_data.txt&quot;, row.names = FALSE)
+
+# Re-initialize the Global Environment
+
+rm(list = ls())</code></pre>
+<div id="reference" class="section level3">
+<h3>Reference</h3>
+<p><a name="myfootnote1">[1]</a>: Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012</p>
+</div>
+</div>
 
     </div>
 

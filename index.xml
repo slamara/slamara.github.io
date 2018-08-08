@@ -16,7 +16,100 @@
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/gcd/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The purpose of this project is to show the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis.&lt;/p&gt;
+&lt;p&gt;The data used in this project represent data collected from the accelerometers of Samsung Galaxy S smartphones. For a full description please visit the following website:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones&#34; class=&#34;uri&#34;&gt;http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones&lt;/a&gt; &lt;sup&gt;&lt;a href=&#34;#myfootnote1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;Here are the data for the project:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip&#34;&gt;https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The script does the following:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Load the libraries &lt;em&gt;data.table&lt;/em&gt; and &lt;em&gt;dplyr&lt;/em&gt; needed to run the script&lt;/li&gt;
+&lt;li&gt;Read the files &lt;em&gt;subject_test.txt&lt;/em&gt;, &lt;em&gt;y_test.txt&lt;/em&gt;, &lt;em&gt;X_test.txt&lt;/em&gt; contained in folder &lt;strong&gt;test&lt;/strong&gt; as well as the files &lt;em&gt;subject_train.txt&lt;/em&gt;, &lt;em&gt;y_train.txt&lt;/em&gt;, &lt;em&gt;X_train.txt&lt;/em&gt; in folder &lt;strong&gt;train&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Extract features and activity names to Label the data sets with descriptive variable names&lt;/li&gt;
+&lt;li&gt;Merge the training and the tests sets to create one data set&lt;/li&gt;
+&lt;li&gt;Coerce the column names to obtain syntactically valid ones&lt;/li&gt;
+&lt;li&gt;Extract only the measurements on the mean and standard deviation for each measurement (&lt;strong&gt;sel_data&lt;/strong&gt;)&lt;/li&gt;
+&lt;li&gt;Use descriptive activity names to name the activities in the selected data set&lt;/li&gt;
+&lt;li&gt;Create a second independent tidy data set with the average of each variable for each activity and each subject (&lt;strong&gt;mean_data&lt;/strong&gt;)&lt;/li&gt;
+&lt;li&gt;Create the output files &lt;em&gt;sel_data.csv&lt;/em&gt; and &lt;em&gt;mean_data.csv&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Re-initialize the Global Environment.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load libraries
+
+library(data.table)
+library(dplyr)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Read Dataset
+
+subject_test &amp;lt;- fread(&amp;quot;./gcd/subject_test.txt&amp;quot;)
+y_test &amp;lt;- fread(&amp;quot;./gcd/y_test.txt&amp;quot;)
+x_test &amp;lt;- fread(&amp;quot;./gcd/X_test.txt&amp;quot;)
+
+subject_train &amp;lt;- fread(&amp;quot;./gcd/subject_train.txt&amp;quot;)
+y_train &amp;lt;- fread(&amp;quot;./gcd/y_train.txt&amp;quot;)
+x_train &amp;lt;- fread(&amp;quot;./gcd/X_train.txt&amp;quot;)
+
+# Extract features and activity names
+
+cnames &amp;lt;- fread(&amp;quot;./gcd/features.txt&amp;quot;)
+
+lActivities &amp;lt;- fread(&amp;quot;./gcd/activity_labels.txt&amp;quot;)
+
+# Label the data sets with descriptive variable names
+
+colnames(y_test) &amp;lt;- &amp;quot;activity&amp;quot;
+colnames(subject_test) &amp;lt;- &amp;quot;subject&amp;quot;
+colnames(x_test) &amp;lt;- as.character(cnames$V2)
+all_test &amp;lt;- cbind(subject_test, y_test, x_test)
+
+colnames(y_train) &amp;lt;- &amp;quot;activity&amp;quot;
+colnames(subject_train) &amp;lt;- &amp;quot;subject&amp;quot;
+colnames(x_train) &amp;lt;- as.character(cnames$V2)
+all_train &amp;lt;- cbind(subject_train, y_train, x_train)
+
+
+# Merge the training and the tests sets to create one data set
+
+all_data &amp;lt;- rbind(all_test, all_train)
+paste0(&amp;quot;Number of variables: &amp;quot;, dim(all_data)[2])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Number of variables: 563&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;paste0(&amp;quot;Number of Observations: &amp;quot;, dim(all_data)[1])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Number of Observations: 10299&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Coerce column names to obtain syntactically valid ones
+
+valid_names &amp;lt;- make.names(names=names(all_data), unique=TRUE, allow_ = TRUE)
+names(all_data) &amp;lt;- valid_names
+
+# Extract only the measurements on the mean and standard deviation for each measurement
+
+sel_data &amp;lt;- select(all_data, matches(&amp;quot;subject|activity|\\.mean\\.|\\.std\\.&amp;quot;))
+
+names(sel_data) &amp;lt;- gsub(names(sel_data), pattern = &amp;quot;\\.\\.&amp;quot;, replacement = &amp;quot;&amp;quot;)
+
+# Use descriptive activity names to name the activities in the selected data set
+
+sel_data$activity &amp;lt;- lActivities$V2[match(sel_data$activity, lActivities$V1)]
+
+paste0(&amp;quot;The recorded activities are: &amp;quot;, paste(unique(sel_data$activity), collapse = &amp;quot;, &amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The recorded activities are: STANDING, SITTING, LAYING, WALKING, WALKING_DOWNSTAIRS, WALKING_UPSTAIRS&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;write.table(sel_data, file = &amp;quot;./gcd/sel_data.txt&amp;quot;, row.names = FALSE)
+
+# From the previous data set, create a second independent tidy data set with the average
+# of each variable for each activity and each subject
+
+mean_data &amp;lt;- sel_data %&amp;gt;% group_by(subject, activity) %&amp;gt;% summarise_all(funs(mean))
+
+write.table(mean_data, file = &amp;quot;./gcd/mean_data.txt&amp;quot;, row.names = FALSE)
+
+# Re-initialize the Global Environment
+
+rm(list = ls())&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;reference&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Reference&lt;/h3&gt;
+&lt;p&gt;&lt;a name=&#34;myfootnote1&#34;&gt;[1]&lt;/a&gt;: Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 </description>
     </item>
     
