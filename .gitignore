@@ -13,3 +13,4 @@ household_power_consumption.txt
 summarySCC_PM25.rds
 Source_Classification_Code.rds
 activity.csv
+StormData.csv.bz2

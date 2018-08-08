@@ -16,7 +16,199 @@
       <pubDate>Wed, 08 Aug 2018 17:08:23 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/severeweather/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;div id=&#34;synopsis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Synopsis&lt;/h2&gt;
+&lt;p&gt;Severe weather events have shown in the last decades an increasing threat on population safety and a costly impact on economy. Hence, their potential consequences should be studied for a better mitigation of their inherent risk. The U.S. National Oceanic and Atmospheric Administration (NOAA) has implemented a catalog where all characteristics of major storms and weather events in the United States from 1950 to November 2011 were collected. These characteristics include when and where these events occurred, as well as estimates of any fatalities, injuries, property and crop damages. The aim of the present analysis is to identify events that are most harmful to population health and economy across the United States.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data processing&lt;/h2&gt;
+&lt;p&gt;Before doing such analysis, the homogeneity and completeness of the catalog should be assessed to insure reliability of the results. Unfortunately, I am forced in this study to use the catalog as it is since no further details are given.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(utils)
+library(ggplot2)
+library(gridExtra)
+library(scales)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#download.file(&amp;quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&amp;quot;, &amp;quot;StormData.csv.bz2&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;StormData &amp;lt;- read.csv(&amp;quot;./severeWeather/StormData.csv.bz2&amp;quot;)
+dim(StormData)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 902297     37&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(StormData)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;STATE__&amp;quot;    &amp;quot;BGN_DATE&amp;quot;   &amp;quot;BGN_TIME&amp;quot;   &amp;quot;TIME_ZONE&amp;quot;  &amp;quot;COUNTY&amp;quot;    
+##  [6] &amp;quot;COUNTYNAME&amp;quot; &amp;quot;STATE&amp;quot;      &amp;quot;EVTYPE&amp;quot;     &amp;quot;BGN_RANGE&amp;quot;  &amp;quot;BGN_AZI&amp;quot;   
+## [11] &amp;quot;BGN_LOCATI&amp;quot; &amp;quot;END_DATE&amp;quot;   &amp;quot;END_TIME&amp;quot;   &amp;quot;COUNTY_END&amp;quot; &amp;quot;COUNTYENDN&amp;quot;
+## [16] &amp;quot;END_RANGE&amp;quot;  &amp;quot;END_AZI&amp;quot;    &amp;quot;END_LOCATI&amp;quot; &amp;quot;LENGTH&amp;quot;     &amp;quot;WIDTH&amp;quot;     
+## [21] &amp;quot;F&amp;quot;          &amp;quot;MAG&amp;quot;        &amp;quot;FATALITIES&amp;quot; &amp;quot;INJURIES&amp;quot;   &amp;quot;PROPDMG&amp;quot;   
+## [26] &amp;quot;PROPDMGEXP&amp;quot; &amp;quot;CROPDMG&amp;quot;    &amp;quot;CROPDMGEXP&amp;quot; &amp;quot;WFO&amp;quot;        &amp;quot;STATEOFFIC&amp;quot;
+## [31] &amp;quot;ZONENAMES&amp;quot;  &amp;quot;LATITUDE&amp;quot;   &amp;quot;LONGITUDE&amp;quot;  &amp;quot;LATITUDE_E&amp;quot; &amp;quot;LONGITUDE_&amp;quot;
+## [36] &amp;quot;REMARKS&amp;quot;    &amp;quot;REFNUM&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;correct-the-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Correct the data&lt;/h3&gt;
+&lt;p&gt;As many observations in variable EVTYPE (representing the different weather events) can be gathered in one:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;unique(StormData$EVTYPE[grep(&amp;quot;fire&amp;quot;, StormData$EVTYPE, ignore.case = TRUE)])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] WILD FIRES        WILDFIRE          WILD/FOREST FIRE 
+##  [4] GRASS FIRES       LIGHTNING FIRE    FOREST FIRES     
+##  [7] WILDFIRES         WILD/FOREST FIRES BRUSH FIRES      
+## [10] BRUSH FIRE        RED FLAG FIRE WX 
+## 985 Levels:    HIGH SURF ADVISORY  COASTAL FLOOD ... WND&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The column should be updated for the events: wind, heat, fire, flood and hurricane:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;elements &amp;lt;- c(&amp;quot;wind&amp;quot;, &amp;quot;heat&amp;quot;, &amp;quot;fire&amp;quot;, &amp;quot;flood&amp;quot;, &amp;quot;hurricane&amp;quot;)
+
+StormDataCorr &amp;lt;- StormData
+
+levels(StormDataCorr$EVTYPE) &amp;lt;- c(levels(StormDataCorr$EVTYPE), &amp;quot;FIRE&amp;quot;)
+for (i in elements){
+    StormDataCorr$EVTYPE[grep(i, StormDataCorr$EVTYPE, ignore.case = TRUE)] &amp;lt;- toupper(i)
+}
+
+unique(StormDataCorr$EVTYPE[grep(&amp;quot;fire&amp;quot;, StormDataCorr$EVTYPE, ignore.case = TRUE)])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] FIRE
+## 986 Levels:    HIGH SURF ADVISORY  COASTAL FLOOD ... FIRE&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;compute-the-impact-on-population-health-fatalities-and-injuries&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Compute the impact on population health (fatalities and injuries)&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;AggreFatInj &amp;lt;- function(data = StormDataCorr, field) {
+    aggre &amp;lt;- aggregate(data[,field], by = list(EVTYPE = data$EVTYPE), FUN = sum)
+    aggreOrd &amp;lt;- aggre[order(-aggre$x),]
+    aggreOrd &amp;lt;- aggreOrd[which(aggreOrd$x&amp;gt;0),]
+    aggreOrd
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;compute-the-economical-impact-property-and-crop-damages&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Compute the economical impact (property and crop damages)&lt;/h3&gt;
+&lt;p&gt;Before computing the correct amount of property and crop damages, we should take in account the appropriate exponentials. First, I set up a dictionary:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;exponent &amp;lt;- cbind(exp = c(&amp;quot;H&amp;quot;,&amp;quot;h&amp;quot;,&amp;quot;K&amp;quot;,&amp;quot;k&amp;quot;,&amp;quot;M&amp;quot;,&amp;quot;m&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;b&amp;quot;,&amp;quot; &amp;quot;,&amp;quot;0&amp;quot;,&amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;,&amp;quot;4&amp;quot;,&amp;quot;5&amp;quot;,&amp;quot;6&amp;quot;,&amp;quot;7&amp;quot;,&amp;quot;8&amp;quot;), 
+                  value = c(10^2,10^2,10^3,10^3,10^6,10^6,10^9,10^9,1,10,10,10,10,10,10,10,10,10))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and then I compute the correct impact with the following function:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggrePropCrop &amp;lt;- function(data = StormDataCorr, field, fieldExp) {
+    
+    DataDMG &amp;lt;- cbind(EVTYPE = as.character(data$EVTYPE), field = as.numeric(data[,field]) * as.numeric(exponent[match(data[,fieldExp],exponent),2]))
+    
+    aggreDMG &amp;lt;- aggregate(as.numeric(DataDMG[,2]), 
+                          by = list(EVTYPE = DataDMG[,1]), 
+                          FUN = sum, na.rm = TRUE)
+    
+    aggreOrd &amp;lt;- aggreDMG[order(-aggreDMG$x),]
+    
+    aggreOrd &amp;lt;- aggreOrd[which(aggreOrd$x&amp;gt;0),]
+    
+    aggreOrd
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;results&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Results&lt;/h2&gt;
+&lt;div id=&#34;fatalities&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Fatalities:&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggreFatOrd &amp;lt;- AggreFatInj(StormDataCorr, &amp;quot;FATALITIES&amp;quot;)
+head(aggreFatOrd, 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           EVTYPE    x
+## 527      TORNADO 5633
+## 177         HEAT 3138
+## 109        FLOOD 1525
+## 607         WIND 1451
+## 286    LIGHTNING  816
+## 379  RIP CURRENT  368
+## 14     AVALANCHE  224
+## 609 WINTER STORM  206
+## 380 RIP CURRENTS  204
+## 102 EXTREME COLD  160&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;injuries&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Injuries:&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggreInjOrd &amp;lt;- AggreFatInj(StormDataCorr, &amp;quot;INJURIES&amp;quot;)
+head(aggreInjOrd, 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           EVTYPE     x
+## 527      TORNADO 91346
+## 607         WIND 11498
+## 177         HEAT  9224
+## 109        FLOOD  8604
+## 286    LIGHTNING  5230
+## 254    ICE STORM  1975
+## 620         FIRE  1608
+## 149         HAIL  1361
+## 240    HURRICANE  1328
+## 609 WINTER STORM  1321&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FatPlot &amp;lt;- ggplot(head(aggreFatOrd,10), aes(x=reorder(EVTYPE, -x), y = x)) +
+    geom_bar(stat=&amp;quot;identity&amp;quot;, width = 0.5) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+    theme(plot.title = element_text(hjust = 0.5)) + 
+    labs(title=&amp;quot;Total fatalities by severe weather\n events in the US&amp;quot;, 
+         x=&amp;quot;Severe weather elements&amp;quot;, 
+         y = &amp;quot;Number of fatalities&amp;quot;)
+
+InjPlot &amp;lt;- ggplot(head(aggreInjOrd,10), aes(x=reorder(EVTYPE, -x), y = x)) +
+    geom_bar(stat=&amp;quot;identity&amp;quot;, width = 0.5) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+    theme(plot.title = element_text(hjust = 0.5)) + 
+    labs(title=&amp;quot;Total Injuries by severe weather\n events in the US&amp;quot;, 
+         x=&amp;quot;Severe weather elements&amp;quot;, 
+         y = &amp;quot;Number of Injuries&amp;quot;)
+
+grid.arrange(FatPlot, InjPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/severeWeather_files/figure-html/plot1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;st-fact&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;1st fact:&lt;/h3&gt;
+&lt;p&gt;From the tables and plots it appears clearly that &lt;strong&gt;TORNADOES&lt;/strong&gt; are the &lt;strong&gt;most harmful with respect to the population health&lt;/strong&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;property-damage&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Property damage:&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggrePropOrd &amp;lt;- aggrePropCrop(StormDataCorr, &amp;quot;PROPDMG&amp;quot;, &amp;quot;PROPDMGEXP&amp;quot;)
+head(aggrePropOrd, 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##               EVTYPE            x
+## 110            FLOOD 167523218973
+## 241        HURRICANE  84656180010
+## 528          TORNADO  56937162837
+## 448      STORM SURGE  43323536000
+## 608             WIND  17742639462
+## 150             HAIL  15732269877
+## 106             FIRE   8501628500
+## 541   TROPICAL STORM   7703890550
+## 610     WINTER STORM   6688497260
+## 449 STORM SURGE/TIDE   4641188000&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;crop-damage&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Crop damage:&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggreCropOrd &amp;lt;- aggrePropCrop(StormDataCorr, &amp;quot;CROPDMG&amp;quot;, &amp;quot;CROPDMGEXP&amp;quot;)
+head(aggreCropOrd, 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           EVTYPE           x
+## 64       DROUGHT 13972566000
+## 110        FLOOD 12267259100
+## 241    HURRICANE  5505292800
+## 255    ICE STORM  5022113500
+## 150         HAIL  3025954650
+## 608         WIND  2159305250
+## 102 EXTREME COLD  1292973000
+## 134 FROST/FREEZE  1094086000
+## 178         HEAT   904469280
+## 186   HEAVY RAIN   733399800&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;PropPlot &amp;lt;- ggplot(head(aggrePropOrd,10), aes(x=reorder(EVTYPE, -x), y = x)) + 
+    geom_bar(stat=&amp;quot;identity&amp;quot;, width = 0.5) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size=12)) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    scale_y_continuous(labels = comma) + 
+    labs(title=&amp;quot;Total amount of property damages\n by severe weather events in the US&amp;quot;, 
+         x=&amp;quot;Severe weather elements&amp;quot;, 
+         y = &amp;quot;Amount of property damages&amp;quot;)
+
+CropPlot &amp;lt;- ggplot(head(aggreCropOrd,10), aes(x=reorder(EVTYPE, -x), y = x)) + 
+    geom_bar(stat=&amp;quot;identity&amp;quot;, width = 0.5) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size=12)) +
+    theme(plot.title = element_text(hjust = 0.5)) + 
+    scale_y_continuous(labels = comma) + 
+    labs(title=&amp;quot;Total amount of crop damages\n by severe weather events in the US&amp;quot;, 
+         x=&amp;quot;Severe weather elements&amp;quot;, 
+         y = &amp;quot;Amount of crop damages&amp;quot;)
+
+grid.arrange(PropPlot, CropPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/severeWeather_files/figure-html/plot2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nd-fact&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2nd fact&lt;/h3&gt;
+&lt;p&gt;From the tables and plots, it appears clearly that &lt;strong&gt;FLOODS&lt;/strong&gt; and &lt;strong&gt;DROUGHTS&lt;/strong&gt; have the &lt;strong&gt;greatest economic consequences&lt;/strong&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -253,7 +445,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Aug 08 17:10:07 2018 --&gt;
+&lt;!-- Wed Aug 08 17:13:33 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
