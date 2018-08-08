@@ -465,7 +465,11 @@ test$AgeCat &amp;lt;- factor(test$AgeCat)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;prediction-of-survival&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Prediction of survival&lt;/h3&gt;
 &lt;p&gt;Now that all the data is processed and missing values imputed, lets compute the final model and predict survival among the passengers in the test list.&lt;/p&gt;
-&lt;p&gt;Contrarily to the imputation of AgeCat, the boosting methods proved to be more effective as they better accomodate: * the small variance of the selected predictors provided that the outcome reduces to only two values: Survived or not, * the high bias that could be induced by the use of categorical predictors.&lt;/p&gt;
+&lt;p&gt;Contrarily to the imputation of AgeCat, the boosting methods proved to be more effective as they better accomodate:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;the small variance of the selected predictors provided that the outcome reduces to only two values: Survived or not,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the high bias that could be induced by the use of categorical predictors.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
 &lt;p&gt;For these reasons, I decided to use the gradient boosting method (GBM) to predict the survival.&lt;/p&gt;
 &lt;p&gt;The &lt;strong&gt;predictor variables&lt;/strong&gt; are: “Pclass”, “Sex”, “Fare”“,”Embarked“,”NameCat“,”AgeCat“,”HasCab“, and”FamCat“.&lt;/p&gt;
 &lt;p&gt;The &lt;strong&gt;target variable&lt;/strong&gt; is “Survived”.&lt;/p&gt;
@@ -1225,7 +1229,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Aug 08 17:54:41 2018 --&gt;
+&lt;!-- Wed Aug 08 18:04:27 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;

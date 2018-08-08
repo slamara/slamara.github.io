@@ -763,7 +763,11 @@ test$AgeCat &lt;- factor(test$AgeCat)</code></pre>
 <div id="prediction-of-survival" class="section level3">
 <h3>Prediction of survival</h3>
 <p>Now that all the data is processed and missing values imputed, lets compute the final model and predict survival among the passengers in the test list.</p>
-<p>Contrarily to the imputation of AgeCat, the boosting methods proved to be more effective as they better accomodate: * the small variance of the selected predictors provided that the outcome reduces to only two values: Survived or not, * the high bias that could be induced by the use of categorical predictors.</p>
+<p>Contrarily to the imputation of AgeCat, the boosting methods proved to be more effective as they better accomodate:</p>
+<ol style="list-style-type: decimal">
+<li><p>the small variance of the selected predictors provided that the outcome reduces to only two values: Survived or not,</p></li>
+<li><p>the high bias that could be induced by the use of categorical predictors.</p></li>
+</ol>
 <p>For these reasons, I decided to use the gradient boosting method (GBM) to predict the survival.</p>
 <p>The <strong>predictor variables</strong> are: “Pclass”, “Sex”, “Fare”“,”Embarked“,”NameCat“,”AgeCat“,”HasCab“, and”FamCat“.</p>
 <p>The <strong>target variable</strong> is “Survived”.</p>
