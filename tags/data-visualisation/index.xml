@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 16:40:59 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 16:53:36 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/data-visualisation/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Influence of automatic and manual transmission on fuel consumption</title>
+      <link>https://slamara.github.io/project/fuelconsumption/</link>
+      <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/fuelconsumption/</guid>
+      <description>hello!</description>
+    </item>
     
     <item>
       <title>Personal activity monitoring</title>

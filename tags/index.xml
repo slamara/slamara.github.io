@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 16:40:59 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 16:53:36 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Data Visualisation</title>
       <link>https://slamara.github.io/tags/data-visualisation/</link>
-      <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
+      <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
       <guid>https://slamara.github.io/tags/data-visualisation/</guid>
       <description></description>
@@ -24,9 +24,27 @@
     <item>
       <title>Exploratory Data Analysis</title>
       <link>https://slamara.github.io/tags/exploratory-data-analysis/</link>
-      <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
+      <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
       <guid>https://slamara.github.io/tags/exploratory-data-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Regression Analysis</title>
+      <link>https://slamara.github.io/tags/regression-analysis/</link>
+      <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/tags/regression-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Statistical Inference</title>
+      <link>https://slamara.github.io/tags/statistical-inference/</link>
+      <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/tags/statistical-inference/</guid>
       <description></description>
     </item>
     
