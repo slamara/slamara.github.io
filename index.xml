@@ -16,8 +16,91 @@
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/rankingushospitals/</guid>
-      <description>&lt;div id=&#34;hello-blogdown-with-tag&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Hello! blogdown with tag&lt;/h1&gt;
+      <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The purpose of this project is to rank over 4000 US hospitals according to the quality of care. The data represent a small subset of the data available at the Hospital Compare web site (&lt;a href=&#34;http://hospitalcompare.hhs.gov&#34; class=&#34;uri&#34;&gt;http://hospitalcompare.hhs.gov&lt;/a&gt;) run by the U.S. Department of Health and Human Services.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/rprog%2Fdata%2FProgAssignment3-data.zip&#34;&gt;zip file&lt;/a&gt; for this project contains three files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;outcome-of-care-measures.csv&lt;/strong&gt;: Contains information about 30-day mortality and readmission rates for heart attacks, heart failure, and pneumonia for over 4,000 hospitals.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;hospital-data.csv&lt;/strong&gt;: Contains information about each hospital.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hospital_Revised_Flatfiles.pdf&lt;/strong&gt;: Descriptions of the variables in each file (i.e the code book). This document contains information about many other files that are not included with this project. We want to focus on the variables for Number 19 (“Outcome of Care Measures.csv”) and Number 11 (“Hospital Data.csv”).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;finding-the-best-hospital-in-a-state&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Finding the best hospital in a state&lt;/h2&gt;
+&lt;p&gt;I write a function called &lt;strong&gt;best&lt;/strong&gt; which takes two arguments: the 2-character abbreviated name of a state and an outcome name. The function returns a character vector with the name of the hospital that has the lowest 30-day mortality for the specified outcome in that state. The outcomes can be one of “heart attack”, “heart failure”, or “pneumonia”. The Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.&lt;/p&gt;
+&lt;p&gt;If there is a tie for the best hospital for a given outcome, then the hospital names should be sorted in alphabetical order and the first hospital in that set should be chosen.&lt;/p&gt;
+&lt;p&gt;The function checks the validity of its arguments and throws an error via the stop function with the message “invalid state” or “invalid outcome” when an invalid state resp. outcome value is passed.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(data.table)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;best &amp;lt;- function(state, outcome) {
+## Read outcome data
+
+    data &amp;lt;- read.csv(&amp;quot;./rankingUsHospitals/outcome-of-care-measures.csv&amp;quot;, 
+                         colClasses = &amp;quot;character&amp;quot;)
+
+## Check that state and outcome are valid
+
+    if (!(state %in% data$State)) {
+        result &amp;lt;- &amp;quot;invalid state&amp;quot;
+      }
+    else if (!outcome %in% c(&amp;quot;heart attack&amp;quot;, &amp;quot;heart failure&amp;quot;, &amp;quot;pneumonia&amp;quot;)) {
+        result &amp;lt;- &amp;quot;invalid outcome&amp;quot;
+      }
+    else{
+        keys &amp;lt;- c(&amp;quot;heart attack&amp;quot; = 11, &amp;quot;heart failure&amp;quot; = 17, &amp;quot;pneumonia&amp;quot; = 23)
+        outcomeKey &amp;lt;- keys[outcome]
+  
+## Return hospital name in that state with lowest 30-day death rate
+  
+        dataPerState &amp;lt;- split(data, data$State)
+        dataOurState &amp;lt;- dataPerState[[state]]
+        dataOurState &amp;lt;- dataOurState[ order(dataOurState[&amp;quot;Hospital.Name&amp;quot;]), ]
+        dataOutcome &amp;lt;- suppressWarnings(as.numeric(dataOurState[, outcomeKey]))
+        good &amp;lt;- complete.cases(dataOutcome)
+        dataOutcome &amp;lt;- dataOutcome[good]
+        dataOurState &amp;lt;- dataOurState[good,]
+        minimum &amp;lt;- min(dataOutcome)
+        index &amp;lt;- match(minimum, dataOutcome)
+        result &amp;lt;- dataOurState[index, 2]
+    }
+    result
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;testing-best&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Testing &lt;strong&gt;best&lt;/strong&gt;:&lt;/h3&gt;
+&lt;p&gt;A set of state names and outcomes is used to check the function:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chk1 &amp;lt;- c(&amp;quot;TX&amp;quot;, &amp;quot;heart attack&amp;quot;)
+chk2 &amp;lt;- c(&amp;quot;TX&amp;quot;, &amp;quot;heart failure&amp;quot;)
+chk3 &amp;lt;- c(&amp;quot;MD&amp;quot;, &amp;quot;heart attack&amp;quot;)
+chk4 &amp;lt;- c(&amp;quot;MD&amp;quot;, &amp;quot;pneumonia&amp;quot;)
+chk5 &amp;lt;- c(&amp;quot;BB&amp;quot;, &amp;quot;heart attack&amp;quot;)
+chk6 &amp;lt;- c(&amp;quot;NY&amp;quot;, &amp;quot;hert attack&amp;quot;)
+dat &amp;lt;- data.table(chk1, chk2, chk3, chk4, chk5, chk6)
+dat &amp;lt;- t(dat)
+as.list(apply(dat, 1, function(x){do.call(best, as.list(x))}))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $chk1
+## [1] &amp;quot;CYPRESS FAIRBANKS MEDICAL CENTER&amp;quot;
+## 
+## $chk2
+## [1] &amp;quot;FORT DUNCAN MEDICAL CENTER&amp;quot;
+## 
+## $chk3
+## [1] &amp;quot;JOHNS HOPKINS HOSPITAL, THE&amp;quot;
+## 
+## $chk4
+## [1] &amp;quot;GREATER BALTIMORE MEDICAL CENTER&amp;quot;
+## 
+## $chk5
+## [1] &amp;quot;invalid state&amp;quot;
+## 
+## $chk6
+## [1] &amp;quot;invalid outcome&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ranking-hospitals-by-outcome-in-a-state&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Ranking hospitals by outcome in a state&lt;/h2&gt;
+&lt;p&gt;To this intent, I write a function &lt;strong&gt;rankHospital&lt;/strong&gt; which takes three arguments: the 2-character abbreviated name of a state (state), an outcome (outcome), and the ranking of a hospital in that state for that outcome (num).&lt;/p&gt;
+&lt;p&gt;The function returns a character vector with the name of the hospital that has the ranking specified by the &lt;strong&gt;num&lt;/strong&gt; argument. The &lt;strong&gt;num&lt;/strong&gt; argument can take the values “best”, “worst”, or an integer indicating the ranking.&lt;/p&gt;
+&lt;p&gt;The Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings. Also, If the number given by num is larger than the number of hospitals in that state, then the function returns NA.&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>

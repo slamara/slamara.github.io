@@ -18,7 +18,9 @@
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/rankingushospitals/</guid>
-      <description>Hello! blogdown with tag</description>
+      <description>IntroductionThe purpose of this project is to rank over 4000 US hospitals according to the quality of care. The data represent a small subset of the data available at the Hospital Compare web site (http://hospitalcompare.hhs.gov) run by the U.S. Department of Health and Human Services.
+The zip file for this project contains three files:
+outcome-of-care-measures.csv: Contains information about 30-day mortality and readmission rates for heart attacks, heart failure, and pneumonia for over 4,000 hospitals.</description>
     </item>
     
   </channel>
