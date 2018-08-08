@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 15:10:54 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 03 Aug 2018 18:05:56 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/categories/projects/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,10 +15,10 @@
     <item>
       <title>Ranking US Hospitals</title>
       <link>https://slamara.github.io/project/rankingushospitals/</link>
-      <pubDate>Wed, 08 Aug 2018 15:10:54 +0200</pubDate>
+      <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/rankingushospitals/</guid>
-      <description>Hello! blogdown</description>
+      <description>Hello! blogdown comment false</description>
     </item>
     
   </channel>
