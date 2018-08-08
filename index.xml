@@ -16,7 +16,91 @@
       <pubDate>Wed, 08 Aug 2018 16:24:41 +0200</pubDate>
       
       <guid>https://slamara.github.io/project/airquality/</guid>
-      <description>&lt;p&gt;hello!&lt;/p&gt;
+      <description>&lt;p&gt;Among the numerous air pollutants, the fine particulate matter (PM2.5) is one of the most harmful to human health. In the US, the Environmental Protection Agency (EPA) is in charge of setting the ambient air quality standards, tracking the emissions of the pollutants into the atmosphere, and releasing a database on emissions approximatly every 3 years. This database is known as the National Emissions Inventory (NEI). For more details, see the &lt;a href=&#34;http://www.epa.gov/ttn/chief/eiinformation.html&#34;&gt;EPA National Emissions Inventory web site&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In this Database, the NEI records, for each year, how many tons of PM2.5 were emitted. The data used in this project are for 1999, 2002, 2005, and 2008 and can be downloaded &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;My goal within this report is to explore the National Emissions Inventory database and see what it says about fine particulate matter pollution in the United states over the 10-year period 1999–2008.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Data frame with all of the PM2.5 emissions data for 1999, 2002, 2005, and 2008
+NEI &amp;lt;- readRDS(&amp;quot;./airQuality/summarySCC_PM25.rds&amp;quot;)
+
+# mapping from the SCC digit strings in the Emissions table to the actual name of
+# the PM2.5 source
+SCC &amp;lt;- readRDS(&amp;quot;./airQuality/Source_Classification_Code.rds&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;have-total-emissions-from-pm2.5-decreased-in-the-united-states-from-1999-to-2008&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Have total emissions from PM2.5 decreased in the United States from 1999 to 2008?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;totalEm &amp;lt;- with(NEI, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalEm), totalEm, type =&amp;quot;l&amp;quot;, 
+     xlab = &amp;quot;Year&amp;quot;, 
+     ylab = &amp;quot;Total Pm(2.5) Emissions (tons)&amp;quot;, 
+     main = &amp;quot;Evolution of the total PM2.5 Emissions over the US&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;have-total-emissions-from-pm2.5-decreased-in-the-baltimore-city-maryland-fips24510-from-1999-to-2008&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips==“24510”) from 1999 to 2008?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NEIBal &amp;lt;- subset(NEI, fips == &amp;quot;24510&amp;quot;)
+
+totalEmBal &amp;lt;- with(NEIBal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalEmBal), totalEmBal, type =&amp;quot;l&amp;quot;, 
+     xlab = &amp;quot;Year&amp;quot;,
+     ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;,
+     main = &amp;quot;Evolution of the total PM2.5 Emissions in Baltimore&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;of-the-four-types-of-sources-indicated-by-the-type-point-nonpoint-onroad-nonroad-variable-which-of-these-four-sources-have-seen-decreases-in-emissions-from-19992008-for-baltimore-city-which-have-seen-increases-in-emissions-from-19992008&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;totalEmBalTypes &amp;lt;- aggregate(NEIBal$Emissions, 
+                             by=list(type=NEIBal$type , year=NEIBal$year), 
+                             FUN = sum)
+
+with(totalEmBalTypes, qplot(year, x, 
+                            color = type, 
+                            geom= c(&amp;quot;point&amp;quot;, &amp;quot;line&amp;quot;), 
+                            xlab = &amp;quot;Year&amp;quot;, ylab = &amp;quot;Total PM2.5 Emissions (tons)&amp;quot;, 
+                            main = &amp;quot;Evolution of total Emissions in Baltimore by type of source&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;across-the-united-states-how-have-emissions-from-coal-combustion-related-sources-changed-from-19992008&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SCCIndex &amp;lt;- as.vector(SCC$SCC[grep(&amp;quot;*comb.*coal&amp;quot;, SCC$Short.Name, ignore.case = TRUE)])
+
+NEICoal &amp;lt;- subset(NEI, SCC %in% SCCIndex)
+
+totalCoal &amp;lt;- with(NEICoal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalCoal), totalCoal, type =&amp;quot;l&amp;quot;, 
+     xlab = &amp;quot;Year&amp;quot;, 
+     ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;, 
+     main = &amp;quot;Total Emission from coal combustion-related sources over the US  &amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;how-have-emissions-from-motor-vehicle-sources-changed-from-19992008-in-baltimore-city&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NEIBal &amp;lt;- subset(NEI, fips == &amp;quot;24510&amp;quot; &amp;amp; type == &amp;quot;ON-ROAD&amp;quot;)
+
+totalBalMotor &amp;lt;- with(NEIBal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalBalMotor), totalBalMotor, type =&amp;quot;l&amp;quot;, 
+     xlab = &amp;quot;Year&amp;quot;, 
+     ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;, 
+     main = &amp;quot;Total Emission from Motor Vehicles in Baltimore City&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;compare-emissions-from-motor-vehicle-sources-in-baltimore-city-with-emissions-from-motor-vehicle-sources-in-los-angeles-county-california-fips06037.-which-city-has-seen-greater-changes-over-time-in-motor-vehicle-emissions&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips==“06037”). Which city has seen greater changes over time in motor vehicle emissions?&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NEIComp &amp;lt;- subset(NEI, fips %in% c(&amp;quot;24510&amp;quot;, &amp;quot;06037&amp;quot;) &amp;amp; type == &amp;quot;ON-ROAD&amp;quot;)
+
+totalComp &amp;lt;- aggregate(NEIComp$Emissions, 
+                       by=list(fips= NEIComp$fips, type=NEIComp$type, year=NEIComp$year), 
+                       FUN = sum)
+
+with(totalComp, qplot(year, x, color = fips, geom= c(&amp;quot;point&amp;quot;, &amp;quot;line&amp;quot;), 
+                      xlab = &amp;quot;Year&amp;quot;, 
+                      ylab = &amp;quot;Total PM2.5 Emissions (tons)&amp;quot;, 
+                      main = &amp;quot;Evolution of total Emissions from Motor Vehicles in Baltimore city \n      (fips = 24510) and Los Angeles County (fips = 06037)&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 </description>
     </item>
     

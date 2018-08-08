@@ -314,7 +314,91 @@
     
 
     <div class="article-style" itemprop="articleBody">
-      <p>hello!</p>
+      <p>Among the numerous air pollutants, the fine particulate matter (PM2.5) is one of the most harmful to human health. In the US, the Environmental Protection Agency (EPA) is in charge of setting the ambient air quality standards, tracking the emissions of the pollutants into the atmosphere, and releasing a database on emissions approximatly every 3 years. This database is known as the National Emissions Inventory (NEI). For more details, see the <a href="http://www.epa.gov/ttn/chief/eiinformation.html">EPA National Emissions Inventory web site</a>.</p>
+<p>In this Database, the NEI records, for each year, how many tons of PM2.5 were emitted. The data used in this project are for 1999, 2002, 2005, and 2008 and can be downloaded <a href="https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip">here</a>.</p>
+<p>My goal within this report is to explore the National Emissions Inventory database and see what it says about fine particulate matter pollution in the United states over the 10-year period 1999–2008.</p>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<pre class="r"><code># Data frame with all of the PM2.5 emissions data for 1999, 2002, 2005, and 2008
+NEI &lt;- readRDS(&quot;./airQuality/summarySCC_PM25.rds&quot;)
+
+# mapping from the SCC digit strings in the Emissions table to the actual name of
+# the PM2.5 source
+SCC &lt;- readRDS(&quot;./airQuality/Source_Classification_Code.rds&quot;)</code></pre>
+<div id="have-total-emissions-from-pm2.5-decreased-in-the-united-states-from-1999-to-2008" class="section level4">
+<h4>Have total emissions from PM2.5 decreased in the United States from 1999 to 2008?</h4>
+<pre class="r"><code>totalEm &lt;- with(NEI, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalEm), totalEm, type =&quot;l&quot;, 
+     xlab = &quot;Year&quot;, 
+     ylab = &quot;Total Pm(2.5) Emissions (tons)&quot;, 
+     main = &quot;Evolution of the total PM2.5 Emissions over the US&quot;)</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="have-total-emissions-from-pm2.5-decreased-in-the-baltimore-city-maryland-fips24510-from-1999-to-2008" class="section level4">
+<h4>Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips==“24510”) from 1999 to 2008?</h4>
+<pre class="r"><code>NEIBal &lt;- subset(NEI, fips == &quot;24510&quot;)
+
+totalEmBal &lt;- with(NEIBal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalEmBal), totalEmBal, type =&quot;l&quot;, 
+     xlab = &quot;Year&quot;,
+     ylab = &quot;Total Pm2.5 Emissions (tons)&quot;,
+     main = &quot;Evolution of the total PM2.5 Emissions in Baltimore&quot;)</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="of-the-four-types-of-sources-indicated-by-the-type-point-nonpoint-onroad-nonroad-variable-which-of-these-four-sources-have-seen-decreases-in-emissions-from-19992008-for-baltimore-city-which-have-seen-increases-in-emissions-from-19992008" class="section level4">
+<h4>Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008?</h4>
+<pre class="r"><code>totalEmBalTypes &lt;- aggregate(NEIBal$Emissions, 
+                             by=list(type=NEIBal$type , year=NEIBal$year), 
+                             FUN = sum)
+
+with(totalEmBalTypes, qplot(year, x, 
+                            color = type, 
+                            geom= c(&quot;point&quot;, &quot;line&quot;), 
+                            xlab = &quot;Year&quot;, ylab = &quot;Total PM2.5 Emissions (tons)&quot;, 
+                            main = &quot;Evolution of total Emissions in Baltimore by type of source&quot;))</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="across-the-united-states-how-have-emissions-from-coal-combustion-related-sources-changed-from-19992008" class="section level4">
+<h4>Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?</h4>
+<pre class="r"><code>SCCIndex &lt;- as.vector(SCC$SCC[grep(&quot;*comb.*coal&quot;, SCC$Short.Name, ignore.case = TRUE)])
+
+NEICoal &lt;- subset(NEI, SCC %in% SCCIndex)
+
+totalCoal &lt;- with(NEICoal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalCoal), totalCoal, type =&quot;l&quot;, 
+     xlab = &quot;Year&quot;, 
+     ylab = &quot;Total Pm2.5 Emissions (tons)&quot;, 
+     main = &quot;Total Emission from coal combustion-related sources over the US  &quot;)</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="how-have-emissions-from-motor-vehicle-sources-changed-from-19992008-in-baltimore-city" class="section level4">
+<h4>How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?</h4>
+<pre class="r"><code>NEIBal &lt;- subset(NEI, fips == &quot;24510&quot; &amp; type == &quot;ON-ROAD&quot;)
+
+totalBalMotor &lt;- with(NEIBal, tapply(Emissions, year, sum, na.rm = TRUE))
+
+plot(names(totalBalMotor), totalBalMotor, type =&quot;l&quot;, 
+     xlab = &quot;Year&quot;, 
+     ylab = &quot;Total Pm2.5 Emissions (tons)&quot;, 
+     main = &quot;Total Emission from Motor Vehicles in Baltimore City&quot;)</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="compare-emissions-from-motor-vehicle-sources-in-baltimore-city-with-emissions-from-motor-vehicle-sources-in-los-angeles-county-california-fips06037.-which-city-has-seen-greater-changes-over-time-in-motor-vehicle-emissions" class="section level4">
+<h4>Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips==“06037”). Which city has seen greater changes over time in motor vehicle emissions?</h4>
+<pre class="r"><code>NEIComp &lt;- subset(NEI, fips %in% c(&quot;24510&quot;, &quot;06037&quot;) &amp; type == &quot;ON-ROAD&quot;)
+
+totalComp &lt;- aggregate(NEIComp$Emissions, 
+                       by=list(fips= NEIComp$fips, type=NEIComp$type, year=NEIComp$year), 
+                       FUN = sum)
+
+with(totalComp, qplot(year, x, color = fips, geom= c(&quot;point&quot;, &quot;line&quot;), 
+                      xlab = &quot;Year&quot;, 
+                      ylab = &quot;Total PM2.5 Emissions (tons)&quot;, 
+                      main = &quot;Evolution of total Emissions from Motor Vehicles in Baltimore city \n      (fips = 24510) and Los Angeles County (fips = 06037)&quot;))</code></pre>
+<p><img src="/project/airQuality_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
 
     </div>
 
