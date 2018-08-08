@@ -37,6 +37,7 @@
 &lt;meta name=&#34;generator&#34; content=&#34;pandoc&#34; /&gt;
 
 
+&lt;meta name=&#34;author&#34; content=&#34;Samir Lamara&#34; /&gt;
 
 
 &lt;title&gt;Ranking Us Hospitals&lt;/title&gt;
@@ -149,6 +150,7 @@ $(document).ready(function () {
 
 
 &lt;h1 class=&#34;title toc-ignore&#34;&gt;Ranking Us Hospitals&lt;/h1&gt;
+&lt;h4 class=&#34;author&#34;&gt;&lt;em&gt;Samir Lamara&lt;/em&gt;&lt;/h4&gt;
 &lt;h4 class=&#34;date&#34;&gt;&lt;em&gt;2018-08-08T15:10:54+02:00&lt;/em&gt;&lt;/h4&gt;
 
 &lt;/div&gt;
