@@ -16,7 +16,202 @@
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
       <guid>https://slamara.github.io/post/xgboost/</guid>
-      <description></description>
+      <description>&lt;div id=&#34;what-is-xgboost&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;What is XGBoost?&lt;/h3&gt;
+&lt;p&gt;The e(X)treme Gradient Boosting (XGBoost) is an algorithm implemented for gradient boosted decision trees with focus on high speed and optimal model performance. During the last three years, the algorithm has become very popular among Kagglers and data scientists in industry, due to its high performance on applied machine learning problems involving structured data within classification, regression or ranking scopes.&lt;/p&gt;
+&lt;p&gt;According to the author of XGBoost, Tianqi Chen, one of the main aspect of XGBoost refers to:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;the engineering goal to push the limit of computations resources for boosted tree algorithms.&lt;/em&gt; &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Nevertheless, the algorithm presents high capabilities not only related to efficiency, but also to scalability, accuracy, and portability:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;XGBoost supports different features for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Model tuning: using Gradient Boosting, Stochastic Gradient Boosting, and a regularized gradient boosting formalization controlling the overfitting,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Computing efficiency: taking maximum advantage from parallelization, distributed computing (cluster computing), external memory Computing (when the size of the dataset exceeds the internal memory), and Cache Optimization.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;permits the automatic handling of missing data values, the parallelization of tree construction, and the continuing training to improve an already fitted model using new data,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;it can be used with different interfaces and platforms (Command Line Interface, C++, Python, R, Julia, Scala, Hadoop,…).&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;As nothing comes without a cost, the main difficulty with XGBoost is to set its numerous hyperparameters optimally. (for more details about the different parameters please check the &lt;a href=&#34;http://xgboost.readthedocs.io/en/latest/parameter.html&#34;&gt;official documentation&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;While the &lt;a href=&#34;https://www.rdocumentation.org/packages/caret/&#34;&gt;Caret&lt;/a&gt; package permits, through the &lt;strong&gt;train&lt;/strong&gt; function, to perform a grid search of the optimal hyperparameters for the linear, tree and DART boosters (resp. xgbLinear, xgbTree and xgbDART), I present in this post an implementation of a code in R doing the same task using the package &lt;a href=&#34;https://www.rdocumentation.org/packages/xgboost/&#34;&gt;XGBoost&lt;/a&gt;. The code involves the use of the function &lt;strong&gt;xgb.cv&lt;/strong&gt; for the cross validation.&lt;/p&gt;
+&lt;p&gt;My implementation of the grid search investigates the hyperparamaters that are related to the tree booster (&lt;strong&gt;gbtree&lt;/strong&gt;), namely &lt;strong&gt;eta&lt;/strong&gt;, &lt;strong&gt;max_depth&lt;/strong&gt;, &lt;strong&gt;min_child_weight&lt;/strong&gt;, &lt;strong&gt;subsample&lt;/strong&gt;, and &lt;strong&gt;colsample_bytree&lt;/strong&gt;. The other tree booster parameters will be left to default.&lt;/p&gt;
+&lt;p&gt;The general parameters controlling the number of iterations for the cross-validation (&lt;strong&gt;nrounds&lt;/strong&gt;), when to stop iterating if no improvement is noticed (&lt;strong&gt;early_stopping_rounds&lt;/strong&gt;), and the frequency at which evaluation messages are printed on screen (&lt;strong&gt;print_every_n&lt;/strong&gt;) will be set at conveniency.&lt;/p&gt;
+&lt;p&gt;As I use the Titanic data set for the application, the parameter &lt;strong&gt;objective&lt;/strong&gt; is set to &lt;strong&gt;binary:logistic&lt;/strong&gt; for a prediction with binary classification. The predicted probability values are then converted to 0 or 1 (survival or not) according to a cut-off of 0.5.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;processing-of-the-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Processing of the data&lt;/h3&gt;
+&lt;p&gt;The data of the Titanic competition is processed in the same way as in my previous &lt;a href=&#34;https://slamara.github.io/project/titanic/&#34;&gt;article&lt;/a&gt;. However, to use this data with XGBoost, one should subset it by isolating the target column in the train data set.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(Matrix)
+library(xgboost)
+library(dplyr)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prepDataTitanic &amp;lt;- function(train, test){
+    
+    train_df &amp;lt;- train[c(1, 2, 3, 5, 10, 12, 13, 14, 15, 16)]
+    test_df &amp;lt;- test[c(1, 2, 4, 9, 11, 12, 13, 14, 15)]
+    
+    target &amp;lt;- train_df$Survived
+    train_df$Survived &amp;lt;- NULL
+    data &amp;lt;- rbind(train_df, test_df)
+    data$PassengerId &amp;lt;- NULL
+    
+    nr &amp;lt;- nrow(train_df)
+    
+    return(list(data = data, target = target, nr = nr))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-an-xgboost-compatible-data-set&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Create an XGBoost-compatible data set&lt;/h3&gt;
+&lt;p&gt;Since XGBoost works with numeric vectors, all categorical variables of which the target variable should be converted to numerics. To this intent, I use the function &lt;strong&gt;sparse.model.matrix&lt;/strong&gt; from the package &lt;a href=&#34;https://www.rdocumentation.org/packages/Matrix&#34;&gt;Matrix&lt;/a&gt;. The data should then be converted to the XGBoost format using the function &lt;strong&gt;xgb.DMatrix&lt;/strong&gt;. The resulting data frame contains both train and test data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;createData &amp;lt;- function(data, target, nr){
+# Convert to numeric    
+    target = as.numeric(target) - 1
+    data_sparse &amp;lt;- sparse.model.matrix(~.-1, data = as.data.frame(data))
+# create XGB matrices    
+    dtrain &amp;lt;- xgb.DMatrix(data = data_sparse[1:nr, ], label = target) 
+    dtest &amp;lt;- xgb.DMatrix(data = data_sparse[(nr+1):nrow(data), ])
+    return(list(dtrain = dtrain, dtest = dtest))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-grid-search&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The grid search&lt;/h3&gt;
+&lt;p&gt;The gridsearch is executed by iterating the computation of the cross validation over different sequences of &lt;strong&gt;eta&lt;/strong&gt;, &lt;strong&gt;max_depth&lt;/strong&gt;, &lt;strong&gt;min_child_weight&lt;/strong&gt;, &lt;strong&gt;subsample&lt;/strong&gt;, and &lt;strong&gt;colsample_bytree&lt;/strong&gt;. The variable &lt;strong&gt;param&lt;/strong&gt; is set with the values of each parameter of the current iteration and &lt;strong&gt;gamma&lt;/strong&gt; equal to 0. Param is then used in the function &lt;strong&gt;xgb.cv&lt;/strong&gt; with the &lt;strong&gt;error&lt;/strong&gt; rate as the evaluation metric.&lt;/p&gt;
+&lt;p&gt;For each iteration a vector containing the current values of the parameters as well as the best test and train error means is returned.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gridSearchXGBTree &amp;lt;- function(valList, n){
+        
+    param &amp;lt;- list(booster = &amp;quot;gbtree&amp;quot;, objective = &amp;quot;binary:logistic&amp;quot;, 
+                   eta = valList[&amp;quot;grdeta&amp;quot;], 
+                   max_depth = valList[&amp;quot;grdmax_depth&amp;quot;], 
+                   min_child_weight = valList[&amp;quot;grdmin_child_weight&amp;quot;], 
+                   subsample = valList[&amp;quot;grdsubsample&amp;quot;], 
+                   colsample_bytree = valList[&amp;quot;grdcolsample_bytree&amp;quot;], 
+                   gamma = 0)
+    
+    grdXGBcv &amp;lt;- xgb.cv(param, data =  dtrain, nrounds = n, nfold = 5, 
+                             showsd = TRUE, metrics = &amp;quot;error&amp;quot;, verbose = TRUE, 
+                             seed = 1962, print_every_n = 10, 
+                             early_stopping_rounds = 20)
+    
+    scores &amp;lt;- as.data.frame(grdXGBcv$evaluation_log)
+    error &amp;lt;- min(scores$test_error_mean)
+    tError &amp;lt;- min(scores$train_error_mean)
+    return(c(error, tError, valList[&amp;quot;grdeta&amp;quot;], valList[&amp;quot;grdmax_depth&amp;quot;], 
+             valList[&amp;quot;grdmin_child_weight&amp;quot;], valList[&amp;quot;grdsubsample&amp;quot;], 
+             valList[&amp;quot;grdcolsample_bytree&amp;quot;]))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;application-to-the-titanic-data-set&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Application to the Titanic data set&lt;/h3&gt;
+&lt;div id=&#34;data-preparation&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Data preparation&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;premDat &amp;lt;- prepDataTitanic(train, test)
+str(premDat)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## List of 3
+##  $ data  :&amp;#39;data.frame&amp;#39;:  1309 obs. of  8 variables:
+##   ..$ Pclass  : Factor w/ 3 levels &amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;: 3 1 3 1 3 3 1 3 3 2 ...
+##   ..$ Sex     : Factor w/ 2 levels &amp;quot;female&amp;quot;,&amp;quot;male&amp;quot;: 2 1 1 1 2 2 2 2 1 1 ...
+##   ..$ Fare    : num [1:1309] 7.25 71.28 7.92 53.1 8.05 ...
+##   ..$ Embarked: Factor w/ 3 levels &amp;quot;C&amp;quot;,&amp;quot;Q&amp;quot;,&amp;quot;S&amp;quot;: 3 1 3 3 3 2 3 3 3 1 ...
+##   ..$ NameCat : Factor w/ 8 levels &amp;quot;Dr&amp;quot;,&amp;quot;Master&amp;quot;,..: 5 6 4 6 5 5 5 2 6 6 ...
+##   ..$ AgeCat  : Factor w/ 3 levels &amp;quot;adult&amp;quot;,&amp;quot;child&amp;quot;,..: 1 1 1 1 1 1 1 2 1 2 ...
+##   ..$ HasCab  : Factor w/ 2 levels &amp;quot;no&amp;quot;,&amp;quot;yes&amp;quot;: 1 2 1 2 1 1 2 1 1 1 ...
+##   ..$ HasFam  : Factor w/ 2 levels &amp;quot;no&amp;quot;,&amp;quot;yes&amp;quot;: 2 2 1 2 1 1 1 2 2 2 ...
+##  $ target: Factor w/ 2 levels &amp;quot;no&amp;quot;,&amp;quot;yes&amp;quot;: 1 2 2 2 1 1 1 1 2 2 ...
+##  $ nr    : int 891&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;allDat &amp;lt;- createData(premDat$data, premDat$target, premDat$nr)
+str(allDat)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## List of 2
+##  $ dtrain:Class &amp;#39;xgb.DMatrix&amp;#39; &amp;lt;externalptr&amp;gt; 
+##   ..- attr(*, &amp;quot;.Dimnames&amp;quot;)=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:18] &amp;quot;Pclass1&amp;quot; &amp;quot;Pclass2&amp;quot; &amp;quot;Pclass3&amp;quot; &amp;quot;Sexmale&amp;quot; ...
+##  $ dtest :Class &amp;#39;xgb.DMatrix&amp;#39; &amp;lt;externalptr&amp;gt; 
+##   ..- attr(*, &amp;quot;.Dimnames&amp;quot;)=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:18] &amp;quot;Pclass1&amp;quot; &amp;quot;Pclass2&amp;quot; &amp;quot;Pclass3&amp;quot; &amp;quot;Sexmale&amp;quot; ...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dtrain &amp;lt;- allDat$dtrain
+dtest &amp;lt;- allDat$dtest
+print(dtrain)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## xgb.DMatrix  dim: 891 x 18  info: label  colnames: yes&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;print(dtest)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## xgb.DMatrix  dim: 418 x 18  info: NA  colnames: yes&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;setting-the-grid-search-values&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Setting the grid search values&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ranges &amp;lt;- expand.grid(grdeta = seq(0.05, 0.5, 0.05), 
+                  grdmax_depth = seq(4, 8, 1),
+                  grdmin_child_weight = seq(1, 5, 1), 
+                  grdsubsample = seq(0.4, 0.8, 0.1), 
+                  grdcolsample_bytree = seq(0.4, 0.8, 0.1))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-grid-search-1&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;The grid search&lt;/h4&gt;
+&lt;p&gt;It is well known that XGBoost is very efficient in computing. Nevertheless, setting up too fine parameters may turn to be highly time consuming.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Number of rounds
+nrd &amp;lt;- 200
+
+grdSrchErrors &amp;lt;- apply(ranges, 1, function(x) gridSearchXGBTree(x, nrd))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;results-of-the-grid-search-and-identification-of-the-best-setting&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Results of the grid search and identification of the best setting&lt;/h4&gt;
+&lt;p&gt;Here the setting with the smallest &lt;strong&gt;test_error_mean&lt;/strong&gt; (on top of the list) is selected for the training.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;res &amp;lt;- as.data.frame(t(grdSrchErrors))
+names(res) &amp;lt;- c(&amp;quot;TestERROR&amp;quot;, &amp;quot;TrainERROR&amp;quot;, &amp;quot;eta&amp;quot;, &amp;quot;max_depth&amp;quot;, &amp;quot;min_child_weight&amp;quot;, 
+                &amp;quot;subsample&amp;quot;, &amp;quot;colsample_bytree&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(arrange(res, TestERROR))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   TestERROR TrainERROR  eta max_depth min_child_weight subsample
+## 1 0.1470028  0.1153194 0.45         4                4       0.6
+## 2 0.1481700  0.0959620 0.50         7                1       0.7
+## 3 0.1503794  0.1071828 0.50         5                1       0.6
+## 4 0.1503860  0.1226144 0.50         7                5       0.5
+## 5 0.1504108  0.1301902 0.50         5                3       0.4
+## 6 0.1504108  0.1052218 0.40         5                3       0.6
+##   colsample_bytree
+## 1              0.5
+## 2              0.6
+## 3              0.8
+## 4              0.8
+## 5              0.4
+## 6              0.8&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;computing-the-model-using-the-best-setting&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Computing the model using the best setting&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xgb_model &amp;lt;- xgb.train(data = dtrain, 
+                       nrounds = 300, early_stopping_rounds = 20, 
+                       eta = 0.50, max_depth = 5, min_child_weight = 3, 
+                       subsample = 0.4, colsample_bytree = 0.4, 
+                       objective = &amp;quot;binary:logistic&amp;quot;, 
+                       print_every_n = 10, seed = 1962, 
+                       verbose = TRUE, 
+                       watchlist = list(train = dtrain))
+
+xgbpred &amp;lt;- predict(xgb_model, dtest)
+xgbpred &amp;lt;- ifelse(xgbpred &amp;gt; 0.5, 1, 0)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xgbpred&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   [1] 0 1 0 0 1 0 1 0 1 0 0 0 1 0 1 1 0 0 1 1 1 1 1 0 1 0 1 0 1 0 0 0 1 0 1
+##  [36] 0 0 0 0 1 0 1 0 1 1 0 0 0 1 1 1 0 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 1
+##  [71] 1 0 1 0 1 0 0 1 0 1 1 0 0 0 0 0 1 0 1 1 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1
+## [106] 0 0 0 0 0 0 1 1 1 1 0 0 1 1 1 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+## [141] 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0 0
+## [176] 1 1 1 1 1 0 0 1 0 1 0 1 0 0 0 0 0 0 0 1 0 1 1 0 1 1 0 1 1 0 0 1 0 1 0
+## [211] 0 0 0 1 1 0 1 0 1 0 1 0 1 0 1 1 0 1 0 0 1 1 0 0 0 0 1 0 1 1 1 1 0 0 0
+## [246] 0 1 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 0 0 1 0 1 1 0 1 0 0 0 0
+## [281] 0 1 1 1 1 0 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 1 1 0 1 0 0 0 0 0 1 1
+## [316] 1 0 0 0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 1
+## [351] 1 0 0 0 1 0 1 0 0 1 0 1 1 0 1 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 1 0
+## [386] 1 0 0 0 0 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 1 0 0 1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;References&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;&lt;a href=&#34;https://www.quora.com/What-is-the-difference-between-the-R-gbm-gradient-boosting-machine-and-xgboost-extreme-gradient-boosting&#34; class=&#34;uri&#34;&gt;https://www.quora.com/What-is-the-difference-between-the-R-gbm-gradient-boosting-machine-and-xgboost-extreme-gradient-boosting&lt;/a&gt;&lt;a href=&#34;#fnref1&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -1238,7 +1433,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Sat Aug 11 00:20:55 2018 --&gt;
+&lt;!-- Sat Aug 11 00:30:47 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
