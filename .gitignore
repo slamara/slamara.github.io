@@ -18,3 +18,8 @@ pml-testing.csv
 pml-training.csv
 train.csv
 test.csv
+Res.csv
+results.RDs
+test.RDs
+train.RDs
+xgbpred.RDs

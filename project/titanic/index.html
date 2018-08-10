@@ -318,7 +318,7 @@
 <h3>Overview</h3>
 <p>The Titanic left the port of Queensland (now Cobh), Ireland on April 11, 1912 with 2224 passengers <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. On early morning of Monday, 15 April 1912, sank the “unsinkable” after a collision with an iceberg dragging more than 2/3 of the passengers down to the bottom of the Atlantic Ocean.</p>
 <p>Due to the insufficient number of means of survival, the possibility to get in lifeboats would have obeyed to some kind of considerations: from the ethical “women and children first” to the more practical proximity to the Upper Deck which is itself related to the cabin class and thus to the socio-economic class of each passenger (see <a href="https://rmstitanic1912.weebly.com/the-levels-of-the-titanic.html">here</a> the different levels of the Titanic).</p>
-<p>Based on these considerations, the purpose of this project is to predict the survival of a test subset of passengers using machine learning. To this intent, I “dive” first into the training dataset provided by <a href="https://www.kaggle.com/c/titanic">kaggle.com</a> within the framework of its prediction competitions, to identify and engineer the most important predictors.</p>
+<p>Based on these considerations, the purpose of this project is to predict the survival of a test subset of passengers using machine learning. To this intent, I “dive” first into the training dataset provided by <a href="https://www.kaggle.com/c/titanic">kaggle.com</a> to identify and engineer the most important predictors.</p>
 </div>
 <div id="read-data" class="section level3">
 <h3>Read data</h3>
@@ -339,7 +339,7 @@ train$Survived &lt;- factor(train$Survived, levels = c(0,1), labels = c(&quot;no
 </div>
 <div id="preliminary-data-analysis" class="section level3">
 <h3>Preliminary data analysis</h3>
-<p>The train dataset consists in a subset of 891 observations of 11 variables describing each passenger listed in. According to each variable we can know: whether the passenger survived or not (yes/no), his/her class on board (1st, 2nd or 3rd class), name (including the title), sex (female/male), Age, ticket number, fare, cabin number, and were he/her embarked.</p>
+<p>The train dataset consists in a subset of 891 observations of 11 variables describing each passenger listed in. According to each variable we can know: whether the passenger survived or not (yes/no), his/her class on board (1st, 2nd or 3rd class), name (including the title), sex (female/male), Age, ticket number, fare, cabin number, and where he/her embarked.</p>
 <p>Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found <a href="https://www.kaggle.com/c/titanic/data">here</a>.</p>
 <pre class="r"><code>str(train)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    891 obs. of  12 variables:
@@ -508,7 +508,7 @@ grid.arrange(p1, p2, p3, layout_matrix = cbind(c(1,3), c(2,3)), widths=c(2,3))</
 ## 2        child       58.44156
 ## 3      missing       29.37853
 ## 4       senior       22.72727</code></pre>
-<p>In light of the first following plot, it seems that having family members on board of the Titanic was not very crucial for survival. However, when looking to the second one, it appears clearly that being a member of a small family was in fact relatively important for survival mainly because of the fact that small children were always accompanied by <strong>at least</strong> one of their parents.</p>
+<p>In light of the upper part of the following plot, it seems that having family members on board of the Titanic was not very crucial for survival. However, when looking to the second one, it appears clearly that being a member of a small family was relatively more important for survival, mainly because small children were always accompanied by <strong>at least</strong> one of their parents.</p>
 <pre class="r"><code># barplot: survived or not according to has a family on board or not
 p1 &lt;- ggplot(data = train, aes(x = HasFam, fill = Survived)) + 
     geom_bar(position = &quot;dodge&quot;) + 
@@ -548,14 +548,14 @@ grid.arrange(p1, p2)</code></pre>
 <pre><code>##   train$HasCab train$Survived
 ## 1           no       29.98544
 ## 2          yes       66.66667</code></pre>
-<p>On the other side, it appears also clearly that the <strong>overwhelming majority</strong> of women who bought their tickets more than 50 pounds survived. Since it is not the case for men, the reason could be that the women from first class were the first to leave the Titanic on lifeboats when men of the first classe was forced to wait for women and children from other classes.</p>
+<p>On the other side, it appears also clearly that the <strong>overwhelming majority</strong> of women who bought their tickets more than 50 pounds survived. Since it is not the case for men, the reason could be that the women from first class were the first to leave the Titanic on lifeboats when men of the first class was forced to wait for women and children from other classes.</p>
 <pre class="r"><code># Had the Fare any impact? 
 ggplot(train, aes(x = PassengerId, y = Fare, color = Survived)) + 
     geom_point() + 
     theme_bw() + 
     facet_grid(. ~ Sex)</code></pre>
 <p><img src="/project/titanic_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>The variable Fare seems also to correlate globally to age categories and can thus be of a good value when imputing the missing ageCat values. Nevertheless, to overcome the skewed distribution of the variable Fare, an appropriate less sensitive classifier method should be used (Random Forest or Gradient Boosting Method can do the job in such cases)</p>
+<p>The variable Fare seems also to correlate globally to age categories and can thus be of a good benefit when imputing the missing ageCat values. Nevertheless, to overcome the skewed distribution of the variable Fare, an appropriate less sensitive classifier method should be used (Random Forest or Gradient Boosting Method can do the job in such cases)</p>
 <pre class="r"><code># How evolves the Fare according to passengers age (depending on age categories)
 ggplot(train,aes(x = Age,y = Fare, color = AgeCat)) + geom_point(shape = 1) + 
      geom_smooth(method=&#39;lm&#39;) + scale_y_continuous(limits = c(0, 300)) + 
@@ -602,7 +602,7 @@ p + facet_grid(. ~ AgeCat)</code></pre>
 </div>
 <div id="data-imputation" class="section level3">
 <h3>Data Imputation</h3>
-<p>In order to predict the target variable, it is important to impute all missing values of the predictors. There are many methods for the imputation, each with advantages and inconvenients. For this project, two variables show missing values: Embarked and Age (Fare and Age for test data). Since only two values are missing in Embarked, I do a little investigation to deduct them based on the ticket number, provided that it should be related to the place were it was issued.</p>
+<p>In order to predict the target variable, it is important to impute all missing values of the predictors. There are many methods for the imputation, each with advantages and inconvenients. For this project, two variables show missing values: Embarked and Age (Fare and Age for test data). Since only two values are missing in Embarked, I do a little investigation to deduct them from the ticket number, provided that it should be related to the place were it was issued.</p>
 <pre class="r"><code># 1. train$Embarked
 
 # passengerID with missing &quot;Embarked&quot;
@@ -687,7 +687,7 @@ train$AgeCat &lt;- factor(train$AgeCat)
 ##           0           0           0           0          86           0 
 ##       Parch      Ticket        Fare       Cabin    Embarked 
 ##           0           0           1         327           0</code></pre>
-<p>We notice here missing values in Age and Fare. Concerning Fare, and since it is only one value missing, one could simply assign to this observation the median value of its appropriate class.</p>
+<p>We notice here missing values in Age and Fare. Concerning Fare, and since it is only one value missing, one could simply assign to this observation the median Fare value of its corresponding class.</p>
 <p>The missing values of AgeCat are imputed using the exact same method as for the train data.</p>
 <p>Many titles seen in the train file are missing in test file. At the same time, a new one, <strong>Dona</strong>, is classified as a noble title.</p>
 <pre class="r"><code># Data Engineering

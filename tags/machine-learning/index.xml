@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 17:42:32 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 09 Aug 2018 13:54:32 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Tuning XGBoost using grid search results in R</title>
+      <link>https://slamara.github.io/post/xgboost/</link>
+      <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/post/xgboost/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>
