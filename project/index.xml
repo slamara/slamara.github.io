@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 17:42:32 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 11 Aug 2018 17:25:50 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/project/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Processing of Natural Language data using the Swiftkey dataset</title>
+      <link>https://slamara.github.io/project/swiftkey1/</link>
+      <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/swiftkey1/</guid>
+      <description>Introduction: The Natural Language ProcessingThe Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.
+Specific packages in R were implemented for NLP.</description>
+    </item>
     
     <item>
       <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>

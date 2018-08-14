@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 17:42:32 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 11 Aug 2018 17:25:50 +0200</lastBuildDate>
     
 	<atom:link href="https://slamara.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Data Visualisation</title>
       <link>https://slamara.github.io/tags/data-visualisation/</link>
-      <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
+      <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
       <guid>https://slamara.github.io/tags/data-visualisation/</guid>
       <description></description>
@@ -24,7 +24,7 @@
     <item>
       <title>Exploratory Data Analysis</title>
       <link>https://slamara.github.io/tags/exploratory-data-analysis/</link>
-      <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
+      <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
       <guid>https://slamara.github.io/tags/exploratory-data-analysis/</guid>
       <description></description>
@@ -36,6 +36,15 @@
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
       <guid>https://slamara.github.io/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NLP</title>
+      <link>https://slamara.github.io/tags/nlp/</link>
+      <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/tags/nlp/</guid>
       <description></description>
     </item>
     

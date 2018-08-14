@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.46" />
+  <meta name="author" content="Samir Lamara">
+
+  
+  
+  
+  
+    
+  
+  <meta name="description" content="Exploratory data analysis of a natural language dataset">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://slamara.github.io/project/swiftkey1/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#EF525B">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css" crossorigin="anonymous">
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-123444635-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+  <link rel="alternate" href="https://slamara.github.io/index.xml" type="application/rss+xml" title="Samir Lamara">
+  <link rel="feed" href="https://slamara.github.io/index.xml" type="application/rss+xml" title="Samir Lamara">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://slamara.github.io/project/swiftkey1/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Samir Lamara">
+  <meta property="og:url" content="https://slamara.github.io/project/swiftkey1/">
+  <meta property="og:title" content="Processing of Natural Language data using the Swiftkey dataset | Samir Lamara">
+  <meta property="og:description" content="Exploratory data analysis of a natural language dataset"><meta property="og:image" content="https://slamara.github.io/img/wordcloud.jpg">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-08-11T17:25:50&#43;02:00">
+  
+  <meta property="article:modified_time" content="2018-08-11T17:25:50&#43;02:00">
+  
+
+  
+
+  
+
+  <title>Processing of Natural Language data using the Swiftkey dataset | Samir Lamara</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Samir Lamara</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/files/cv.pdf">
+            
+            <span>CV</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article article-project" itemscope itemtype="http://schema.org/Article">
+
+  
+<div class="article-header">
+  
+  
+    <img src="/img/wordcloud.jpg" class="article-banner" itemprop="image">
+  
+
+  <span class="article-header-caption"><a href='https://www.freepik.com/free-vector/welcome-pattern-in-different-languages_2609581.htm'>Designed by Freepik</a></span>
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="pub-title">
+      <h1 itemprop="name">Processing of Natural Language data using the Swiftkey dataset</h1>
+      <span class="pub-authors" itemprop="author">&nbsp;</span>
+      <span class="pull-right">
+        
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Processing%20of%20Natural%20Language%20data%20using%20the%20Swiftkey%20dataset&amp;url=https%3a%2f%2fslamara.github.io%2fproject%2fswiftkey1%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fslamara.github.io%2fproject%2fswiftkey1%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fslamara.github.io%2fproject%2fswiftkey1%2f&amp;title=Processing%20of%20Natural%20Language%20data%20using%20the%20Swiftkey%20dataset"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=https%3a%2f%2fslamara.github.io%2fproject%2fswiftkey1%2f&amp;title=Processing%20of%20Natural%20Language%20data%20using%20the%20Swiftkey%20dataset"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Processing%20of%20Natural%20Language%20data%20using%20the%20Swiftkey%20dataset&amp;body=https%3a%2f%2fslamara.github.io%2fproject%2fswiftkey1%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+      </span>
+    </div>
+
+    
+
+    <div class="article-style" itemprop="articleBody">
+      <div id="introduction-the-natural-language-processing" class="section level3">
+<h3>Introduction: The Natural Language Processing</h3>
+<p>The Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.</p>
+<p>Specific packages in R were implemented for NLP. The most used ones for each domain of application include (but not limited to):</p>
+<ul>
+<li><strong>Data preparation</strong>: tm, stringi, stringr, readtext,…</li>
+<li><strong>Text analysis</strong>: text2vec, koRpus, tidytext,…</li>
+<li><strong>Advanced NLP</strong> (lemmatization, speach tagging, syntax): spacyr, coreNLP, koRpus,…</li>
+</ul>
+<p>For its part, the library <strong>quanteda</strong> operates efficiently on all previous domains.</p>
+</div>
+<div id="exploring-the-dataset" class="section level3">
+<h3>Exploring the Dataset</h3>
+<p>The data used in this project, is provided by <a href="https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;activetab=pivot_1%3aprimaryr2">Swiftkey</a>, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The <a href="https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip">dataset</a> consists in a collection of raw texts from three different sources: blogs, news and twitter. These collections come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.</p>
+<p>Depending on its origin, the text in each file can highly differ from the grammatical, syntactic, and lexical point of view (vocabulary, used abbreviations, text construction,…). The general features of each file are shown below.</p>
+<pre class="r"><code>library(knitr)
+library(readtext)
+library(qdap)
+library(stringr)
+library(quanteda)
+library(ggplot2)
+library(data.table)
+library(gridExtra)</code></pre>
+<pre class="r"><code># To handle the occurrence of special characters that could interrupt the 
+# reading of the files, I read them in a binary mode.
+# The NULL charachter is also excluded during the reading phase.
+
+con1 &lt;- file(&quot;./swiftkey1/en_US.blogs.txt&quot;, &quot;rb&quot;)
+con2 &lt;- file(&quot;./swiftkey1/en_US.news.txt&quot;, &quot;rb&quot;)
+con3 &lt;- file(&quot;./swiftkey1/en_US.twitter.txt&quot;, &quot;rb&quot;)
+
+file1 &lt;- readLines(con1, skipNul = TRUE)
+file2 &lt;- readLines(con2, skipNul = TRUE)
+file3 &lt;- readLines(con3, skipNul = TRUE)
+
+summary &lt;- data.frame(File= c(&quot;en_US.blogs.txt&quot;, 
+                              &quot;en_US.news.txt&quot;, 
+                              &quot;en_US.twitter.txt&quot;),
+                      
+                      Size_in_MB = c(file.info(&quot;./swiftkey1/en_US.blogs.txt&quot;)$size / (1024**2), 
+                                     file.info(&quot;./swiftkey1/en_US.news.txt&quot;)$size / (1024**2), 
+                                     file.info(&quot;./swiftkey1/en_US.twitter.txt&quot;)$size / (1024**2)),
+                      
+                      Nb_of_rows = c(length(file1), 
+                                     length(file2), 
+                                     length(file3)),
+                      
+                      Max_Nb_Characters_per_row = c(max(nchar(file1)), 
+                                                    max(nchar(file2)), 
+                                                    max(nchar(file3))),
+                      
+                      Min_Nb_Characters_per_row = c(min(nchar(file1)), 
+                                                    min(nchar(file2)), 
+                                                    min(nchar(file3)))
+                      )
+close(con1, con2, con3)
+kable(summary)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">File</th>
+<th align="right">Size_in_MB</th>
+<th align="right">Nb_of_rows</th>
+<th align="right">Max_Nb_Characters_per_row</th>
+<th align="right">Min_Nb_Characters_per_row</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">en_US.blogs.txt</td>
+<td align="right">200.4242</td>
+<td align="right">899288</td>
+<td align="right">40835</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">en_US.news.txt</td>
+<td align="right">196.2775</td>
+<td align="right">1010242</td>
+<td align="right">11384</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">en_US.twitter.txt</td>
+<td align="right">159.3641</td>
+<td align="right">2360148</td>
+<td align="right">213</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="processing-of-data" class="section level3">
+<h3>Processing of Data</h3>
+<p>As explained previously, each file is investigated separately to spot its specific characteristics. The files are read with <strong>readLines</strong> in a binary mode to avoid any crashes due to the occurrence of special characters.</p>
+<p>The processing is done as follows:</p>
+<ul>
+<li>the text is converted from UTF-8 (the main encoding in the internet<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>) to ASCII<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> and all non-convertible characters are excluded,</li>
+<li>a text corpus is created with the read data,</li>
+<li>the corpus is reshaped in an aggregation of sentences,</li>
+<li>all contractions such as <strong>I’d</strong> or <strong>won’t</strong> are replaced by their complete forms,</li>
+<li>all abbreviations such as <strong>Dr.</strong> or <strong>Mr.</strong> are replaced by their complete forms,</li>
+<li>same for all ordinals such as <strong>1st</strong>,</li>
+<li>one character strings, with the exception of “I” and “a”, are also excluded.</li>
+</ul>
+<p>Since the processed corpus could be very big, the function offers the possibility to save it in an RDS file for later use or to free the memory. The function permits also to work on a subsample representing 5% of the complete data.</p>
+<pre class="r"><code># x: c(&quot;blogs&quot;|&quot;news&quot;|&quot;twitter&quot;)
+
+crps_prcs &lt;- function(x, sampling = FALSE, savefile = FALSE) {
+    
+    con &lt;- file(paste0(&quot;./swiftkey1/en_US.&quot;, x, &quot;.txt&quot;), &quot;rb&quot;)
+    crps &lt;- readLines(con, skipNul = TRUE)  #read text files
+    close(con)
+    if (sampling) {
+        crps &lt;- crps[rbinom(length(crps)*.05, length(crps), .5)]
+    }
+    crps &lt;- iconv(crps, from = &quot;UTF-8&quot;, to = &quot;ASCII&quot;, sub=&quot;&quot;)
+    corpus &lt;- corpus(crps)
+    corpus &lt;- corpus_reshape(corpus, to = &quot;sentences&quot;)
+    corpus &lt;- replace_contraction(corpus)
+    corpus &lt;- replace_abbreviation(corpus)
+    corpus &lt;- replace_ordinal(corpus)
+    corpus &lt;- gsub(&quot;\\W[^0-9AaIi](( )[^0-9AaIi])*\\W&quot;, &quot; &quot;, corpus) #remove all one-character strings except &quot;I&quot; and &quot;a&quot;
+    if (savefile){
+        saveRDS(corpus, file = paste0(&quot;./swiftkey1/corpus_&quot;, x, &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: corpus_&quot;, x, &quot;.RDs&quot;))
+    }
+    else {
+        corpus
+    }
+}</code></pre>
+</div>
+<div id="tokenisation-and-construction-of-the-document-term-matrix" class="section level3">
+<h3>Tokenisation and construction of the document-term matrix</h3>
+<p>To compute the frequency of occurrence of each word, the text is transformed to lower case and splitted in tokens with all punctuation, numbers and (specific) symbols removed. English stopwords such as <strong>the</strong> can also be excluded when needed. In some specific applications when occurrence of particular words is investigated, words with different morphological variations but same meaning can be considered as one and replaced by their root (e.g. the words “happy”, “happiest”, “happier” are replaced by “happi”). This processing is called <strong>stemming</strong>.</p>
+<p>Once the tokens are computed, one can move to the next step which is the computation of the document-term matrix.</p>
+<p>The document-term matrix (DTM) is a sparse matrix representation allowing the algebraic analysis of the data. The rows of this matrix represent the unit element of the corpus (sentence or document), the columns represent the tokens, and the cells indicate their frequency in each element. The DTMs can be computed for tokens of one word (1-gram) or a sequence of a consecutive n words (n-grams). A token comprising one word is thus referred as unigram, two words as a bigram, three words as a trigram, and so on.</p>
+<p>Since the computation of the DTM is time consuming and resources requiring, especially for higher order n-grams, I chosed to accomplish all the processing before computing the DTMs (in the tokenisation step). Yet, it is also possible to accomplish most of the processing directly when setting up the DTM with the function <strong>dfm</strong> from quanteda.</p>
+<p>As an input, my function can take an Rds file, as well as a corpus object.</p>
+<pre class="r"><code># x : corpus or string (c(&quot;blogs&quot;|&quot;news&quot;|&quot;twitter&quot;))
+# n : N-Gram
+
+dfm_comp &lt;- function(x, n, stem = FALSE, stopwords = FALSE, savefile = FALSE) {
+    
+    if (is.character(x)) {
+        dat &lt;- readRDS(paste0(&quot;./swiftkey1/corpus_&quot;, x, &quot;.RDs&quot;))
+    }
+    toks &lt;- tokens(char_tolower(dat), remove_punct = TRUE, remove_numbers = TRUE, 
+                   remove_symbols = TRUE, remove_separators = TRUE, 
+                   remove_url = TRUE, remove_twitter = TRUE, concatenator = &quot; &quot;)
+    
+    if (stopwords) {
+        toks &lt;- tokens_remove(toks, stopwords(&quot;english&quot;))
+    }
+    
+    if (stem) {
+        toks &lt;- tokens_wordstem(toks)
+    }
+    dfm &lt;- dfm(toks, ngrams = n)
+    if (savefile){
+        saveRDS(dfm, file = paste0(&quot;./swiftkey1/dfm_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: dfm_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+    }
+    else {
+        dfm
+    }
+}</code></pre>
+<p>All DTMs computed for each file given a specific n-gram can also be joined in one:</p>
+<pre class="r"><code># all files for: c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;), 
+# n : N-Gram
+
+dfm_bind_all &lt;- function(n, savefile = FALSE) {
+    
+    docs &lt;- c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;)
+    files &lt;- paste0(&quot;./swiftkey1/dfm_&quot;, docs, &quot;_&quot;, n, &quot;.RDs&quot;)
+    dfm &lt;- readRDS(head(files, 1))
+    for (x in tail(files, length(files)-1)) {
+        dfm_temp &lt;- readRDS(x)
+        dfm &lt;- rbind(dfm, dfm_temp)
+    }
+    if (savefile) {
+        saveRDS(dfm, file = paste0(&quot;./swiftkey1/dfm_all_&quot;, n, &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: dfm_all_&quot;, n, &quot;.RDs&quot;))
+    }
+    else {
+        dfm
+    }
+}</code></pre>
+</div>
+<div id="frequency-of-words-occurrence" class="section level3">
+<h3>Frequency of word’s occurrence</h3>
+<p>The frequency of occurrence of each word in the DTM is computed using the function <strong>topfeatures</strong> in quanteda. Adding to the computation of the topfeatures, the function I implemented permits also to compute the cumulative sum of all features, from the most to the least frequent one. The results of this cumulative sum can be used to plot the Zipf’s graph.</p>
+<pre class="r"><code># x: dfm or string (c(&quot;blogs&quot;|&quot;news&quot;|&quot;twitter&quot;|&quot;all&quot;)), 
+# n: N-Gram
+
+topfeat_comp &lt;- function(x, n, cumulate = FALSE, savefile = FALSE) {
+    
+    if (is.character(x) &amp; !missing(n)) {
+        dfm &lt;- readRDS(paste0(&quot;./swiftkey1/dfm_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+    } else {
+        dfm &lt;- x
+    }
+    tpf &lt;- topfeatures(dfm, length(dfm))
+    if (cumulate) {
+        cumul &lt;- cumsum(tpf)
+    }
+    if (savefile &amp;&amp; is.character(x) &amp; !missing(n)) {
+        saveRDS(tpf, file = paste0(&quot;./swiftkey1/tpf_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: tpf_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+        if (cumulate) {
+            saveRDS(cumul, file = paste0(&quot;./swiftkey1/cumulate_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+            print(paste0(&quot;file saved: cumulate_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+        }
+    }
+    else if (savefile &amp; !is.character(x)) {
+        saveRDS(tpf, file = paste0(&quot;./swiftkey1/tpf_&quot;, deparse(substitute(x)), &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: tpf_&quot;, deparse(substitute(x)), &quot;.RDs&quot;))
+        if (cumulate) {
+            saveRDS(cumul, file = paste0(&quot;./swiftkey1/cumulate_&quot;, deparse(substitute(x)), &quot;.RDs&quot;))
+            print(paste0(&quot;file saved: cumulate_&quot;, deparse(substitute(x)), &quot;.RDs&quot;))
+        }
+    }
+    else {
+        if (cumulate) {
+            return(list(tpf, cumul))
+        }
+        else {
+            tpf
+        }
+    }
+}</code></pre>
+</div>
+<div id="the-zipfs-law" class="section level3">
+<h3>The Zipf’s law</h3>
+<p>The Zipf’s law<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> was formulated by the american linguist George Kingsley Zipf. It states that:</p>
+<blockquote>
+<p>the frequency of any word is inversely proportional to its rank in the frequency table. Thus the most frequent word will occur approximately twice as often as the second most frequent word, three times as often as the third most frequent word.</p>
+</blockquote>
+<p>The Zipf’s graph (including stopwords) for each of the three files of the dataset, as well as for the total one, can be built using the cumulative sums computed with the previous function, as follows:</p>
+<pre class="r"><code># n: n-gram
+# threshold: to shade the area beneath the th-percentile
+# maxrank: limit of the x axis
+
+plot_zipf_all &lt;- function(n, threshold = 0.95, maxrank = 100000) {
+    
+    df &lt;- data.frame()
+    files &lt;- c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;, &quot;all&quot;)
+    for (x in files) {
+        cumulate &lt;- readRDS(paste0(&quot;./swiftkey1/cumulate_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+        mx &lt;- max(cumulate)
+        if (x == &quot;all&quot;) {
+            dat &lt;- c(sum((cumulate / mx) &lt; 0.5), +
+                         sum((cumulate / mx) &lt; 0.9), +
+                         sum((cumulate / mx) &lt; 0.95), +
+                         sum((cumulate / mx) &lt; 0.99), +
+                         length(cumulate))
+        }
+        if (length(cumulate) &gt; maxrank){
+            cumulate &lt;- cumulate[1:maxrank]
+        }
+        rate &lt;- lapply(cumulate, function(x){x/mx})
+        df_temp &lt;- data.frame(Docs = x, Rank = 1:length(cumulate), Rate = as.numeric(rate))
+        df &lt;- rbind(df, df_temp)
+    }
+    tab &lt;- cbind(Rate = c(&quot;50%&quot;, &quot;90%&quot;, &quot;95%&quot;, &quot;99%&quot;, &quot;100%&quot;), Rank = dat)
+    g &lt;- tableGrob(tab, rows = NULL, theme = ttheme_default(base_size = 6))
+    ggplot(df, aes(x = Rank, y = Rate, Docs = Docs)) +
+        geom_line(size = 1) + 
+        geom_ribbon(data = subset(df, Rate &gt; 0 &amp; Rate &lt; threshold), 
+                    aes(x = Rank, ymax = Rate, fill = Docs), ymin = 0, alpha = 0.3) +
+        xlim(0, maxrank) +
+        labs(x = &quot;Word&#39;s Rank&quot;, y = &quot;Occurrence Rate&quot;) +
+        labs(title = paste0(&quot;Zipf&#39;s Graph of all files for n-gram = &quot;, n)) +
+        annotation_custom(g, xmin = 6/8 * maxrank, xmax = maxrank, 
+                          ymin = 1/8 * max(df$Rate), ymax = 4/8 * max(df$Rate))
+}</code></pre>
+<p>The graph presents the variation of the cumulative occurrence rate depending on words rank, from the most to the least frequent word. The area representing the 95th percentile of the cumulative occurrence rate is shaded and a table with the corresponding rank, for different percentiles, is also shown (only for the <strong>complete dataset</strong>).</p>
+</div>
+<div id="the-probability-of-occurrence-of-a-specific-word" class="section level3">
+<h3>The probability of occurrence of a specific word</h3>
+<p>One important application of the NLP is the prediction of the following word while typing in smartphones and tablets keyboards. This prediction is done by counting the number of times a word in a dataset follows a specific n-gram (see <a href="https://web.stanford.edu/~jurafsky/slp3/3.pdf">here</a> for more details). This counting can then be used to compute the probability of occurrence of each possible combination and thus, find the most probable ones. As this will be a topic of another post, I only show here my function to compute the (simple) probability of occurrence.</p>
+<p>Within this function, only the RDS files of the top features are used. After reading, the n-grams are splitted in base and predicted parts: the predicted contains the last word of the n-gram while the rest is put in base (the used separator is the underscore). To handle very big files with millions of n-grams, I make benefit from the power of <strong>data.table</strong>. The function also permits to exclude combinations with low probabilities by specifying appropriate cut-offs for both base and predicted parts.</p>
+<pre class="r"><code># x &lt;- (&quot;all&quot; | &quot;blogs&quot; | &quot;news&quot; | &quot;twitter&quot;), 
+# n: N-Gram, 
+# minCount: cut-off count
+
+prob_comp &lt;- function(x, n, minCount = 1, savefile = TRUE){ 
+    
+    tpf &lt;- readRDS(paste0(&quot;./swiftkey1/tpf_&quot;, x, &quot;_&quot;, n, &quot;.RDs&quot;))
+    tpf &lt;- data.table(names(tpf), tpf)
+    colnames(tpf) &lt;- c(&quot;ngram&quot;, &quot;count&quot;)
+    
+#POST-FILTERING of words with additional undescores
+    tpf &lt;- tpf[!grepl(paste0(&quot;^(.*_){&quot;, n, &quot;,}&quot;), tpf$ngram)] 
+    if (n == 1){
+        tpf[, c(&quot;base&quot;, &quot;pred&quot;) := list(sub(&quot;_[^_]*$&quot;, &quot;\\1&quot;, ngram), &quot;&quot;)]
+    }
+    else{
+        tpf[, c(&quot;base&quot;, &quot;pred&quot;) := list(sub(&quot;_[^_]*$&quot;, &quot;\\1&quot;, ngram), sub(&quot;^.+_&quot;, &quot;\\1&quot;, ngram))]
+    }
+    setkey(tpf, base)
+    tpf[, prob := count/sum(count), by = base]
+    tpf &lt;- tpf[!(tpf$count &lt;= minCount &amp; tpf$prob == 1),]
+    tpf &lt;- tpf[tpf[,head(.I,3),by=base]$V1,]
+    tpf &lt;- data.table(base = tpf$base, pred = tpf$pred, count = tpf$count)
+    if (savefile) {
+        saveRDS(tpf, file = paste0(&quot;./swiftkey1/tpf_prob_&quot;, x, &quot;_&quot;, n, &quot;_cutoff_&quot;, minCount, &quot;.RDs&quot;))
+        print(paste0(&quot;file saved: tpf_prob_&quot;, x, &quot;_&quot;, n, &quot;_cutoff_&quot;, minCount, &quot;.RDs&quot;))
+    }
+    else {
+        tpf
+    }
+}</code></pre>
+</div>
+<div id="application" class="section level3">
+<h3>Application</h3>
+<p>Since the dataset is relatively big, I use only 5% of each file to perform the EDA. The sampling is done using a binomial distribution as shown previously.</p>
+<p>The workflow of the application is:</p>
+<pre class="r"><code># Compute the corpus for blogs, news, and twitter
+lapply(c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;), 
+       function(x){crps_prcs(x, sampling = TRUE, savefile = TRUE)})
+
+# Compute the DTM for blogs, news, and twitter
+lapply(c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;), 
+       function(x){for (i in seq(1:3)){dfm_comp(x, i, stopwords = TRUE, savefile = TRUE)}})
+
+# Join all DTMs in one
+lapply(seq(1:3), function(x){dfm_bind_all(x, savefile = TRUE)})
+
+# Compute the top features for blogs, news, and twitter and all dataset
+lapply(c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;, &quot;all&quot;), 
+       function(x){for (i in seq(1:3)){topfeat_comp(x, i, cumulate = TRUE, savefile = TRUE)}})</code></pre>
+<div id="zipfs-graphs" class="section level4">
+<h4>Zipf’s graphs</h4>
+<p>Not surprisingly, the graph from the twitter file is quite different from the others with a narrower vocabulary content compensated by a more frequent use of top words. The longer tail of the graph for the complete dataset gives also an indication on how the vocabulary content differs from a file to another, as each one adds to the total number of words. This is apparent especially for the bigram and the trigram.</p>
+<p>The Zipf’s law seems to be respected by all files especially for the unigram. However, as the effect of the stopwords decreases for the bigram and trigram, the Zipf’s law becomes less noticeable. The same effect could also be seen for the unigram when excluding the stopwords in the processing steps.</p>
+<pre class="r"><code>plot_zipf_all(1, maxrank = 25000)</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>plot_zipf_all(2, maxrank = 100000)</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>plot_zipf_all(3, maxrank = 100000)</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p>In order to show the features of each file, I exclude the stopwords for what follows:</p>
+</div>
+<div id="top-features-for-the-blogs-news-and-twitter" class="section level4">
+<h4>Top features for the blogs, news, and twitter</h4>
+<div id="unigram" class="section level5">
+<h5>Unigram</h5>
+<pre class="r"><code>dtm1 &lt;- readRDS(&quot;./swiftkey1/without_stopwords/dfm_blogs_1.RDs&quot;)
+dtm2 &lt;- readRDS(&quot;./swiftkey1/without_stopwords/dfm_news_1.RDs&quot;)
+dtm3 &lt;- readRDS(&quot;./swiftkey1/without_stopwords/dfm_twitter_1.RDs&quot;)
+
+topFeats1 &lt;- topfeatures(dtm1, 20)
+topFeats2 &lt;- topfeatures(dtm2, 20)
+topFeats3 &lt;- topfeatures(dtm3, 20)
+
+topDf1 &lt;- data.frame(features = names(topFeats1), freq = topFeats1)
+topDf2 &lt;- data.frame(features = names(topFeats2), freq = topFeats2)
+topDf3 &lt;- data.frame(features = names(topFeats3), freq = topFeats3)
+
+p1 &lt;- ggplot(data = topDf1, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &quot;identity&quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &quot;Feature&quot;, y = &quot;Frequency&quot;) + 
+    labs(title = expression(&quot;Blogs&quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+p2 &lt;- ggplot(data = topDf2, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &quot;identity&quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &quot;Feature&quot;, y = &quot;Frequency&quot;) + 
+    labs(title = expression(&quot;News&quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+p3 &lt;- ggplot(data = topDf3, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &quot;identity&quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &quot;Feature&quot;, y = &quot;Frequency&quot;) + 
+    labs(title = expression(&quot;Twitter&quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+grid.arrange(p1, p2, p3, ncol = 3)</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="bigram" class="section level5">
+<h5>Bigram</h5>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="trigram" class="section level5">
+<h5>Trigram</h5>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+<div id="unigram-features-for-the-complete-dataset" class="section level4">
+<h4>Unigram features for the complete dataset</h4>
+<pre class="r"><code>dtm &lt;- readRDS(&quot;./swiftkey1/without_stopwords/dfm_all_1.RDs&quot;)
+
+textplot_wordcloud(dtm, 
+                   max_words = 50, 
+                   colors = c(&quot;red&quot;, &quot;pink&quot;, &quot;green&quot;, &quot;purple&quot;, &quot;orange&quot;, &quot;blue&quot;))</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>topFeats &lt;- topfeatures(dtm, 20)
+
+topDf &lt;- data.frame(features = names(topFeats), freq = topFeats)
+
+ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)) + 
+    geom_bar(stat = &quot;identity&quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &quot;Feature&quot;, y = &quot;Frequency&quot;) + 
+    labs(title = expression(&quot;Features Frequencies&quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)</code></pre>
+<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+</div>
+<div id="bigram-features-for-the-complete-dataset" class="section level4">
+<h4>Bigram features for the complete dataset</h4>
+<p><img src="/project/swiftkey1_files/figure-html/DFM_ng2-1.png" width="672" /><img src="/project/swiftkey1_files/figure-html/DFM_ng2-2.png" width="672" /></p>
+</div>
+<div id="trigram-features-for-the-complete-dataset" class="section level4">
+<h4>Trigram features for the complete dataset</h4>
+<p><img src="/project/swiftkey1_files/figure-html/DFM_ng3-1.png" width="672" /><img src="/project/swiftkey1_files/figure-html/DFM_ng3-2.png" width="672" /></p>
+</div>
+</div>
+<div id="references" class="section level3">
+<h3>References</h3>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>one could also use the function <strong>guess_encoding</strong> from the package <a href="https://www.rdocumentation.org/packages/readr/">readr</a> to have an “estimation” of the encoding<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>english is well encoded using ASCII<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><a href="https://en.wikipedia.org/wiki/Zipf%27s_law">https://en.wikipedia.org/wiki/Zipf%27s_law</a><a href="#fnref3">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+
+    
+
+
+<div class="article-tags">
+  
+  <a class="label label-default" href="https://slamara.github.io/tags/nlp/">NLP</a>
+  
+  <a class="label label-default" href="https://slamara.github.io/tags/exploratory-data-analysis/">Exploratory Data Analysis</a>
+  
+  <a class="label label-default" href="https://slamara.github.io/tags/data-visualisation/">Data Visualisation</a>
+  
+</div>
+
+
+
+
+    
+    
+    
+
+    
+      
+      
+      
+      
+
+      
+      
+      
+      
+    
+
+  </div>
+</article>
+
+
+
+<footer class="site-footer">
+  <div class="container">
+
+    
+    <p class="powered-by">
+      <a href="https://slamara.github.io/privacy/">Privacy Policy</a>
+    </p>
+    
+
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        CommonHTML: { linebreaks: { automatic: true } },
+        tex2jax: { inlineMath: [ ['$', '$'], ['\\(','\\)'] ], displayMath: [ ['$$','$$'], ['\\[', '\\]'] ], processEscapes: false },
+        TeX: { noUndefined: { attributes: { mathcolor: 'red', mathbackground: '#FFEEEE', mathsize: '90%' } } },
+        messageStyle: 'none'
+      });
+    </script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+
+  </body>
+</html>
+

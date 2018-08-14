@@ -11,6 +11,458 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Processing of Natural Language data using the Swiftkey dataset</title>
+      <link>https://slamara.github.io/project/swiftkey1/</link>
+      <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
+      
+      <guid>https://slamara.github.io/project/swiftkey1/</guid>
+      <description>&lt;div id=&#34;introduction-the-natural-language-processing&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Introduction: The Natural Language Processing&lt;/h3&gt;
+&lt;p&gt;The Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.&lt;/p&gt;
+&lt;p&gt;Specific packages in R were implemented for NLP. The most used ones for each domain of application include (but not limited to):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Data preparation&lt;/strong&gt;: tm, stringi, stringr, readtext,…&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Text analysis&lt;/strong&gt;: text2vec, koRpus, tidytext,…&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Advanced NLP&lt;/strong&gt; (lemmatization, speach tagging, syntax): spacyr, coreNLP, koRpus,…&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For its part, the library &lt;strong&gt;quanteda&lt;/strong&gt; operates efficiently on all previous domains.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;exploring-the-dataset&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Exploring the Dataset&lt;/h3&gt;
+&lt;p&gt;The data used in this project, is provided by &lt;a href=&#34;https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;amp;activetab=pivot_1%3aprimaryr2&#34;&gt;Swiftkey&lt;/a&gt;, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip&#34;&gt;dataset&lt;/a&gt; consists in a collection of raw texts from three different sources: blogs, news and twitter. These collections come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.&lt;/p&gt;
+&lt;p&gt;Depending on its origin, the text in each file can highly differ from the grammatical, syntactic, and lexical point of view (vocabulary, used abbreviations, text construction,…). The general features of each file are shown below.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(readtext)
+library(qdap)
+library(stringr)
+library(quanteda)
+library(ggplot2)
+library(data.table)
+library(gridExtra)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# To handle the occurrence of special characters that could interrupt the 
+# reading of the files, I read them in a binary mode.
+# The NULL charachter is also excluded during the reading phase.
+
+con1 &amp;lt;- file(&amp;quot;./swiftkey1/en_US.blogs.txt&amp;quot;, &amp;quot;rb&amp;quot;)
+con2 &amp;lt;- file(&amp;quot;./swiftkey1/en_US.news.txt&amp;quot;, &amp;quot;rb&amp;quot;)
+con3 &amp;lt;- file(&amp;quot;./swiftkey1/en_US.twitter.txt&amp;quot;, &amp;quot;rb&amp;quot;)
+
+file1 &amp;lt;- readLines(con1, skipNul = TRUE)
+file2 &amp;lt;- readLines(con2, skipNul = TRUE)
+file3 &amp;lt;- readLines(con3, skipNul = TRUE)
+
+summary &amp;lt;- data.frame(File= c(&amp;quot;en_US.blogs.txt&amp;quot;, 
+                              &amp;quot;en_US.news.txt&amp;quot;, 
+                              &amp;quot;en_US.twitter.txt&amp;quot;),
+                      
+                      Size_in_MB = c(file.info(&amp;quot;./swiftkey1/en_US.blogs.txt&amp;quot;)$size / (1024**2), 
+                                     file.info(&amp;quot;./swiftkey1/en_US.news.txt&amp;quot;)$size / (1024**2), 
+                                     file.info(&amp;quot;./swiftkey1/en_US.twitter.txt&amp;quot;)$size / (1024**2)),
+                      
+                      Nb_of_rows = c(length(file1), 
+                                     length(file2), 
+                                     length(file3)),
+                      
+                      Max_Nb_Characters_per_row = c(max(nchar(file1)), 
+                                                    max(nchar(file2)), 
+                                                    max(nchar(file3))),
+                      
+                      Min_Nb_Characters_per_row = c(min(nchar(file1)), 
+                                                    min(nchar(file2)), 
+                                                    min(nchar(file3)))
+                      )
+close(con1, con2, con3)
+kable(summary)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;File&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Size_in_MB&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Nb_of_rows&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Max_Nb_Characters_per_row&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Min_Nb_Characters_per_row&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;en_US.blogs.txt&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;200.4242&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;899288&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40835&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;en_US.news.txt&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;196.2775&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1010242&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11384&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;en_US.twitter.txt&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;159.3641&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2360148&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;213&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;processing-of-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Processing of Data&lt;/h3&gt;
+&lt;p&gt;As explained previously, each file is investigated separately to spot its specific characteristics. The files are read with &lt;strong&gt;readLines&lt;/strong&gt; in a binary mode to avoid any crashes due to the occurrence of special characters.&lt;/p&gt;
+&lt;p&gt;The processing is done as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the text is converted from UTF-8 (the main encoding in the internet&lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;) to ASCII&lt;a href=&#34;#fn2&#34; class=&#34;footnoteRef&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; and all non-convertible characters are excluded,&lt;/li&gt;
+&lt;li&gt;a text corpus is created with the read data,&lt;/li&gt;
+&lt;li&gt;the corpus is reshaped in an aggregation of sentences,&lt;/li&gt;
+&lt;li&gt;all contractions such as &lt;strong&gt;I’d&lt;/strong&gt; or &lt;strong&gt;won’t&lt;/strong&gt; are replaced by their complete forms,&lt;/li&gt;
+&lt;li&gt;all abbreviations such as &lt;strong&gt;Dr.&lt;/strong&gt; or &lt;strong&gt;Mr.&lt;/strong&gt; are replaced by their complete forms,&lt;/li&gt;
+&lt;li&gt;same for all ordinals such as &lt;strong&gt;1st&lt;/strong&gt;,&lt;/li&gt;
+&lt;li&gt;one character strings, with the exception of “I” and “a”, are also excluded.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Since the processed corpus could be very big, the function offers the possibility to save it in an RDS file for later use or to free the memory. The function permits also to work on a subsample representing 5% of the complete data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# x: c(&amp;quot;blogs&amp;quot;|&amp;quot;news&amp;quot;|&amp;quot;twitter&amp;quot;)
+
+crps_prcs &amp;lt;- function(x, sampling = FALSE, savefile = FALSE) {
+    
+    con &amp;lt;- file(paste0(&amp;quot;./swiftkey1/en_US.&amp;quot;, x, &amp;quot;.txt&amp;quot;), &amp;quot;rb&amp;quot;)
+    crps &amp;lt;- readLines(con, skipNul = TRUE)  #read text files
+    close(con)
+    if (sampling) {
+        crps &amp;lt;- crps[rbinom(length(crps)*.05, length(crps), .5)]
+    }
+    crps &amp;lt;- iconv(crps, from = &amp;quot;UTF-8&amp;quot;, to = &amp;quot;ASCII&amp;quot;, sub=&amp;quot;&amp;quot;)
+    corpus &amp;lt;- corpus(crps)
+    corpus &amp;lt;- corpus_reshape(corpus, to = &amp;quot;sentences&amp;quot;)
+    corpus &amp;lt;- replace_contraction(corpus)
+    corpus &amp;lt;- replace_abbreviation(corpus)
+    corpus &amp;lt;- replace_ordinal(corpus)
+    corpus &amp;lt;- gsub(&amp;quot;\\W[^0-9AaIi](( )[^0-9AaIi])*\\W&amp;quot;, &amp;quot; &amp;quot;, corpus) #remove all one-character strings except &amp;quot;I&amp;quot; and &amp;quot;a&amp;quot;
+    if (savefile){
+        saveRDS(corpus, file = paste0(&amp;quot;./swiftkey1/corpus_&amp;quot;, x, &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: corpus_&amp;quot;, x, &amp;quot;.RDs&amp;quot;))
+    }
+    else {
+        corpus
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;tokenisation-and-construction-of-the-document-term-matrix&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Tokenisation and construction of the document-term matrix&lt;/h3&gt;
+&lt;p&gt;To compute the frequency of occurrence of each word, the text is transformed to lower case and splitted in tokens with all punctuation, numbers and (specific) symbols removed. English stopwords such as &lt;strong&gt;the&lt;/strong&gt; can also be excluded when needed. In some specific applications when occurrence of particular words is investigated, words with different morphological variations but same meaning can be considered as one and replaced by their root (e.g. the words “happy”, “happiest”, “happier” are replaced by “happi”). This processing is called &lt;strong&gt;stemming&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Once the tokens are computed, one can move to the next step which is the computation of the document-term matrix.&lt;/p&gt;
+&lt;p&gt;The document-term matrix (DTM) is a sparse matrix representation allowing the algebraic analysis of the data. The rows of this matrix represent the unit element of the corpus (sentence or document), the columns represent the tokens, and the cells indicate their frequency in each element. The DTMs can be computed for tokens of one word (1-gram) or a sequence of a consecutive n words (n-grams). A token comprising one word is thus referred as unigram, two words as a bigram, three words as a trigram, and so on.&lt;/p&gt;
+&lt;p&gt;Since the computation of the DTM is time consuming and resources requiring, especially for higher order n-grams, I chosed to accomplish all the processing before computing the DTMs (in the tokenisation step). Yet, it is also possible to accomplish most of the processing directly when setting up the DTM with the function &lt;strong&gt;dfm&lt;/strong&gt; from quanteda.&lt;/p&gt;
+&lt;p&gt;As an input, my function can take an Rds file, as well as a corpus object.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# x : corpus or string (c(&amp;quot;blogs&amp;quot;|&amp;quot;news&amp;quot;|&amp;quot;twitter&amp;quot;))
+# n : N-Gram
+
+dfm_comp &amp;lt;- function(x, n, stem = FALSE, stopwords = FALSE, savefile = FALSE) {
+    
+    if (is.character(x)) {
+        dat &amp;lt;- readRDS(paste0(&amp;quot;./swiftkey1/corpus_&amp;quot;, x, &amp;quot;.RDs&amp;quot;))
+    }
+    toks &amp;lt;- tokens(char_tolower(dat), remove_punct = TRUE, remove_numbers = TRUE, 
+                   remove_symbols = TRUE, remove_separators = TRUE, 
+                   remove_url = TRUE, remove_twitter = TRUE, concatenator = &amp;quot; &amp;quot;)
+    
+    if (stopwords) {
+        toks &amp;lt;- tokens_remove(toks, stopwords(&amp;quot;english&amp;quot;))
+    }
+    
+    if (stem) {
+        toks &amp;lt;- tokens_wordstem(toks)
+    }
+    dfm &amp;lt;- dfm(toks, ngrams = n)
+    if (savefile){
+        saveRDS(dfm, file = paste0(&amp;quot;./swiftkey1/dfm_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: dfm_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+    }
+    else {
+        dfm
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;All DTMs computed for each file given a specific n-gram can also be joined in one:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# all files for: c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;), 
+# n : N-Gram
+
+dfm_bind_all &amp;lt;- function(n, savefile = FALSE) {
+    
+    docs &amp;lt;- c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;)
+    files &amp;lt;- paste0(&amp;quot;./swiftkey1/dfm_&amp;quot;, docs, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;)
+    dfm &amp;lt;- readRDS(head(files, 1))
+    for (x in tail(files, length(files)-1)) {
+        dfm_temp &amp;lt;- readRDS(x)
+        dfm &amp;lt;- rbind(dfm, dfm_temp)
+    }
+    if (savefile) {
+        saveRDS(dfm, file = paste0(&amp;quot;./swiftkey1/dfm_all_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: dfm_all_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+    }
+    else {
+        dfm
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;frequency-of-words-occurrence&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Frequency of word’s occurrence&lt;/h3&gt;
+&lt;p&gt;The frequency of occurrence of each word in the DTM is computed using the function &lt;strong&gt;topfeatures&lt;/strong&gt; in quanteda. Adding to the computation of the topfeatures, the function I implemented permits also to compute the cumulative sum of all features, from the most to the least frequent one. The results of this cumulative sum can be used to plot the Zipf’s graph.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# x: dfm or string (c(&amp;quot;blogs&amp;quot;|&amp;quot;news&amp;quot;|&amp;quot;twitter&amp;quot;|&amp;quot;all&amp;quot;)), 
+# n: N-Gram
+
+topfeat_comp &amp;lt;- function(x, n, cumulate = FALSE, savefile = FALSE) {
+    
+    if (is.character(x) &amp;amp; !missing(n)) {
+        dfm &amp;lt;- readRDS(paste0(&amp;quot;./swiftkey1/dfm_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+    } else {
+        dfm &amp;lt;- x
+    }
+    tpf &amp;lt;- topfeatures(dfm, length(dfm))
+    if (cumulate) {
+        cumul &amp;lt;- cumsum(tpf)
+    }
+    if (savefile &amp;amp;&amp;amp; is.character(x) &amp;amp; !missing(n)) {
+        saveRDS(tpf, file = paste0(&amp;quot;./swiftkey1/tpf_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: tpf_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        if (cumulate) {
+            saveRDS(cumul, file = paste0(&amp;quot;./swiftkey1/cumulate_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+            print(paste0(&amp;quot;file saved: cumulate_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        }
+    }
+    else if (savefile &amp;amp; !is.character(x)) {
+        saveRDS(tpf, file = paste0(&amp;quot;./swiftkey1/tpf_&amp;quot;, deparse(substitute(x)), &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: tpf_&amp;quot;, deparse(substitute(x)), &amp;quot;.RDs&amp;quot;))
+        if (cumulate) {
+            saveRDS(cumul, file = paste0(&amp;quot;./swiftkey1/cumulate_&amp;quot;, deparse(substitute(x)), &amp;quot;.RDs&amp;quot;))
+            print(paste0(&amp;quot;file saved: cumulate_&amp;quot;, deparse(substitute(x)), &amp;quot;.RDs&amp;quot;))
+        }
+    }
+    else {
+        if (cumulate) {
+            return(list(tpf, cumul))
+        }
+        else {
+            tpf
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-zipfs-law&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The Zipf’s law&lt;/h3&gt;
+&lt;p&gt;The Zipf’s law&lt;a href=&#34;#fn3&#34; class=&#34;footnoteRef&#34; id=&#34;fnref3&#34;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt; was formulated by the american linguist George Kingsley Zipf. It states that:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;the frequency of any word is inversely proportional to its rank in the frequency table. Thus the most frequent word will occur approximately twice as often as the second most frequent word, three times as often as the third most frequent word.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The Zipf’s graph (including stopwords) for each of the three files of the dataset, as well as for the total one, can be built using the cumulative sums computed with the previous function, as follows:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# n: n-gram
+# threshold: to shade the area beneath the th-percentile
+# maxrank: limit of the x axis
+
+plot_zipf_all &amp;lt;- function(n, threshold = 0.95, maxrank = 100000) {
+    
+    df &amp;lt;- data.frame()
+    files &amp;lt;- c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;, &amp;quot;all&amp;quot;)
+    for (x in files) {
+        cumulate &amp;lt;- readRDS(paste0(&amp;quot;./swiftkey1/cumulate_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+        mx &amp;lt;- max(cumulate)
+        if (x == &amp;quot;all&amp;quot;) {
+            dat &amp;lt;- c(sum((cumulate / mx) &amp;lt; 0.5), +
+                         sum((cumulate / mx) &amp;lt; 0.9), +
+                         sum((cumulate / mx) &amp;lt; 0.95), +
+                         sum((cumulate / mx) &amp;lt; 0.99), +
+                         length(cumulate))
+        }
+        if (length(cumulate) &amp;gt; maxrank){
+            cumulate &amp;lt;- cumulate[1:maxrank]
+        }
+        rate &amp;lt;- lapply(cumulate, function(x){x/mx})
+        df_temp &amp;lt;- data.frame(Docs = x, Rank = 1:length(cumulate), Rate = as.numeric(rate))
+        df &amp;lt;- rbind(df, df_temp)
+    }
+    tab &amp;lt;- cbind(Rate = c(&amp;quot;50%&amp;quot;, &amp;quot;90%&amp;quot;, &amp;quot;95%&amp;quot;, &amp;quot;99%&amp;quot;, &amp;quot;100%&amp;quot;), Rank = dat)
+    g &amp;lt;- tableGrob(tab, rows = NULL, theme = ttheme_default(base_size = 6))
+    ggplot(df, aes(x = Rank, y = Rate, Docs = Docs)) +
+        geom_line(size = 1) + 
+        geom_ribbon(data = subset(df, Rate &amp;gt; 0 &amp;amp; Rate &amp;lt; threshold), 
+                    aes(x = Rank, ymax = Rate, fill = Docs), ymin = 0, alpha = 0.3) +
+        xlim(0, maxrank) +
+        labs(x = &amp;quot;Word&amp;#39;s Rank&amp;quot;, y = &amp;quot;Occurrence Rate&amp;quot;) +
+        labs(title = paste0(&amp;quot;Zipf&amp;#39;s Graph of all files for n-gram = &amp;quot;, n)) +
+        annotation_custom(g, xmin = 6/8 * maxrank, xmax = maxrank, 
+                          ymin = 1/8 * max(df$Rate), ymax = 4/8 * max(df$Rate))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The graph presents the variation of the cumulative occurrence rate depending on words rank, from the most to the least frequent word. The area representing the 95th percentile of the cumulative occurrence rate is shaded and a table with the corresponding rank, for different percentiles, is also shown (only for the &lt;strong&gt;complete dataset&lt;/strong&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-probability-of-occurrence-of-a-specific-word&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The probability of occurrence of a specific word&lt;/h3&gt;
+&lt;p&gt;One important application of the NLP is the prediction of the following word while typing in smartphones and tablets keyboards. This prediction is done by counting the number of times a word in a dataset follows a specific n-gram (see &lt;a href=&#34;https://web.stanford.edu/~jurafsky/slp3/3.pdf&#34;&gt;here&lt;/a&gt; for more details). This counting can then be used to compute the probability of occurrence of each possible combination and thus, find the most probable ones. As this will be a topic of another post, I only show here my function to compute the (simple) probability of occurrence.&lt;/p&gt;
+&lt;p&gt;Within this function, only the RDS files of the top features are used. After reading, the n-grams are splitted in base and predicted parts: the predicted contains the last word of the n-gram while the rest is put in base (the used separator is the underscore). To handle very big files with millions of n-grams, I make benefit from the power of &lt;strong&gt;data.table&lt;/strong&gt;. The function also permits to exclude combinations with low probabilities by specifying appropriate cut-offs for both base and predicted parts.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# x &amp;lt;- (&amp;quot;all&amp;quot; | &amp;quot;blogs&amp;quot; | &amp;quot;news&amp;quot; | &amp;quot;twitter&amp;quot;), 
+# n: N-Gram, 
+# minCount: cut-off count
+
+prob_comp &amp;lt;- function(x, n, minCount = 1, savefile = TRUE){ 
+    
+    tpf &amp;lt;- readRDS(paste0(&amp;quot;./swiftkey1/tpf_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;.RDs&amp;quot;))
+    tpf &amp;lt;- data.table(names(tpf), tpf)
+    colnames(tpf) &amp;lt;- c(&amp;quot;ngram&amp;quot;, &amp;quot;count&amp;quot;)
+    
+#POST-FILTERING of words with additional undescores
+    tpf &amp;lt;- tpf[!grepl(paste0(&amp;quot;^(.*_){&amp;quot;, n, &amp;quot;,}&amp;quot;), tpf$ngram)] 
+    if (n == 1){
+        tpf[, c(&amp;quot;base&amp;quot;, &amp;quot;pred&amp;quot;) := list(sub(&amp;quot;_[^_]*$&amp;quot;, &amp;quot;\\1&amp;quot;, ngram), &amp;quot;&amp;quot;)]
+    }
+    else{
+        tpf[, c(&amp;quot;base&amp;quot;, &amp;quot;pred&amp;quot;) := list(sub(&amp;quot;_[^_]*$&amp;quot;, &amp;quot;\\1&amp;quot;, ngram), sub(&amp;quot;^.+_&amp;quot;, &amp;quot;\\1&amp;quot;, ngram))]
+    }
+    setkey(tpf, base)
+    tpf[, prob := count/sum(count), by = base]
+    tpf &amp;lt;- tpf[!(tpf$count &amp;lt;= minCount &amp;amp; tpf$prob == 1),]
+    tpf &amp;lt;- tpf[tpf[,head(.I,3),by=base]$V1,]
+    tpf &amp;lt;- data.table(base = tpf$base, pred = tpf$pred, count = tpf$count)
+    if (savefile) {
+        saveRDS(tpf, file = paste0(&amp;quot;./swiftkey1/tpf_prob_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;_cutoff_&amp;quot;, minCount, &amp;quot;.RDs&amp;quot;))
+        print(paste0(&amp;quot;file saved: tpf_prob_&amp;quot;, x, &amp;quot;_&amp;quot;, n, &amp;quot;_cutoff_&amp;quot;, minCount, &amp;quot;.RDs&amp;quot;))
+    }
+    else {
+        tpf
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;application&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Application&lt;/h3&gt;
+&lt;p&gt;Since the dataset is relatively big, I use only 5% of each file to perform the EDA. The sampling is done using a binomial distribution as shown previously.&lt;/p&gt;
+&lt;p&gt;The workflow of the application is:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Compute the corpus for blogs, news, and twitter
+lapply(c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;), 
+       function(x){crps_prcs(x, sampling = TRUE, savefile = TRUE)})
+
+# Compute the DTM for blogs, news, and twitter
+lapply(c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;), 
+       function(x){for (i in seq(1:3)){dfm_comp(x, i, stopwords = TRUE, savefile = TRUE)}})
+
+# Join all DTMs in one
+lapply(seq(1:3), function(x){dfm_bind_all(x, savefile = TRUE)})
+
+# Compute the top features for blogs, news, and twitter and all dataset
+lapply(c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&amp;quot;, &amp;quot;all&amp;quot;), 
+       function(x){for (i in seq(1:3)){topfeat_comp(x, i, cumulate = TRUE, savefile = TRUE)}})&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;zipfs-graphs&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Zipf’s graphs&lt;/h4&gt;
+&lt;p&gt;Not surprisingly, the graph from the twitter file is quite different from the others with a narrower vocabulary content compensated by a more frequent use of top words. The longer tail of the graph for the complete dataset gives also an indication on how the vocabulary content differs from a file to another, as each one adds to the total number of words. This is apparent especially for the bigram and the trigram.&lt;/p&gt;
+&lt;p&gt;The Zipf’s law seems to be respected by all files especially for the unigram. However, as the effect of the stopwords decreases for the bigram and trigram, the Zipf’s law becomes less noticeable. The same effect could also be seen for the unigram when excluding the stopwords in the processing steps.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(1, maxrank = 25000)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(2, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(3, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;In order to show the features of each file, I exclude the stopwords for what follows:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;top-features-for-the-blogs-news-and-twitter&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Top features for the blogs, news, and twitter&lt;/h4&gt;
+&lt;div id=&#34;unigram&#34; class=&#34;section level5&#34;&gt;
+&lt;h5&gt;Unigram&lt;/h5&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dtm1 &amp;lt;- readRDS(&amp;quot;./swiftkey1/without_stopwords/dfm_blogs_1.RDs&amp;quot;)
+dtm2 &amp;lt;- readRDS(&amp;quot;./swiftkey1/without_stopwords/dfm_news_1.RDs&amp;quot;)
+dtm3 &amp;lt;- readRDS(&amp;quot;./swiftkey1/without_stopwords/dfm_twitter_1.RDs&amp;quot;)
+
+topFeats1 &amp;lt;- topfeatures(dtm1, 20)
+topFeats2 &amp;lt;- topfeatures(dtm2, 20)
+topFeats3 &amp;lt;- topfeatures(dtm3, 20)
+
+topDf1 &amp;lt;- data.frame(features = names(topFeats1), freq = topFeats1)
+topDf2 &amp;lt;- data.frame(features = names(topFeats2), freq = topFeats2)
+topDf3 &amp;lt;- data.frame(features = names(topFeats3), freq = topFeats3)
+
+p1 &amp;lt;- ggplot(data = topDf1, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &amp;quot;identity&amp;quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &amp;quot;Feature&amp;quot;, y = &amp;quot;Frequency&amp;quot;) + 
+    labs(title = expression(&amp;quot;Blogs&amp;quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+p2 &amp;lt;- ggplot(data = topDf2, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &amp;quot;identity&amp;quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &amp;quot;Feature&amp;quot;, y = &amp;quot;Frequency&amp;quot;) + 
+    labs(title = expression(&amp;quot;News&amp;quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+p3 &amp;lt;- ggplot(data = topDf3, aes(x = reorder(features, freq), 
+                                y = freq, 
+                                fill = features)) + 
+    geom_bar(stat = &amp;quot;identity&amp;quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &amp;quot;Feature&amp;quot;, y = &amp;quot;Frequency&amp;quot;) + 
+    labs(title = expression(&amp;quot;Twitter&amp;quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)
+
+grid.arrange(p1, p2, p3, ncol = 3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bigram&#34; class=&#34;section level5&#34;&gt;
+&lt;h5&gt;Bigram&lt;/h5&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;trigram&#34; class=&#34;section level5&#34;&gt;
+&lt;h5&gt;Trigram&lt;/h5&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;unigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Unigram features for the complete dataset&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dtm &amp;lt;- readRDS(&amp;quot;./swiftkey1/without_stopwords/dfm_all_1.RDs&amp;quot;)
+
+textplot_wordcloud(dtm, 
+                   max_words = 50, 
+                   colors = c(&amp;quot;red&amp;quot;, &amp;quot;pink&amp;quot;, &amp;quot;green&amp;quot;, &amp;quot;purple&amp;quot;, &amp;quot;orange&amp;quot;, &amp;quot;blue&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;topFeats &amp;lt;- topfeatures(dtm, 20)
+
+topDf &amp;lt;- data.frame(features = names(topFeats), freq = topFeats)
+
+ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)) + 
+    geom_bar(stat = &amp;quot;identity&amp;quot;, position = position_dodge()) + 
+    theme_minimal() + 
+    labs(x = &amp;quot;Feature&amp;quot;, y = &amp;quot;Frequency&amp;quot;) + 
+    labs(title = expression(&amp;quot;Features Frequencies&amp;quot;)) + 
+    coord_flip() + 
+    guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Bigram features for the complete dataset&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;trigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Trigram features for the complete dataset&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;References&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;one could also use the function &lt;strong&gt;guess_encoding&lt;/strong&gt; from the package &lt;a href=&#34;https://www.rdocumentation.org/packages/readr/&#34;&gt;readr&lt;/a&gt; to have an “estimation” of the encoding&lt;a href=&#34;#fnref1&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn2&#34;&gt;&lt;p&gt;english is well encoded using ASCII&lt;a href=&#34;#fnref2&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn3&#34;&gt;&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Zipf%27s_law&#34;&gt;https://en.wikipedia.org/wiki/Zipf%27s_law&lt;/a&gt;&lt;a href=&#34;#fnref3&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Tuning XGBoost using grid search results in R</title>
       <link>https://slamara.github.io/post/xgboost/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
@@ -1433,7 +1885,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Sat Aug 11 00:30:47 2018 --&gt;
+&lt;!-- Tue Aug 14 21:12:17 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
