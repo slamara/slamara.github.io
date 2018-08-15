@@ -2,61 +2,61 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Data Visualisation on Samir Lamara</title>
-    <link>https://slamara.github.io/tags/data-visualisation/</link>
+    <link>/tags/data-visualisation/</link>
     <description>Recent content in Data Visualisation on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sat, 11 Aug 2018 17:25:50 +0200</lastBuildDate>
     
-	<atom:link href="https://slamara.github.io/tags/data-visualisation/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/data-visualisation/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Processing of Natural Language data using the Swiftkey dataset</title>
-      <link>https://slamara.github.io/project/swiftkey1/</link>
+      <title>Processing of Natural Language data: Application to a Swiftkey dataset</title>
+      <link>/project/swiftkey1/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/swiftkey1/</guid>
+      <guid>/project/swiftkey1/</guid>
       <description>Introduction: The Natural Language ProcessingThe Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.
 Specific packages in R were implemented for NLP.</description>
     </item>
     
     <item>
       <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>
-      <link>https://slamara.github.io/project/titanic/</link>
+      <link>/project/titanic/</link>
       <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/titanic/</guid>
+      <guid>/project/titanic/</guid>
       <description>OverviewThe Titanic left the port of Queensland (now Cobh), Ireland on April 11, 1912 with 2224 passengers 1. On early morning of Monday, 15 April 1912, sank the “unsinkable” after a collision with an iceberg dragging more than 2/3 of the passengers down to the bottom of the Atlantic Ocean.
 Due to the insufficient number of means of survival, the possibility to get in lifeboats would have obeyed to some kind of considerations: from the ethical “women and children first” to the more practical proximity to the Upper Deck which is itself related to the cabin class and thus to the socio-economic class of each passenger (see here the different levels of the Titanic).</description>
     </item>
     
     <item>
       <title>Impact of severe weather events in the United States</title>
-      <link>https://slamara.github.io/project/severeweather/</link>
+      <link>/project/severeweather/</link>
       <pubDate>Wed, 08 Aug 2018 17:08:23 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/severeweather/</guid>
+      <guid>/project/severeweather/</guid>
       <description>SynopsisSevere weather events have shown in the last decades an increasing threat on population safety and a costly impact on economy. Hence, their potential consequences should be studied for a better mitigation of their inherent risk. The U.S. National Oceanic and Atmospheric Administration (NOAA) has implemented a catalog where all characteristics of major storms and weather events in the United States from 1950 to November 2011 were collected. These characteristics include when and where these events occurred, as well as estimates of any fatalities, injuries, property and crop damages.</description>
     </item>
     
     <item>
       <title>Influence of automatic and manual transmission on fuel consumption</title>
-      <link>https://slamara.github.io/project/fuelconsumption/</link>
+      <link>/project/fuelconsumption/</link>
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/fuelconsumption/</guid>
+      <guid>/project/fuelconsumption/</guid>
       <description>Executive summary:The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (am) on the fuel consumption (mpg) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of mpg and am with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.
 In this short report, I start with an exploratory analysis and rapid graphical representation focusing roughly on the am and mpg.</description>
     </item>
     
     <item>
       <title>Personal activity monitoring</title>
-      <link>https://slamara.github.io/project/activitymonitoring/</link>
+      <link>/project/activitymonitoring/</link>
       <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/activitymonitoring/</guid>
+      <guid>/project/activitymonitoring/</guid>
       <description>IntroductionThis project makes use of data from a personal activity monitoring device which counts the number of steps taken by an anonymous individual in 5 minutes intervals throughout the day. The dataset was collected within a period of two months (October and November 2012).
 The variables included in this dataset are:
 steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
@@ -65,19 +65,19 @@ date: The date on which the measurement was taken in YYYY-MM-DD format</descript
     
     <item>
       <title>Evolution of fine particulate matter pollution in the US</title>
-      <link>https://slamara.github.io/project/airquality/</link>
+      <link>/project/airquality/</link>
       <pubDate>Wed, 08 Aug 2018 16:24:41 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/airquality/</guid>
+      <guid>/project/airquality/</guid>
       <description>Among the numerous air pollutants, the fine particulate matter (PM2.5) is one of the most harmful to human health. In the US, the Environmental Protection Agency (EPA) is in charge of setting the ambient air quality standards, tracking the emissions of the pollutants into the atmosphere, and releasing a database on emissions approximatly every 3 years. This database is known as the National Emissions Inventory (NEI). For more details, see the EPA National Emissions Inventory web site.</description>
     </item>
     
     <item>
       <title>Individual household electric power consumption</title>
-      <link>https://slamara.github.io/project/electricpconsumption/</link>
+      <link>/project/electricpconsumption/</link>
       <pubDate>Wed, 08 Aug 2018 16:08:18 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/electricpconsumption/</guid>
+      <guid>/project/electricpconsumption/</guid>
       <description>The goal of this project is to examine how household energy usage varies over a 2-day period in February, 2007 using the base plotting system. The data used in here (in particular, the “Individual household electric power consumption Data Set”) are from the UC Irvine Machine Learning Repository, a popular repository for machine learning datasets.
 library(sqldf)library(dplyr)library(ggplot2)# Estimate the memory usagepaste0(&amp;quot;As the dataset has 2880 rows and 9 columns, it requires about &amp;quot;, round(2880 * 9 * 8 / 2^20, 2), &amp;quot; Megabytes in memory.</description>
     </item>

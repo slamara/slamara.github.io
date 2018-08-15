@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Samir Lamara on Samir Lamara</title>
-    <link>https://slamara.github.io/</link>
+    <link>/</link>
     <description>Recent content in Samir Lamara on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
@@ -11,11 +11,11 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Processing of Natural Language data using the Swiftkey dataset</title>
-      <link>https://slamara.github.io/project/swiftkey1/</link>
+      <title>Processing of Natural Language data: Application to a Swiftkey dataset</title>
+      <link>/project/swiftkey1/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/swiftkey1/</guid>
+      <guid>/project/swiftkey1/</guid>
       <description>&lt;div id=&#34;introduction-the-natural-language-processing&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Introduction: The Natural Language Processing&lt;/h3&gt;
 &lt;p&gt;The Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.&lt;/p&gt;
@@ -353,11 +353,11 @@ lapply(c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&
 &lt;p&gt;Not surprisingly, the graph from the twitter file is quite different from the others with a narrower vocabulary content compensated by a more frequent use of top words. The longer tail of the graph for the complete dataset gives also an indication on how the vocabulary content differs from a file to another, as each one adds to the total number of words. This is apparent especially for the bigram and the trigram.&lt;/p&gt;
 &lt;p&gt;The Zipf’s law seems to be respected by all files especially for the unigram. However, as the effect of the stopwords decreases for the bigram and trigram, the Zipf’s law becomes less noticeable. The same effect could also be seen for the unigram when excluding the stopwords in the processing steps.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(1, maxrank = 25000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(2, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(3, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;In order to show the features of each file, I exclude the stopwords for what follows:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;top-features-for-the-blogs-news-and-twitter&#34; class=&#34;section level4&#34;&gt;
@@ -407,15 +407,15 @@ p3 &amp;lt;- ggplot(data = topDf3, aes(x = reorder(features, freq),
     guides(fill=FALSE)
 
 grid.arrange(p1, p2, p3, ncol = 3)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;bigram&#34; class=&#34;section level5&#34;&gt;
 &lt;h5&gt;Bigram&lt;/h5&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;trigram&#34; class=&#34;section level5&#34;&gt;
 &lt;h5&gt;Trigram&lt;/h5&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;unigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
@@ -425,7 +425,7 @@ grid.arrange(p1, p2, p3, ncol = 3)&lt;/code&gt;&lt;/pre&gt;
 textplot_wordcloud(dtm, 
                    max_words = 50, 
                    colors = c(&amp;quot;red&amp;quot;, &amp;quot;pink&amp;quot;, &amp;quot;green&amp;quot;, &amp;quot;purple&amp;quot;, &amp;quot;orange&amp;quot;, &amp;quot;blue&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;topFeats &amp;lt;- topfeatures(dtm, 20)
 
 topDf &amp;lt;- data.frame(features = names(topFeats), freq = topFeats)
@@ -437,15 +437,15 @@ ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)
     labs(title = expression(&amp;quot;Features Frequencies&amp;quot;)) + 
     coord_flip() + 
     guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;bigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Bigram features for the complete dataset&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/DFM_ng2-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/DFM_ng2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;trigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Trigram features for the complete dataset&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/DFM_ng3-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/project/swiftkey1_files/figure-html/DFM_ng3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level3&#34;&gt;
@@ -464,10 +464,10 @@ ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)
     
     <item>
       <title>Tuning XGBoost using grid search results in R</title>
-      <link>https://slamara.github.io/post/xgboost/</link>
+      <link>/post/xgboost/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
-      <guid>https://slamara.github.io/post/xgboost/</guid>
+      <guid>/post/xgboost/</guid>
       <description>&lt;div id=&#34;what-is-xgboost&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;What is XGBoost?&lt;/h3&gt;
 &lt;p&gt;The e(X)treme Gradient Boosting (XGBoost) is an algorithm implemented for gradient boosted decision trees with focus on high speed and optimal model performance. During the last three years, the algorithm has become very popular among Kagglers and data scientists in industry, due to its high performance on applied machine learning problems involving structured data within classification, regression or ranking scopes.&lt;/p&gt;
@@ -668,10 +668,10 @@ xgbpred &amp;lt;- ifelse(xgbpred &amp;gt; 0.5, 1, 0)&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>
-      <link>https://slamara.github.io/project/titanic/</link>
+      <link>/project/titanic/</link>
       <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/titanic/</guid>
+      <guid>/project/titanic/</guid>
       <description>&lt;div id=&#34;overview&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Overview&lt;/h3&gt;
 &lt;p&gt;The Titanic left the port of Queensland (now Cobh), Ireland on April 11, 1912 with 2224 passengers &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. On early morning of Monday, 15 April 1912, sank the “unsinkable” after a collision with an iceberg dragging more than 2/3 of the passengers down to the bottom of the Atlantic Ocean.&lt;/p&gt;
@@ -756,7 +756,7 @@ train$Survived &amp;lt;- factor(train$Survived, levels = c(0,1), labels = c(&amp
 ## &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;One important aspect when predicting using machine learning is the assessment of the completeness of the data (percentage of data with one or more values).&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;missmap(train, main = &amp;quot;Missing Values Analysis&amp;quot;, col=c(&amp;quot;red&amp;quot;, &amp;quot;gray&amp;quot;)) # how many observations are missing&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/missing-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/missing-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sapply(train, function(x) sum(is.na(x))) # how many observations are missing&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## PassengerId    Survived      Pclass        Name         Sex         Age 
 ##           0           0           0           0           0         177 
@@ -781,7 +781,7 @@ train$NameCat[train$NameCat %in% c(&amp;quot;Capt&amp;quot;, &amp;quot;Col&amp;q
 train$NameCat[train$NameCat %in% c(&amp;quot;Don&amp;quot;, &amp;quot;Jonkheer&amp;quot;, &amp;quot;Lady&amp;quot;, &amp;quot;Sir&amp;quot;, &amp;quot;the Countess&amp;quot;)] &amp;lt;- &amp;quot;Noble&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Please note however, that, contrary to what one might think, the category “Master” was used at the time to identify male children.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(train, aes(x = NameCat, y = Age)) + geom_boxplot(aes(fill=Survived)) + theme_bw()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/bxplt_NameCat-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/bxplt_NameCat-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;create-age-categories&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Create Age categories&lt;/h4&gt;
@@ -817,7 +817,7 @@ ggplot(train, aes(y = SibSp, x = Parch)) +
     theme_bw() +
     geom_vline(xintercept = 3, color = &amp;#39;black&amp;#39;, lty=5) +
     geom_hline(yintercept = 3, color = &amp;#39;black&amp;#39;, lty=5)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;It appears here that passengers with SibSp or Parch greater than 3 (i.e. the passenger belonged to a family of more than 4 members) had a smaller chance to survive. I introduce thus another predictor variable which classify the passengers according to the count of their relatives on board.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 5. train$FamCat
 
@@ -856,7 +856,7 @@ p3 &amp;lt;-  ggplot(data = train, aes(x = AgeCat, fill = Survived)) +
     theme_bw()
 
 grid.arrange(p1, p2, p3, layout_matrix = cbind(c(1,3), c(2,3)), widths=c(2,3))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/DEDA-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/DEDA-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The percentage of survival is about 38.4%&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   train$Sex train$Survived
 ## 1    female       74.20382
@@ -878,7 +878,7 @@ p2 &amp;lt;- ggplot(data = train, aes(x = FamCat, fill = Survived)) +
     theme_bw()
 
 grid.arrange(p1, p2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;##   train$HasFam train$Survived
 ## 1           no       30.35382
 ## 2          yes       50.56497&lt;/code&gt;&lt;/pre&gt;
@@ -898,7 +898,7 @@ p1 &amp;lt;-  ggplot(data = train, aes(x = Pclass, fill = Survived)) +
     theme_bw()
 
 grid.arrange(p1, p2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;##   train$Pclass train$Survived
 ## 1            1       62.96296
 ## 2            2       47.28261
@@ -912,24 +912,24 @@ ggplot(train, aes(x = PassengerId, y = Fare, color = Survived)) +
     geom_point() + 
     theme_bw() + 
     facet_grid(. ~ Sex)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The variable Fare seems also to correlate globally to age categories and can thus be of a good benefit when imputing the missing ageCat values. Nevertheless, to overcome the skewed distribution of the variable Fare, an appropriate less sensitive classifier method should be used (Random Forest or Gradient Boosting Method can do the job in such cases)&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# How evolves the Fare according to passengers age (depending on age categories)
 ggplot(train,aes(x = Age,y = Fare, color = AgeCat)) + geom_point(shape = 1) + 
      geom_smooth(method=&amp;#39;lm&amp;#39;) + scale_y_continuous(limits = c(0, 300)) + 
     theme_bw()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# How evolves the Fare according to passengers age (overall)
 ggplot(train,aes(x = Age,y = Fare)) + geom_point(color = &amp;quot;red&amp;quot;) + 
     geom_smooth(method=&amp;#39;lm&amp;#39;) + scale_y_continuous(limits = c(0, 300)) + 
     theme_bw()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-14-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-14-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Concerning the passengers titles, the proportions of survival for each category correlate to age categories and sex as pointed out above. One can notice also that certain categories such as Doctors, servicemen or clerics did not survive for the majority (did not even tried to leave the Titanic?).&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Relationship between survival and name categories
 ggplot(data = train, aes(x = NameCat, fill = Survived)) + 
     geom_bar(position = &amp;quot;dodge&amp;quot;) + 
     theme_bw()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;aggregate(train$Survived ~ train$NameCat, FUN= function(x) sum(x == &amp;quot;yes&amp;quot;) / length(x) * 100)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   train$NameCat train$Survived
 ## 1            Dr       42.85714
@@ -950,13 +950,13 @@ p &amp;lt;- ggplot(data = train, aes(Pclass, fill = Pclass)) +
     theme_bw()
 
 p + facet_grid(. ~ NameCat)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/curiosity-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/curiosity-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Relationship between age categories and passengers class 
 # (interesting concerning the category &amp;quot;missing&amp;quot; which seems, according to its
 # distribution, to be close to &amp;quot;adult&amp;quot;) (suppose that most of the passengers with 
 # &amp;quot;missing&amp;quot; ages are in fact &amp;quot;adults&amp;quot;)
 p + facet_grid(. ~ AgeCat)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/curiosity-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/curiosity-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;data-imputation&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Data Imputation&lt;/h3&gt;
@@ -1026,7 +1026,7 @@ cfMatRFtrain$overall&lt;/code&gt;&lt;/pre&gt;
 ##     senior     5     0      0&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;importanceRFtrain &amp;lt;- varImp(modelRFtrain,scale = FALSE)
 plot(importanceRFtrain, top= 10)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/titanic_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/titanic_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The obtained model shows a very good accuracy on training subset. The most important predictors are resp. NameCat, Fare and FamCat. This result is not surprising as this relationship appeared clearly in the exploratory data analysis.&lt;/p&gt;
 &lt;p&gt;The missing values of AgeCat in train data are then predicted using the obtained RF model.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# predict for the missing AgeCat in train data set
@@ -1178,10 +1178,10 @@ write.csv(z, &amp;quot;Res.csv&amp;quot;, row.names=FALSE)&lt;/code&gt;&lt;/pre&
     
     <item>
       <title>Predicting correctness of weight lifting exercises</title>
-      <link>https://slamara.github.io/project/weightlifting/</link>
+      <link>/project/weightlifting/</link>
       <pubDate>Wed, 08 Aug 2018 17:17:52 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/weightlifting/</guid>
+      <guid>/project/weightlifting/</guid>
       <description>&lt;div id=&#34;background&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Background&lt;/h3&gt;
 &lt;p&gt;Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.&lt;/p&gt;
@@ -1327,7 +1327,7 @@ cfMatRPART$overall&lt;/code&gt;&lt;/pre&gt;
 ##          D   71  152  521    0   60
 ##          E   69  168  363    0  301&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fancyRpartPlot(modelRPART$finalModel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/ModelPredRPART-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/weightLifting_files/figure-html/ModelPredRPART-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The model obtained has a low accuracy of 55,66% and cannot be used to predict the results of the test data.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;gradient-boosting-method&#34; class=&#34;section level4&#34;&gt;
@@ -1415,14 +1415,14 @@ results$timings &lt;/code&gt;&lt;/pre&gt;
 ## GBM       172.27      32.25         NA
 ## RF        446.53      59.48         NA&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bwplot(results)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/compModels-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/weightLifting_files/figure-html/compModels-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Apart of the RPART method, the models obtained with the GBM and RF methods fit the test data very well. The standard deviations of the accuracies are also very small which suggests that the data collected with the body sensors is very accurate. The big difference in processing time between the GBM and RF methods (about the double) poses the problem of performance when using a time-consuming method for just a little improvement. Of course, for this project, one can afford using the RF method to predict the cases from the test data. However, once the data becomes very big, it is important to assess all these different aspects taking into consideration the acceptable margin of error.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;predictors-importance-in-random-forest&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Predictor’s importance in Random Forest&lt;/h3&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;importanceRF &amp;lt;- varImp(modelRF,scale = FALSE)
 plot(importanceRF, top= 10) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/predImportance-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/weightLifting_files/figure-html/predImportance-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;It is very interesting to notice that the most important predictors used in RF method are the &lt;strong&gt;&lt;em&gt;raw_timestamp_part_1&lt;/em&gt;&lt;/strong&gt; and the &lt;strong&gt;&lt;em&gt;num_window&lt;/em&gt;&lt;/strong&gt;. Since the data was recorded by body sensors using a sliding time window with different durations, it is therefore necessary to look at the observations according to their corresponding time stamp and window number. While this behavior is intuitive for a human being, the fact remains that it is not obvious for a machine. Fortunately, the RF algorithm permitted to learn from the data enough to spot this fact.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;application-to-the-test-data&#34; class=&#34;section level3&#34;&gt;
@@ -1452,10 +1452,10 @@ registerDoSEQ()&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Impact of severe weather events in the United States</title>
-      <link>https://slamara.github.io/project/severeweather/</link>
+      <link>/project/severeweather/</link>
       <pubDate>Wed, 08 Aug 2018 17:08:23 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/severeweather/</guid>
+      <guid>/project/severeweather/</guid>
       <description>&lt;div id=&#34;synopsis&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Synopsis&lt;/h2&gt;
 &lt;p&gt;Severe weather events have shown in the last decades an increasing threat on population safety and a costly impact on economy. Hence, their potential consequences should be studied for a better mitigation of their inherent risk. The U.S. National Oceanic and Atmospheric Administration (NOAA) has implemented a catalog where all characteristics of major storms and weather events in the United States from 1950 to November 2011 were collected. These characteristics include when and where these events occurred, as well as estimates of any fatalities, injuries, property and crop damages. The aim of the present analysis is to identify events that are most harmful to population health and economy across the United States.&lt;/p&gt;
@@ -1584,7 +1584,7 @@ InjPlot &amp;lt;- ggplot(head(aggreInjOrd,10), aes(x=reorder(EVTYPE, -x), y = x)
          y = &amp;quot;Number of Injuries&amp;quot;)
 
 grid.arrange(FatPlot, InjPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/severeWeather_files/figure-html/plot1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/severeWeather_files/figure-html/plot1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;st-fact&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;1st fact:&lt;/h3&gt;
@@ -1642,7 +1642,7 @@ CropPlot &amp;lt;- ggplot(head(aggreCropOrd,10), aes(x=reorder(EVTYPE, -x), y = 
          y = &amp;quot;Amount of crop damages&amp;quot;)
 
 grid.arrange(PropPlot, CropPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/severeWeather_files/figure-html/plot2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/severeWeather_files/figure-html/plot2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;nd-fact&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;2nd fact&lt;/h3&gt;
@@ -1654,10 +1654,10 @@ grid.arrange(PropPlot, CropPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Influence of automatic and manual transmission on fuel consumption</title>
-      <link>https://slamara.github.io/project/fuelconsumption/</link>
+      <link>/project/fuelconsumption/</link>
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/fuelconsumption/</guid>
+      <guid>/project/fuelconsumption/</guid>
       <description>&lt;div id=&#34;executive-summary&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Executive summary:&lt;/h2&gt;
 &lt;p&gt;The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (&lt;strong&gt;am&lt;/strong&gt;) on the fuel consumption (&lt;strong&gt;mpg&lt;/strong&gt;) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of &lt;strong&gt;mpg&lt;/strong&gt; and &lt;strong&gt;am&lt;/strong&gt; with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.&lt;/p&gt;
@@ -1694,7 +1694,7 @@ grid.arrange(PropPlot, CropPlot, ncol = 2)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;qplot(as.factor(am), mpg, data = mtcars, geom = &amp;quot;boxplot&amp;quot;, color = as.factor(am), 
       xlab = &amp;quot;Type of transmission(0: automatic, 1: manual)&amp;quot;, 
       ylab = &amp;quot;Number of miles per gallon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/fuelConsumption_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/fuelConsumption_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;However, the correlation between &lt;strong&gt;mpg&lt;/strong&gt; and the other parameters shows a stronger relationship between &lt;strong&gt;mpg&lt;/strong&gt; and &lt;strong&gt;wt&lt;/strong&gt;, &lt;strong&gt;cyl&lt;/strong&gt;, &lt;strong&gt;disp&lt;/strong&gt;, &lt;strong&gt;hp&lt;/strong&gt;, &lt;strong&gt;drat&lt;/strong&gt;, &lt;strong&gt;vs&lt;/strong&gt; as compared to &lt;strong&gt;am&lt;/strong&gt;.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;corr &amp;lt;- cor(mtcars$mpg, mtcars)
 corr[1, order(-abs(corr[1,]))]&lt;/code&gt;&lt;/pre&gt;
@@ -1770,7 +1770,7 @@ summary(fit2)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The plots of the residuals Vs. fitted values, the square root of the standard residuals Vs. fitted values, the standard residuals Vs. Leverage and the QQ-plot are given by:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow = c(2, 2))
 plot(best)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/fuelConsumption_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/fuelConsumption_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;While the QQ-plot seems to be relatively acceptable, the other plots show that the assumptions of normality and linearity are close to be breached.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;conclusion&#34; class=&#34;section level2&#34;&gt;
@@ -1782,10 +1782,10 @@ plot(best)&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Personal activity monitoring</title>
-      <link>https://slamara.github.io/project/activitymonitoring/</link>
+      <link>/project/activitymonitoring/</link>
       <pubDate>Wed, 08 Aug 2018 16:40:59 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/activitymonitoring/</guid>
+      <guid>/project/activitymonitoring/</guid>
       <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;This project makes use of data from a personal activity monitoring device which counts the number of steps taken by an anonymous individual in 5 minutes intervals throughout the day. The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&#34;&gt;dataset&lt;/a&gt; was collected within a period of two months (October and November 2012).&lt;/p&gt;
@@ -1836,7 +1836,7 @@ StepsPerDay&lt;/code&gt;&lt;/pre&gt;
      xlab=&amp;quot;Days&amp;quot;, 
      ylab=&amp;quot;Number of steps&amp;quot;, 
      main=&amp;quot;Total number of steps taken each day&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/histo1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/activityMonitoring_files/figure-html/histo1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Finally, I calculate and report the mean and median of the total number of steps taken per day&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mean(StepsPerDay$TotSteps)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] 10766.19&lt;/code&gt;&lt;/pre&gt;
@@ -1854,7 +1854,7 @@ plot(MeanInterval$interval, MeanInterval$x, type = &amp;quot;l&amp;quot;, col = 
      xlab = &amp;quot;5-minute intervals&amp;quot;, 
      ylab = &amp;quot;Average nummber of steps&amp;quot;, 
      main = &amp;quot;Average number of steps averaged across all days&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/timeSerie1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/activityMonitoring_files/figure-html/timeSerie1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MeanInterval[which.max(MeanInterval$x),]&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##     interval        x
@@ -1876,7 +1876,7 @@ plot(StepsPerDayFull$date, StepsPerDayFull$TotSteps, type=&amp;quot;h&amp;quot;,
      xlab=&amp;quot;Days&amp;quot;, 
      ylab=&amp;quot;Number of steps&amp;quot;, 
      main=&amp;quot;Total number of steps taken each day obtained from a full data set&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/histo2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/activityMonitoring_files/figure-html/histo2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Recap &amp;lt;- xtable(cbind(c(&amp;quot;Without \&amp;quot;NA\&amp;quot;&amp;quot;, &amp;quot;With \&amp;quot;NA\&amp;quot;&amp;quot;), c(mean(StepsPerDayFull$TotSteps), mean(StepsPerDay$TotSteps)), c(median(StepsPerDayFull$TotSteps), median(StepsPerDay$TotSteps))))
 
 colnames(Recap) &amp;lt;- c(&amp;quot;Type of data set&amp;quot;, &amp;quot;Mean&amp;quot;, &amp;quot;Median&amp;quot;)
@@ -1885,7 +1885,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Tue Aug 14 21:12:17 2018 --&gt;
+&lt;!-- Wed Aug 15 13:05:43 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;
@@ -1944,17 +1944,17 @@ xyplot(x ~ interval | as.factor(WE), data = MeanIntervalFull, type = &amp;quot;l
        ylab = &amp;quot;Number of steps&amp;quot;, 
        main = &amp;quot;The average number of steps across all weekday days or weekend days&amp;quot;, 
        layout = c(1,2))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/activityMonitoring_files/figure-html/PanelPlot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/activityMonitoring_files/figure-html/PanelPlot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
     
     <item>
       <title>Evolution of fine particulate matter pollution in the US</title>
-      <link>https://slamara.github.io/project/airquality/</link>
+      <link>/project/airquality/</link>
       <pubDate>Wed, 08 Aug 2018 16:24:41 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/airquality/</guid>
+      <guid>/project/airquality/</guid>
       <description>&lt;p&gt;Among the numerous air pollutants, the fine particulate matter (PM2.5) is one of the most harmful to human health. In the US, the Environmental Protection Agency (EPA) is in charge of setting the ambient air quality standards, tracking the emissions of the pollutants into the atmosphere, and releasing a database on emissions approximatly every 3 years. This database is known as the National Emissions Inventory (NEI). For more details, see the &lt;a href=&#34;http://www.epa.gov/ttn/chief/eiinformation.html&#34;&gt;EPA National Emissions Inventory web site&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;In this Database, the NEI records, for each year, how many tons of PM2.5 were emitted. The data used in this project are for 1999, 2002, 2005, and 2008 and can be downloaded &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;My goal within this report is to explore the National Emissions Inventory database and see what it says about fine particulate matter pollution in the United states over the 10-year period 1999–2008.&lt;/p&gt;
@@ -1973,7 +1973,7 @@ plot(names(totalEm), totalEm, type =&amp;quot;l&amp;quot;,
      xlab = &amp;quot;Year&amp;quot;, 
      ylab = &amp;quot;Total Pm(2.5) Emissions (tons)&amp;quot;, 
      main = &amp;quot;Evolution of the total PM2.5 Emissions over the US&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;have-total-emissions-from-pm2.5-decreased-in-the-baltimore-city-maryland-fips24510-from-1999-to-2008&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips==“24510”) from 1999 to 2008?&lt;/h4&gt;
@@ -1985,7 +1985,7 @@ plot(names(totalEmBal), totalEmBal, type =&amp;quot;l&amp;quot;,
      xlab = &amp;quot;Year&amp;quot;,
      ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;,
      main = &amp;quot;Evolution of the total PM2.5 Emissions in Baltimore&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;of-the-four-types-of-sources-indicated-by-the-type-point-nonpoint-onroad-nonroad-variable-which-of-these-four-sources-have-seen-decreases-in-emissions-from-19992008-for-baltimore-city-which-have-seen-increases-in-emissions-from-19992008&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008?&lt;/h4&gt;
@@ -1998,7 +1998,7 @@ with(totalEmBalTypes, qplot(year, x,
                             geom= c(&amp;quot;point&amp;quot;, &amp;quot;line&amp;quot;), 
                             xlab = &amp;quot;Year&amp;quot;, ylab = &amp;quot;Total PM2.5 Emissions (tons)&amp;quot;, 
                             main = &amp;quot;Evolution of total Emissions in Baltimore by type of source&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;across-the-united-states-how-have-emissions-from-coal-combustion-related-sources-changed-from-19992008&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?&lt;/h4&gt;
@@ -2012,7 +2012,7 @@ plot(names(totalCoal), totalCoal, type =&amp;quot;l&amp;quot;,
      xlab = &amp;quot;Year&amp;quot;, 
      ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;, 
      main = &amp;quot;Total Emission from coal combustion-related sources over the US  &amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;how-have-emissions-from-motor-vehicle-sources-changed-from-19992008-in-baltimore-city&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?&lt;/h4&gt;
@@ -2024,7 +2024,7 @@ plot(names(totalBalMotor), totalBalMotor, type =&amp;quot;l&amp;quot;,
      xlab = &amp;quot;Year&amp;quot;, 
      ylab = &amp;quot;Total Pm2.5 Emissions (tons)&amp;quot;, 
      main = &amp;quot;Total Emission from Motor Vehicles in Baltimore City&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;compare-emissions-from-motor-vehicle-sources-in-baltimore-city-with-emissions-from-motor-vehicle-sources-in-los-angeles-county-california-fips06037.-which-city-has-seen-greater-changes-over-time-in-motor-vehicle-emissions&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips==“06037”). Which city has seen greater changes over time in motor vehicle emissions?&lt;/h4&gt;
@@ -2038,17 +2038,17 @@ with(totalComp, qplot(year, x, color = fips, geom= c(&amp;quot;point&amp;quot;, 
                       xlab = &amp;quot;Year&amp;quot;, 
                       ylab = &amp;quot;Total PM2.5 Emissions (tons)&amp;quot;, 
                       main = &amp;quot;Evolution of total Emissions from Motor Vehicles in Baltimore city \n      (fips = 24510) and Los Angeles County (fips = 06037)&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/airQuality_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/airQuality_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
     
     <item>
       <title>Individual household electric power consumption</title>
-      <link>https://slamara.github.io/project/electricpconsumption/</link>
+      <link>/project/electricpconsumption/</link>
       <pubDate>Wed, 08 Aug 2018 16:08:18 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/electricpconsumption/</guid>
+      <guid>/project/electricpconsumption/</guid>
       <description>&lt;p&gt;The goal of this project is to examine how household energy usage varies over a 2-day period in February, 2007 using the base plotting system. The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip&#34;&gt;data&lt;/a&gt; used in here (in particular, the “Individual household electric power consumption Data Set”) are from the &lt;a href=&#34;http://archive.ics.uci.edu/ml/&#34;&gt;UC Irvine Machine Learning Repository&lt;/a&gt;, a popular repository for machine learning datasets.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(sqldf)
 library(dplyr)
@@ -2071,7 +2071,7 @@ sel_data &amp;lt;- sel_data %&amp;gt;% mutate(datetime = as.POSIXct(paste(sel_da
 # Plot the histogram
 hist(sel_data$Global_active_power, col = &amp;quot;red&amp;quot;, main = &amp;quot;Global Active Power&amp;quot;, 
          xlab = &amp;quot;Global Active Power (kilowatts)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/electricPConsumption_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Create a png file from the histogram
 png(file = &amp;quot;plot1.png&amp;quot;, width = 480, height = 480, bg = &amp;quot;transparent&amp;quot;)
 
@@ -2081,7 +2081,7 @@ hist(sel_data$Global_active_power, col = &amp;quot;red&amp;quot;, main = &amp;qu
 dev.off()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(sel_data$datetime, sel_data$Global_active_power, type = &amp;quot;l&amp;quot;, xlab = &amp;quot;&amp;quot;, 
          ylab = &amp;quot;Global Active Power (kilowatts)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/electricPConsumption_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow = c(2, 2))
 
 plot(sel_data$datetime, sel_data$Global_active_power, type = &amp;quot;l&amp;quot;, xlab = &amp;quot;&amp;quot;, 
@@ -2110,16 +2110,16 @@ legend(&amp;quot;topright&amp;quot;,legend=c(&amp;quot;Sub_metering_1&amp;quot;,
 
 plot(sel_data$datetime, sel_data$Global_reactive_power, type = &amp;quot;l&amp;quot;, 
          xlab = &amp;quot;datetime&amp;quot;, ylab = &amp;quot;Global_reactive_power&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/electricPConsumption_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/project/electricPConsumption_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Getting and cleaning data</title>
-      <link>https://slamara.github.io/project/gcd/</link>
+      <link>/project/gcd/</link>
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/gcd/</guid>
+      <guid>/project/gcd/</guid>
       <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;The purpose of this project is to show the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis.&lt;/p&gt;
@@ -2219,10 +2219,10 @@ rm(list = ls())&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Ranking US Hospitals</title>
-      <link>https://slamara.github.io/project/rankingushospitals/</link>
+      <link>/project/rankingushospitals/</link>
       <pubDate>Fri, 03 Aug 2018 18:05:56 +0200</pubDate>
       
-      <guid>https://slamara.github.io/project/rankingushospitals/</guid>
+      <guid>/project/rankingushospitals/</guid>
       <description>&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;The purpose of this project is to rank over 4000 US hospitals according to the quality of care. The data represent a small subset of the data available at the Hospital Compare web site (&lt;a href=&#34;http://hospitalcompare.hhs.gov&#34; class=&#34;uri&#34;&gt;http://hospitalcompare.hhs.gov&lt;/a&gt;) run by the U.S. Department of Health and Human Services.&lt;/p&gt;
@@ -2468,10 +2468,10 @@ as.list(apply(dat, 1, function(x){do.call(rankHospital, as.list(x))}))&lt;/code&
     
     <item>
       <title>Privacy Policy</title>
-      <link>https://slamara.github.io/privacy/</link>
+      <link>/privacy/</link>
       <pubDate>Thu, 28 Jun 2018 00:00:00 +0200</pubDate>
       
-      <guid>https://slamara.github.io/privacy/</guid>
+      <guid>/privacy/</guid>
       <description>&lt;p&gt;&amp;hellip;&lt;/p&gt;
 </description>
     </item>

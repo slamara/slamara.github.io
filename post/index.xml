@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Samir Lamara</title>
-    <link>https://slamara.github.io/post/</link>
+    <link>/post/</link>
     <description>Recent content in Posts on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0100</lastBuildDate>
     
-	<atom:link href="https://slamara.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Tuning XGBoost using grid search results in R</title>
-      <link>https://slamara.github.io/post/xgboost/</link>
+      <link>/post/xgboost/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
-      <guid>https://slamara.github.io/post/xgboost/</guid>
+      <guid>/post/xgboost/</guid>
       <description>What is XGBoost?The e(X)treme Gradient Boosting (XGBoost) is an algorithm implemented for gradient boosted decision trees with focus on high speed and optimal model performance. During the last three years, the algorithm has become very popular among Kagglers and data scientists in industry, due to its high performance on applied machine learning problems involving structured data within classification, regression or ranking scopes.
 According to the author of XGBoost, Tianqi Chen, one of the main aspect of XGBoost refers to:</description>
     </item>

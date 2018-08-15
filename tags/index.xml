@@ -2,67 +2,67 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Samir Lamara</title>
-    <link>https://slamara.github.io/tags/</link>
+    <link>/tags/</link>
     <description>Recent content in Tags on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sat, 11 Aug 2018 17:25:50 +0200</lastBuildDate>
     
-	<atom:link href="https://slamara.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Data Visualisation</title>
-      <link>https://slamara.github.io/tags/data-visualisation/</link>
+      <link>/tags/data-visualisation/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/data-visualisation/</guid>
+      <guid>/tags/data-visualisation/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Exploratory Data Analysis</title>
-      <link>https://slamara.github.io/tags/exploratory-data-analysis/</link>
+      <link>/tags/exploratory-data-analysis/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/exploratory-data-analysis/</guid>
+      <guid>/tags/exploratory-data-analysis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Machine Learning</title>
-      <link>https://slamara.github.io/tags/machine-learning/</link>
+      <link>/tags/machine-learning/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/machine-learning/</guid>
+      <guid>/tags/machine-learning/</guid>
       <description></description>
     </item>
     
     <item>
       <title>NLP</title>
-      <link>https://slamara.github.io/tags/nlp/</link>
+      <link>/tags/nlp/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/nlp/</guid>
+      <guid>/tags/nlp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Regression Analysis</title>
-      <link>https://slamara.github.io/tags/regression-analysis/</link>
+      <link>/tags/regression-analysis/</link>
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/regression-analysis/</guid>
+      <guid>/tags/regression-analysis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Statistical Inference</title>
-      <link>https://slamara.github.io/tags/statistical-inference/</link>
+      <link>/tags/statistical-inference/</link>
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
-      <guid>https://slamara.github.io/tags/statistical-inference/</guid>
+      <guid>/tags/statistical-inference/</guid>
       <description></description>
     </item>
     
