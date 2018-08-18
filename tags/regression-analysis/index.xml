@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Regression Analysis on Samir Lamara</title>
-    <link>/tags/regression-analysis/</link>
+    <link>https://slamara.github.io/tags/regression-analysis/</link>
     <description>Recent content in Regression Analysis on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Wed, 08 Aug 2018 16:53:36 +0200</lastBuildDate>
     
-	<atom:link href="/tags/regression-analysis/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://slamara.github.io/tags/regression-analysis/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Influence of automatic and manual transmission on fuel consumption</title>
-      <link>/project/fuelconsumption/</link>
+      <link>https://slamara.github.io/project/fuelconsumption/</link>
       <pubDate>Wed, 08 Aug 2018 16:53:36 +0200</pubDate>
       
-      <guid>/project/fuelconsumption/</guid>
+      <guid>https://slamara.github.io/project/fuelconsumption/</guid>
       <description>Executive summary:The purpose of this project is to assess qualitatively and quantitatively the leverage of automatic and manual transmission (am) on the fuel consumption (mpg) of a selection of 32 cars. This should be done with regards to the intrinsic relationship of mpg and am with 10 other car aspects and performances. The data used in this assignment was published in the 1974 Motors Trend magazine.
 In this short report, I start with an exploratory analysis and rapid graphical representation focusing roughly on the am and mpg.</description>
     </item>

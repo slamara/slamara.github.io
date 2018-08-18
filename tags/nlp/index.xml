@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>NLP on Samir Lamara</title>
-    <link>/tags/nlp/</link>
+    <link>https://slamara.github.io/tags/nlp/</link>
     <description>Recent content in NLP on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Sat, 11 Aug 2018 17:25:50 +0200</lastBuildDate>
     
-	<atom:link href="/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://slamara.github.io/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Processing of Natural Language data: Application to a Swiftkey dataset</title>
-      <link>/project/swiftkey1/</link>
+      <link>https://slamara.github.io/project/swiftkey1/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>/project/swiftkey1/</guid>
+      <guid>https://slamara.github.io/project/swiftkey1/</guid>
       <description>Introduction: The Natural Language ProcessingThe Natural Language Processing (NLP) is nowadays widely used in different areas related to text production and/or analysis. Some major fields of application ranges from word prediction to machine translation, including sentiment analysis, summarization, and classification,…etc. The main goal of NLP is to help machines read and process our natural language without necessarily understanding the meanings of the words or their context.
 Specific packages in R were implemented for NLP.</description>
     </item>

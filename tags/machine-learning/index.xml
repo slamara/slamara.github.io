@@ -2,42 +2,42 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Machine Learning on Samir Lamara</title>
-    <link>/tags/machine-learning/</link>
+    <link>https://slamara.github.io/tags/machine-learning/</link>
     <description>Recent content in Machine Learning on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     <lastBuildDate>Thu, 09 Aug 2018 13:54:32 +0200</lastBuildDate>
     
-	<atom:link href="/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://slamara.github.io/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Tuning XGBoost using grid search results in R</title>
-      <link>/post/xgboost/</link>
+      <link>https://slamara.github.io/post/xgboost/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
-      <guid>/post/xgboost/</guid>
+      <guid>https://slamara.github.io/post/xgboost/</guid>
       <description>What is XGBoost?The e(X)treme Gradient Boosting (XGBoost) is an algorithm implemented for gradient boosted decision trees with focus on high speed and optimal model performance. During the last three years, the algorithm has become very popular among Kagglers and data scientists in industry, due to its high performance on applied machine learning problems involving structured data within classification, regression or ranking scopes.
 According to the author of XGBoost, Tianqi Chen, one of the main aspect of XGBoost refers to:</description>
     </item>
     
     <item>
       <title>Titanic: Machine Learning from Disaster- A Kaggle Competition</title>
-      <link>/project/titanic/</link>
+      <link>https://slamara.github.io/project/titanic/</link>
       <pubDate>Wed, 08 Aug 2018 17:42:32 +0200</pubDate>
       
-      <guid>/project/titanic/</guid>
+      <guid>https://slamara.github.io/project/titanic/</guid>
       <description>OverviewThe Titanic left the port of Queensland (now Cobh), Ireland on April 11, 1912 with 2224 passengers 1. On early morning of Monday, 15 April 1912, sank the “unsinkable” after a collision with an iceberg dragging more than 2/3 of the passengers down to the bottom of the Atlantic Ocean.
 Due to the insufficient number of means of survival, the possibility to get in lifeboats would have obeyed to some kind of considerations: from the ethical “women and children first” to the more practical proximity to the Upper Deck which is itself related to the cabin class and thus to the socio-economic class of each passenger (see here the different levels of the Titanic).</description>
     </item>
     
     <item>
       <title>Predicting correctness of weight lifting exercises</title>
-      <link>/project/weightlifting/</link>
+      <link>https://slamara.github.io/project/weightlifting/</link>
       <pubDate>Wed, 08 Aug 2018 17:17:52 +0200</pubDate>
       
-      <guid>/project/weightlifting/</guid>
+      <guid>https://slamara.github.io/project/weightlifting/</guid>
       <description>BackgroundMany fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities 1. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.</description>
     </item>
     

@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Samir Lamara</title>
-    <link>/categories/</link>
+    <link>https://slamara.github.io/categories/</link>
     <description>Recent content in Categories on Samir Lamara</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2018</copyright>
     
-	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://slamara.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Posts</title>
-      <link>/categories/posts/</link>
+      <link>https://slamara.github.io/categories/posts/</link>
       <pubDate>Thu, 09 Aug 2018 13:54:32 +0200</pubDate>
       
-      <guid>/categories/posts/</guid>
+      <guid>https://slamara.github.io/categories/posts/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Projects</title>
-      <link>/categories/projects/</link>
+      <link>https://slamara.github.io/categories/projects/</link>
       <pubDate>Sat, 11 Aug 2018 17:25:50 +0200</pubDate>
       
-      <guid>/categories/projects/</guid>
+      <guid>https://slamara.github.io/categories/projects/</guid>
       <description></description>
     </item>
     
