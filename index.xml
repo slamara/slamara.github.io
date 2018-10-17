@@ -29,7 +29,7 @@
 &lt;/div&gt;
 &lt;div id=&#34;exploring-the-dataset&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Exploring the Dataset&lt;/h3&gt;
-&lt;p&gt;The data used in this project, is provided by &lt;a href=&#34;https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;amp;activetab=pivot_1%3aprimaryr2&#34;&gt;Swiftkey&lt;/a&gt;, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip&#34;&gt;dataset&lt;/a&gt; consists in a collection of raw texts from three different sources: blogs, news and twitter. These collections come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.&lt;/p&gt;
+&lt;p&gt;The data used in this project, is provided by &lt;a href=&#34;https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;amp;activetab=pivot_1%3aprimaryr2&#34;&gt;Swiftkey&lt;/a&gt;, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The &lt;a href=&#34;https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip&#34;&gt;dataset&lt;/a&gt; consists in a collection of raw texts from three different sources: blogs, news and twitter. The text files come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.&lt;/p&gt;
 &lt;p&gt;Depending on its origin, the text in each file can highly differ from the grammatical, syntactic, and lexical point of view (vocabulary, used abbreviations, text construction,…). The general features of each file are shown below.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
 library(readtext)
@@ -353,11 +353,11 @@ lapply(c(&amp;quot;blogs&amp;quot;, &amp;quot;news&amp;quot;, &amp;quot;twitter&
 &lt;p&gt;Not surprisingly, the graph from the twitter file is quite different from the others with a narrower vocabulary content compensated by a more frequent use of top words. The longer tail of the graph for the complete dataset gives also an indication on how the vocabulary content differs from a file to another, as each one adds to the total number of words. This is apparent especially for the bigram and the trigram.&lt;/p&gt;
 &lt;p&gt;The Zipf’s law seems to be respected by all files especially for the unigram. However, as the effect of the stopwords decreases for the bigram and trigram, the Zipf’s law becomes less noticeable. The same effect could also be seen for the unigram when excluding the stopwords in the processing steps.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(1, maxrank = 25000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(2, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_zipf_all(3, maxrank = 100000)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-7-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;In order to show the features of each file, I exclude the stopwords for what follows:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;top-features-for-the-blogs-news-and-twitter&#34; class=&#34;section level4&#34;&gt;
@@ -407,15 +407,15 @@ p3 &amp;lt;- ggplot(data = topDf3, aes(x = reorder(features, freq),
     guides(fill=FALSE)
 
 grid.arrange(p1, p2, p3, ncol = 3)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;bigram&#34; class=&#34;section level5&#34;&gt;
 &lt;h5&gt;Bigram&lt;/h5&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;trigram&#34; class=&#34;section level5&#34;&gt;
 &lt;h5&gt;Trigram&lt;/h5&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;unigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
@@ -425,7 +425,7 @@ grid.arrange(p1, p2, p3, ncol = 3)&lt;/code&gt;&lt;/pre&gt;
 textplot_wordcloud(dtm, 
                    max_words = 50, 
                    colors = c(&amp;quot;red&amp;quot;, &amp;quot;pink&amp;quot;, &amp;quot;green&amp;quot;, &amp;quot;purple&amp;quot;, &amp;quot;orange&amp;quot;, &amp;quot;blue&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;topFeats &amp;lt;- topfeatures(dtm, 20)
 
 topDf &amp;lt;- data.frame(features = names(topFeats), freq = topFeats)
@@ -437,15 +437,15 @@ ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)
     labs(title = expression(&amp;quot;Features Frequencies&amp;quot;)) + 
     coord_flip() + 
     guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;bigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Bigram features for the complete dataset&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/DFM_ng2-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;swiftkey1_files/figure-html/DFM_ng2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;trigram-features-for-the-complete-dataset&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Trigram features for the complete dataset&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;https://slamara.github.io/project/swiftkey1_files/figure-html/DFM_ng3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;swiftkey1_files/figure-html/DFM_ng3-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;swiftkey1_files/figure-html/DFM_ng3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level3&#34;&gt;
@@ -698,7 +698,7 @@ train$Survived &amp;lt;- factor(train$Survived, levels = c(0,1), labels = c(&amp
 &lt;div id=&#34;preliminary-data-analysis&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Preliminary data analysis&lt;/h3&gt;
 &lt;p&gt;The train dataset consists in a subset of 891 observations of 11 variables describing each passenger listed in. According to each variable we can know: whether the passenger survived or not (yes/no), his/her class on board (1st, 2nd or 3rd class), name (including the title), sex (female/male), Age, ticket number, fare, cabin number, and where he/her embarked.&lt;/p&gt;
-&lt;p&gt;Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found &lt;a href=&#34;https://www.kaggle.com/c/titanic/data&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found &lt;a href=&#34;https://www.kaggle.com/c/titanic/data&#34;&gt;here&lt;/a&gt;).&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(train)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    891 obs. of  12 variables:
 ##  $ PassengerId: int  1 2 3 4 5 6 7 8 9 10 ...
@@ -838,7 +838,7 @@ train$FamCat &amp;lt;- factor(train$FamCat)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;detailed-exploratory-data-analysis&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Detailed exploratory data analysis&lt;/h3&gt;
-&lt;p&gt;According to the train dataset, the proportion of survival is a bit greater than the global one (one third). Not surprisingly, the women and children survived the shipwreck more than men.&lt;/p&gt;
+&lt;p&gt;According to the train dataset, the overall proportion of survival is a bit greater than the global one (one third). Not surprisingly, we notice also that women and children survived the shipwreck more than men.&lt;/p&gt;
 &lt;p&gt;One can also notice that the overall proportion of survival for the category “missing” seems to be very close to category “adult” which leads me to believe (even subjectively) that the mean ages of these categories would not be very different.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# barplot: survived or not
 p1 &amp;lt;- ggplot(data = train, aes(Survived, fill = Survived)) + 
@@ -1184,7 +1184,7 @@ write.csv(z, &amp;quot;Res.csv&amp;quot;, row.names=FALSE)&lt;/code&gt;&lt;/pre&
       <guid>https://slamara.github.io/project/weightlifting/</guid>
       <description>&lt;div id=&#34;background&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Background&lt;/h3&gt;
-&lt;p&gt;Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.&lt;/p&gt;
+&lt;p&gt;Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring during free weight activities &lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.&lt;/p&gt;
 &lt;p&gt;In this project, I use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to a scientific study. During this experiment, the participants were asked to perform barbell lifts in 5 different ways: one correct and four incorrect. More information is available from the website &lt;a href=&#34;http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har&#34;&gt;here&lt;/a&gt;. See the section on the Weight Lifting Exercise Dataset.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;data&#34; class=&#34;section level3&#34;&gt;
@@ -1305,7 +1305,7 @@ registerDoParallel(cluster)&lt;/code&gt;&lt;/pre&gt;
 control = trainControl(method = &amp;quot;cv&amp;quot;, number = 5, allowParallel = TRUE)
 system.time(modelRPART &amp;lt;- train(x, y, method = &amp;quot;rpart&amp;quot;, trControl = control)) &lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
-##        6.00        0.12       20.12&lt;/code&gt;&lt;/pre&gt;
+##        8.29        0.12       37.43&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelRPART$results&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##           cp  Accuracy     Kappa  AccuracySD    KappaSD
 ## 1 0.03398842 0.5565960 0.4378718 0.009052306 0.01130354
@@ -1336,7 +1336,7 @@ cfMatRPART$overall&lt;/code&gt;&lt;/pre&gt;
 elapsed &amp;lt;- system.time(modelGBM &amp;lt;- train(x, y, method = &amp;quot;gbm&amp;quot;, trControl = control)) &lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;elapsed&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
-##       33.14        0.16      172.27&lt;/code&gt;&lt;/pre&gt;
+##       50.63        0.36      239.08&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelGBM$results&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   shrinkage interaction.depth n.minobsinnode n.trees  Accuracy     Kappa
 ## 1       0.1                 1             10      50 0.7842776 0.7262820
@@ -1380,7 +1380,7 @@ cfMatGBM$overall&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(123)
 system.time(modelRF &amp;lt;- train(x, y, method = &amp;quot;rf&amp;quot;, trControl = control))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##        User      System verstrichen 
-##       58.67        1.32      446.53&lt;/code&gt;&lt;/pre&gt;
+##       72.25        1.82      515.49&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;modelRF$results &lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   mtry  Accuracy     Kappa  AccuracySD     KappaSD
 ## 1    2 0.9952433 0.9939829 0.002150399 0.002720445
@@ -1411,9 +1411,9 @@ cfMatRF$overall&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;results &amp;lt;- resamples(list(RPART=modelRPART, GBM=modelGBM, RF=modelRF))
 results$timings &lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##       Everything FinalModel Prediction
-## RPART      20.12       0.39         NA
-## GBM       172.27      32.25         NA
-## RF        446.53      59.48         NA&lt;/code&gt;&lt;/pre&gt;
+## RPART      37.43       1.07         NA
+## GBM       239.08      53.01         NA
+## RF        515.49      71.66         NA&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bwplot(results)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;https://slamara.github.io/project/weightLifting_files/figure-html/compModels-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Apart of the RPART method, the models obtained with the GBM and RF methods fit the test data very well. The standard deviations of the accuracies are also very small which suggests that the data collected with the body sensors is very accurate. The big difference in processing time between the GBM and RF methods (about the double) poses the problem of performance when using a time-consuming method for just a little improvement. Of course, for this project, one can afford using the RF method to predict the cases from the test data. However, once the data becomes very big, it is important to assess all these different aspects taking into consideration the acceptable margin of error.&lt;/p&gt;
@@ -1885,7 +1885,7 @@ rownames(Recap) &amp;lt;- NULL
 
 print(Recap, include.rownames=FALSE, type=&amp;quot;html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- html table generated in R 3.5.1 by xtable 1.8-2 package --&gt;
-&lt;!-- Wed Oct 17 20:02:20 2018 --&gt;
+&lt;!-- Wed Oct 17 21:24:29 2018 --&gt;
 &lt;table border=&#34;1&#34;&gt;
 &lt;tr&gt;
 &lt;th&gt;

@@ -327,7 +327,7 @@
 </div>
 <div id="exploring-the-dataset" class="section level3">
 <h3>Exploring the Dataset</h3>
-<p>The data used in this project, is provided by <a href="https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;activetab=pivot_1%3aprimaryr2">Swiftkey</a>, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The <a href="https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip">dataset</a> consists in a collection of raw texts from three different sources: blogs, news and twitter. These collections come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.</p>
+<p>The data used in this project, is provided by <a href="https://www.microsoft.com/de-de/swiftkey?rtc=1&amp;activetab=pivot_1%3aprimaryr2">Swiftkey</a>, the keyboard application for word prediction in smartphones and tablets (Android and iOS). The <a href="https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip">dataset</a> consists in a collection of raw texts from three different sources: blogs, news and twitter. The text files come in four different languages (german, english, finnish and russian) but only the ones in english are used in this project.</p>
 <p>Depending on its origin, the text in each file can highly differ from the grammatical, syntactic, and lexical point of view (vocabulary, used abbreviations, text construction,…). The general features of each file are shown below.</p>
 <pre class="r"><code>library(knitr)
 library(readtext)
@@ -651,11 +651,11 @@ lapply(c(&quot;blogs&quot;, &quot;news&quot;, &quot;twitter&quot;, &quot;all&quo
 <p>Not surprisingly, the graph from the twitter file is quite different from the others with a narrower vocabulary content compensated by a more frequent use of top words. The longer tail of the graph for the complete dataset gives also an indication on how the vocabulary content differs from a file to another, as each one adds to the total number of words. This is apparent especially for the bigram and the trigram.</p>
 <p>The Zipf’s law seems to be respected by all files especially for the unigram. However, as the effect of the stopwords decreases for the bigram and trigram, the Zipf’s law becomes less noticeable. The same effect could also be seen for the unigram when excluding the stopwords in the processing steps.</p>
 <pre class="r"><code>plot_zipf_all(1, maxrank = 25000)</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>plot_zipf_all(2, maxrank = 100000)</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 <pre class="r"><code>plot_zipf_all(3, maxrank = 100000)</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
 <p>In order to show the features of each file, I exclude the stopwords for what follows:</p>
 </div>
 <div id="top-features-for-the-blogs-news-and-twitter" class="section level4">
@@ -705,15 +705,15 @@ p3 &lt;- ggplot(data = topDf3, aes(x = reorder(features, freq),
     guides(fill=FALSE)
 
 grid.arrange(p1, p2, p3, ncol = 3)</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="bigram" class="section level5">
 <h5>Bigram</h5>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="trigram" class="section level5">
 <h5>Trigram</h5>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="unigram-features-for-the-complete-dataset" class="section level4">
@@ -723,7 +723,7 @@ grid.arrange(p1, p2, p3, ncol = 3)</code></pre>
 textplot_wordcloud(dtm, 
                    max_words = 50, 
                    colors = c(&quot;red&quot;, &quot;pink&quot;, &quot;green&quot;, &quot;purple&quot;, &quot;orange&quot;, &quot;blue&quot;))</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>topFeats &lt;- topfeatures(dtm, 20)
 
 topDf &lt;- data.frame(features = names(topFeats), freq = topFeats)
@@ -735,15 +735,15 @@ ggplot(data = topDf, aes(x = reorder(features, freq), y = freq, fill = features)
     labs(title = expression(&quot;Features Frequencies&quot;)) + 
     coord_flip() + 
     guides(fill=FALSE)</code></pre>
-<p><img src="/project/swiftkey1_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
 </div>
 <div id="bigram-features-for-the-complete-dataset" class="section level4">
 <h4>Bigram features for the complete dataset</h4>
-<p><img src="/project/swiftkey1_files/figure-html/DFM_ng2-1.png" width="672" /><img src="/project/swiftkey1_files/figure-html/DFM_ng2-2.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/DFM_ng2-1.png" width="672" /><img src="swiftkey1_files/figure-html/DFM_ng2-2.png" width="672" /></p>
 </div>
 <div id="trigram-features-for-the-complete-dataset" class="section level4">
 <h4>Trigram features for the complete dataset</h4>
-<p><img src="/project/swiftkey1_files/figure-html/DFM_ng3-1.png" width="672" /><img src="/project/swiftkey1_files/figure-html/DFM_ng3-2.png" width="672" /></p>
+<p><img src="swiftkey1_files/figure-html/DFM_ng3-1.png" width="672" /><img src="swiftkey1_files/figure-html/DFM_ng3-2.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level3">

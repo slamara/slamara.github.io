@@ -340,7 +340,7 @@ train$Survived &lt;- factor(train$Survived, levels = c(0,1), labels = c(&quot;no
 <div id="preliminary-data-analysis" class="section level3">
 <h3>Preliminary data analysis</h3>
 <p>The train dataset consists in a subset of 891 observations of 11 variables describing each passenger listed in. According to each variable we can know: whether the passenger survived or not (yes/no), his/her class on board (1st, 2nd or 3rd class), name (including the title), sex (female/male), Age, ticket number, fare, cabin number, and where he/her embarked.</p>
-<p>Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found <a href="https://www.kaggle.com/c/titanic/data">here</a>.</p>
+<p>Adding to that, the variables SibSp and Parch represent respectively the number of siblings and spouses, and the number of parents and children. Both variables indicate implicitly whether a passenger has family members on board and how many are they. (more details can be found <a href="https://www.kaggle.com/c/titanic/data">here</a>).</p>
 <pre class="r"><code>str(train)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    891 obs. of  12 variables:
 ##  $ PassengerId: int  1 2 3 4 5 6 7 8 9 10 ...
@@ -480,7 +480,7 @@ train$FamCat &lt;- factor(train$FamCat)</code></pre>
 </div>
 <div id="detailed-exploratory-data-analysis" class="section level3">
 <h3>Detailed exploratory data analysis</h3>
-<p>According to the train dataset, the proportion of survival is a bit greater than the global one (one third). Not surprisingly, the women and children survived the shipwreck more than men.</p>
+<p>According to the train dataset, the overall proportion of survival is a bit greater than the global one (one third). Not surprisingly, we notice also that women and children survived the shipwreck more than men.</p>
 <p>One can also notice that the overall proportion of survival for the category “missing” seems to be very close to category “adult” which leads me to believe (even subjectively) that the mean ages of these categories would not be very different.</p>
 <pre class="r"><code># barplot: survived or not
 p1 &lt;- ggplot(data = train, aes(Survived, fill = Survived)) + 

@@ -316,7 +316,7 @@
     <div class="article-style" itemprop="articleBody">
       <div id="background" class="section level3">
 <h3>Background</h3>
-<p>Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring ones during free weight activities <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.</p>
+<p>Many fitness enthusiasts focuse mainly on how often they practice and how heavy they can lift, and usually neglect to verify whether they do it well or not. Yet, injuries due to unnatural movements and overexertion were proved to be the most commonly occuring during free weight activities <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. With the increasing use of devices that are equipped with accelerometers it is now possible to quantify how well a movement is done.</p>
 <p>In this project, I use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to a scientific study. During this experiment, the participants were asked to perform barbell lifts in 5 different ways: one correct and four incorrect. More information is available from the website <a href="http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har">here</a>. See the section on the Weight Lifting Exercise Dataset.</p>
 </div>
 <div id="data" class="section level3">
@@ -437,7 +437,7 @@ registerDoParallel(cluster)</code></pre>
 control = trainControl(method = &quot;cv&quot;, number = 5, allowParallel = TRUE)
 system.time(modelRPART &lt;- train(x, y, method = &quot;rpart&quot;, trControl = control)) </code></pre>
 <pre><code>##        User      System verstrichen 
-##        6.00        0.12       20.12</code></pre>
+##        8.29        0.12       37.43</code></pre>
 <pre class="r"><code>modelRPART$results</code></pre>
 <pre><code>##           cp  Accuracy     Kappa  AccuracySD    KappaSD
 ## 1 0.03398842 0.5565960 0.4378718 0.009052306 0.01130354
@@ -468,7 +468,7 @@ cfMatRPART$overall</code></pre>
 elapsed &lt;- system.time(modelGBM &lt;- train(x, y, method = &quot;gbm&quot;, trControl = control)) </code></pre>
 <pre class="r"><code>elapsed</code></pre>
 <pre><code>##        User      System verstrichen 
-##       33.14        0.16      172.27</code></pre>
+##       50.63        0.36      239.08</code></pre>
 <pre class="r"><code>modelGBM$results</code></pre>
 <pre><code>##   shrinkage interaction.depth n.minobsinnode n.trees  Accuracy     Kappa
 ## 1       0.1                 1             10      50 0.7842776 0.7262820
@@ -512,7 +512,7 @@ cfMatGBM$overall</code></pre>
 <pre class="r"><code>set.seed(123)
 system.time(modelRF &lt;- train(x, y, method = &quot;rf&quot;, trControl = control))</code></pre>
 <pre><code>##        User      System verstrichen 
-##       58.67        1.32      446.53</code></pre>
+##       72.25        1.82      515.49</code></pre>
 <pre class="r"><code>modelRF$results </code></pre>
 <pre><code>##   mtry  Accuracy     Kappa  AccuracySD     KappaSD
 ## 1    2 0.9952433 0.9939829 0.002150399 0.002720445
@@ -543,9 +543,9 @@ cfMatRF$overall</code></pre>
 <pre class="r"><code>results &lt;- resamples(list(RPART=modelRPART, GBM=modelGBM, RF=modelRF))
 results$timings </code></pre>
 <pre><code>##       Everything FinalModel Prediction
-## RPART      20.12       0.39         NA
-## GBM       172.27      32.25         NA
-## RF        446.53      59.48         NA</code></pre>
+## RPART      37.43       1.07         NA
+## GBM       239.08      53.01         NA
+## RF        515.49      71.66         NA</code></pre>
 <pre class="r"><code>bwplot(results)</code></pre>
 <p><img src="/project/weightLifting_files/figure-html/compModels-1.png" width="672" /></p>
 <p>Apart of the RPART method, the models obtained with the GBM and RF methods fit the test data very well. The standard deviations of the accuracies are also very small which suggests that the data collected with the body sensors is very accurate. The big difference in processing time between the GBM and RF methods (about the double) poses the problem of performance when using a time-consuming method for just a little improvement. Of course, for this project, one can afford using the RF method to predict the cases from the test data. However, once the data becomes very big, it is important to assess all these different aspects taking into consideration the acceptable margin of error.</p>
